@@ -47,6 +47,13 @@ final class ADAM_Interface_Theme_Manager {
 	private $switcher_rendered = false;
 
 	/**
+	 * Whether a plugin opted the current admin screen into ADAM theming.
+	 *
+	 * @var bool
+	 */
+	private $admin_theme_enabled = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param ADAM_Interface_Settings $settings Settings service.
@@ -58,7 +65,7 @@ final class ADAM_Interface_Theme_Manager {
 	/**
 	 * Registers frontend hooks.
 	 *
-	 * WordPress admin is deliberately excluded from Phase 1.
+	 * WordPress admin remains opt-in so only ADAM-owned screens are affected.
 	 *
 	 * @return void
 	 */
@@ -75,6 +82,52 @@ final class ADAM_Interface_Theme_Manager {
 		add_action( 'login_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_filter( 'login_body_class', array( $this, 'add_body_class' ) );
 		add_action( 'login_footer', array( $this, 'render_theme_switcher' ) );
+	}
+
+	/**
+	 * Enables the theme system for a plugin-owned WordPress admin screen.
+	 *
+	 * This is intentionally opt-in. Calling plugins remain responsible for
+	 * limiting the call to their own screens.
+	 *
+	 * @return void
+	 */
+	public function enable_admin_theme() {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		if ( ! $this->admin_theme_enabled ) {
+			add_filter( 'admin_body_class', array( $this, 'add_admin_body_class' ) );
+			$this->admin_theme_enabled = true;
+		}
+
+		$this->enqueue_assets();
+	}
+
+	/**
+	 * Adds one resolved ADAM theme class to the WordPress admin body.
+	 *
+	 * @param string $classes Space-separated admin body classes.
+	 * @return string
+	 */
+	public function add_admin_body_class( $classes ) {
+		$class_list    = preg_split( '/\s+/', trim( (string) $classes ) );
+		$class_list    = is_array( $class_list ) ? $class_list : array();
+		$theme_classes = array_map( array( $this, 'get_body_class' ), $this->get_resolved_themes() );
+		$class_list    = array_diff( $class_list, $theme_classes, array( '' ) );
+		$class_list[]  = $this->get_body_class( $this->get_resolved_theme() );
+
+		return implode( ' ', array_values( array_unique( $class_list ) ) );
+	}
+
+	/**
+	 * Returns the public handle for the reusable utility stylesheet.
+	 *
+	 * @return string
+	 */
+	public function get_utility_style_handle() {
+		return 'adam-interface-utilities';
 	}
 
 	/**
@@ -217,9 +270,16 @@ final class ADAM_Interface_Theme_Manager {
 		);
 
 		wp_enqueue_style(
+			$this->get_utility_style_handle(),
+			ADAM_INTERFACE_URL . 'assets/css/utilities.css',
+			array( 'adam-interface' ),
+			ADAM_INTERFACE_VERSION
+		);
+
+		wp_enqueue_style(
 			'adam-interface-theme-switcher',
 			ADAM_INTERFACE_URL . 'assets/css/theme-switcher.css',
-			array( 'adam-interface' ),
+			array( 'adam-interface-utilities' ),
 			ADAM_INTERFACE_VERSION
 		);
 
@@ -229,6 +289,14 @@ final class ADAM_Interface_Theme_Manager {
 			array(),
 			ADAM_INTERFACE_VERSION,
 			false
+		);
+
+		wp_enqueue_script(
+			'adam-interface-components',
+			ADAM_INTERFACE_URL . 'assets/js/components.js',
+			array( 'adam-interface' ),
+			ADAM_INTERFACE_VERSION,
+			true
 		);
 
 		wp_localize_script(

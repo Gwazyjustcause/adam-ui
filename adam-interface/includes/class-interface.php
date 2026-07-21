@@ -33,6 +33,13 @@ final class ADAM_Interface {
 	private $theme_manager;
 
 	/**
+	 * Shared component renderer.
+	 *
+	 * @var ADAM_Interface_Components
+	 */
+	private $components;
+
+	/**
 	 * Returns the plugin singleton.
 	 *
 	 * @return ADAM_Interface
@@ -51,6 +58,7 @@ final class ADAM_Interface {
 	private function __construct() {
 		$this->settings      = new ADAM_Interface_Settings();
 		$this->theme_manager = new ADAM_Interface_Theme_Manager( $this->settings );
+		$this->components    = new ADAM_Interface_Components();
 
 		$this->theme_manager->init();
 	}
@@ -76,5 +84,14 @@ final class ADAM_Interface {
 	 */
 	public function get_theme_manager() {
 		return $this->theme_manager;
+	}
+
+	/**
+	 * Returns the shared component renderer.
+	 *
+	 * @return ADAM_Interface_Components
+	 */
+	public function get_components() {
+		return $this->components;
 	}
 }
