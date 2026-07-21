@@ -1,0 +1,23 @@
+/**
+ * ADAM dark theme tokens.
+ *
+ * This file intentionally contains variables only.
+ */
+:root.adam-theme-dark,
+:root.adam-theme-dark body,
+body.adam-theme-dark {
+	--adam-bg: #17191c;
+	--adam-surface: #202327;
+	--adam-surface-2: #292d32;
+	--adam-text: #f0f0f1;
+	--adam-text-muted: #a7aaad;
+	--adam-primary: #72aee6;
+	--adam-primary-hover: #9ec2e6;
+	--adam-border: #3c434a;
+	--adam-success: #68de7c;
+	--adam-warning: #f0c33c;
+	--adam-danger: #ff8085;
+	--adam-selection-bg: #72aee6;
+	--adam-selection-text: #17191c;
+	--adam-shadow: 0 0.25rem 1rem rgb(0 0 0 / 0.35);
+}

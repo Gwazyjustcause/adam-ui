@@ -1,0 +1,23 @@
+/**
+ * ADAM light theme tokens.
+ *
+ * This file intentionally contains variables only.
+ */
+:root.adam-theme-light,
+:root.adam-theme-light body,
+body.adam-theme-light {
+	--adam-bg: #ffffff;
+	--adam-surface: #ffffff;
+	--adam-surface-2: #f6f7f8;
+	--adam-text: #1d2327;
+	--adam-text-muted: #646970;
+	--adam-primary: #2271b1;
+	--adam-primary-hover: #135e96;
+	--adam-border: #dcdcde;
+	--adam-success: #008a20;
+	--adam-warning: #996800;
+	--adam-danger: #b32d2e;
+	--adam-selection-bg: #2271b1;
+	--adam-selection-text: #ffffff;
+	--adam-shadow: 0 0.25rem 1rem rgb(0 0 0 / 0.08);
+}

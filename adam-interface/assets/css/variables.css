@@ -1,0 +1,13 @@
+/**
+ * Global ADAM design tokens shared by every theme.
+ *
+ * Colour-dependent values live in the individual theme files.
+ */
+:root {
+	--adam-font-family: inherit;
+	--adam-font-size: inherit;
+	--adam-line-height: 1.5;
+	--adam-radius: 0.5rem;
+	--adam-transition-duration: 160ms;
+	--adam-transition-timing: ease;
+}

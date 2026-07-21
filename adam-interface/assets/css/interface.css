@@ -1,0 +1,40 @@
+/**
+ * Generic ADAM interface foundations.
+ *
+ * Rules are scoped to .adam-interface so activating Phase 1 does not restyle
+ * the existing site. Future ADAM screens can opt into the shared foundation by
+ * applying that class to their outer wrapper.
+ */
+:root.adam-theme-light .adam-interface,
+:root.adam-theme-dark .adam-interface,
+body.adam-theme-light .adam-interface,
+body.adam-theme-dark .adam-interface {
+	color: var(--adam-text);
+	background-color: var(--adam-bg);
+	font-family: var(--adam-font-family);
+	font-size: var(--adam-font-size);
+	line-height: var(--adam-line-height);
+}
+
+:where(.adam-interface) :where(h1, h2, h3, h4, h5, h6) {
+	color: var(--adam-text);
+}
+
+:where(.adam-interface) p {
+	color: var(--adam-text);
+}
+
+:where(.adam-interface) a {
+	color: var(--adam-primary);
+	transition: color var(--adam-transition-duration) var(--adam-transition-timing);
+}
+
+:where(.adam-interface) a:hover,
+:where(.adam-interface) a:focus {
+	color: var(--adam-primary-hover);
+}
+
+:where(.adam-interface) ::selection {
+	color: var(--adam-selection-text);
+	background-color: var(--adam-selection-bg);
+}

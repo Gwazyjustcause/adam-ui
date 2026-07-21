@@ -1,0 +1,240 @@
+/**
+ * ADAM Interface theme controller.
+ *
+ * Restores, applies, and persists the visitor's theme preference. The storage
+ * adapter can be replaced later without changing the public theme API.
+ */
+( function ( window, document ) {
+	'use strict';
+
+	const config = window.adamInterfaceConfig || {};
+	const modes = Array.isArray( config.modes ) ? config.modes : [];
+	const resolvedThemes = Array.isArray( config.resolvedThemes )
+		? config.resolvedThemes
+		: [];
+	const classMap = config.classMap || {};
+	const storageConfig = config.storage || {};
+	const storageAdapters = {};
+	let activeStorageAdapter = storageConfig.adapter || '';
+	let currentMode = modes.includes( config.mode ) ? config.mode : config.systemMode;
+	let mediaQuery = null;
+	let lastEventMode = null;
+	let lastEventTheme = null;
+
+	storageAdapters.localStorage = {
+		load( key ) {
+			return window.localStorage.getItem( key );
+		},
+		save( key, value ) {
+			window.localStorage.setItem( key, value );
+		},
+		remove( key ) {
+			window.localStorage.removeItem( key );
+		},
+	};
+
+	function getStorageAdapter() {
+		return storageAdapters[ activeStorageAdapter ] || null;
+	}
+
+	function safelyUseStorage( operation, fallback = null ) {
+		const adapter = getStorageAdapter();
+
+		if ( ! adapter || typeof adapter[ operation ] !== 'function' ) {
+			return fallback;
+		}
+
+		try {
+			return adapter[ operation ]( storageConfig.key );
+		} catch ( error ) {
+			return fallback;
+		}
+	}
+
+	function getSystemTheme() {
+		if ( ! window.matchMedia || ! config.systemQuery ) {
+			return config.systemFallback;
+		}
+
+		mediaQuery = mediaQuery || window.matchMedia( config.systemQuery );
+
+		return mediaQuery.matches ? config.systemDark : config.systemFallback;
+	}
+
+	function resolveTheme( mode ) {
+		if ( resolvedThemes.includes( mode ) ) {
+			return mode;
+		}
+
+		if ( mode === config.systemMode ) {
+			return getSystemTheme();
+		}
+
+		return config.systemFallback;
+	}
+
+	function updateBodyClass( theme, mode ) {
+		Object.values( classMap ).forEach( ( className ) => {
+			document.documentElement.classList.remove( className );
+		} );
+
+		if ( classMap[ theme ] ) {
+			document.documentElement.classList.add( classMap[ theme ] );
+		}
+
+		if ( ! document.body ) {
+			return;
+		}
+
+		Object.values( classMap ).forEach( ( className ) => {
+			document.body.classList.remove( className );
+		} );
+
+		if ( classMap[ theme ] ) {
+			document.body.classList.add( classMap[ theme ] );
+		}
+
+		document.body.dataset.adamTheme = theme;
+		document.body.dataset.adamThemeMode = mode;
+
+		// The root class is only an early-paint bridge. Once body exists, it is
+		// the single source of truth used by ADAM styles and integrations.
+		Object.values( classMap ).forEach( ( className ) => {
+			document.documentElement.classList.remove( className );
+		} );
+	}
+
+	function dispatchThemeChange( mode, theme ) {
+		if ( mode === lastEventMode && theme === lastEventTheme ) {
+			return;
+		}
+
+		lastEventMode = mode;
+		lastEventTheme = theme;
+
+		const detail = { mode, theme, resolvedTheme: theme };
+
+		document.dispatchEvent( new window.CustomEvent( 'adam:themeChanged', { detail } ) );
+
+		// Retained for consumers built against the Phase 1 development API.
+		document.dispatchEvent(
+			new window.CustomEvent( 'adam-interface:theme-change', { detail } )
+		);
+	}
+
+	function syncThemeSwitchers() {
+		document.querySelectorAll( '[data-adam-theme-select]' ).forEach( ( select ) => {
+			select.value = currentMode;
+		} );
+	}
+
+	function applyTheme( mode, options = {} ) {
+		const nextMode = modes.includes( mode ) ? mode : config.systemMode;
+		const theme = resolveTheme( nextMode );
+
+		currentMode = nextMode;
+		updateBodyClass( theme, nextMode );
+		syncThemeSwitchers();
+
+		if ( options.persist ) {
+			const adapter = getStorageAdapter();
+
+			if ( adapter && typeof adapter.save === 'function' ) {
+				try {
+					adapter.save( storageConfig.key, nextMode );
+				} catch ( error ) {
+					// Storage can be unavailable in privacy-restricted browsers.
+				}
+			}
+		}
+
+		dispatchThemeChange( nextMode, theme );
+
+		return theme;
+	}
+
+	function restoreTheme() {
+		const storedMode = safelyUseStorage( 'load' );
+
+		return applyTheme( modes.includes( storedMode ) ? storedMode : currentMode );
+	}
+
+	function resetTheme() {
+		safelyUseStorage( 'remove' );
+
+		return applyTheme( config.mode );
+	}
+
+	function handleSystemThemeChange() {
+		if ( currentMode === config.systemMode ) {
+			applyTheme( currentMode );
+		}
+	}
+
+	function watchSystemTheme() {
+		if ( ! window.matchMedia || ! config.systemQuery ) {
+			return;
+		}
+
+		mediaQuery = mediaQuery || window.matchMedia( config.systemQuery );
+
+		if ( typeof mediaQuery.addEventListener === 'function' ) {
+			mediaQuery.addEventListener( 'change', handleSystemThemeChange );
+		} else if ( typeof mediaQuery.addListener === 'function' ) {
+			mediaQuery.addListener( handleSystemThemeChange );
+		}
+	}
+
+	function bindThemeSwitchers() {
+		document.querySelectorAll( '[data-adam-theme-select]' ).forEach( ( select ) => {
+			if ( select.dataset.adamThemeBound ) {
+				return;
+			}
+
+			select.dataset.adamThemeBound = 'true';
+			select.addEventListener( 'change', () => {
+				api.setTheme( select.value );
+			} );
+		} );
+
+		syncThemeSwitchers();
+	}
+
+	const api = {
+		applyTheme,
+		getMode: () => currentMode,
+		getResolvedTheme: () => resolveTheme( currentMode ),
+		getTheme: () => currentMode,
+		registerStorageAdapter( name, adapter ) {
+			if ( name && adapter ) {
+				storageAdapters[ name ] = adapter;
+			}
+		},
+		resetTheme,
+		restoreTheme,
+		setStorageAdapter( name ) {
+			if ( storageAdapters[ name ] ) {
+				activeStorageAdapter = name;
+			}
+		},
+		setTheme: ( mode ) => applyTheme( mode, { persist: true } ),
+	};
+
+	window.ADAMInterface = api;
+
+	function init() {
+		applyTheme( currentMode );
+		bindThemeSwitchers();
+		watchSystemTheme();
+	}
+
+	// The script is loaded in <head>; applying to <html> here prevents a flash
+	// before <body> exists. init() copies the one resolved class to <body>.
+	restoreTheme();
+
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', init, { once: true } );
+	} else {
+		init();
+	}
+} )( window, document );
