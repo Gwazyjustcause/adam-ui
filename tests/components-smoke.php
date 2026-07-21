@@ -2,7 +2,7 @@
 /**
  * Minimal component renderer smoke test.
  *
- * Run with: php adam-ui/tests/components-smoke.php
+ * Run with: php tests/components-smoke.php
  */
 
 define( 'ABSPATH', __DIR__ );
@@ -38,4 +38,3 @@ if ( in_array( false, $checks, true ) ) {
 }
 
 echo "PASS: component renderer contract.\n";
-

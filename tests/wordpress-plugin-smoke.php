@@ -2,7 +2,7 @@
 /**
  * Verifies the canonical WordPress plugin entry point and bootstrap lifecycle.
  *
- * Run with: php adam-ui/tests/wordpress-plugin-smoke.php
+ * Run with: php tests/wordpress-plugin-smoke.php
  *
  * @package ADAM_UI
  */
