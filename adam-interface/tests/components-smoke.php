@@ -20,6 +20,7 @@ require dirname( __DIR__ ) . '/includes/class-components.php';
 
 $components = new ADAM_Interface_Components();
 $checks     = array(
+	strpos( $components->card( 'Content', array( 'title' => 'Summary' ) ), 'adam-card-header' ) !== false,
 	strpos( $components->notice( 'Saved', 'success' ), 'role="status"' ) !== false,
 	strpos( $components->notice( 'Failed', 'error' ), 'role="alert"' ) !== false,
 	strpos( $components->button( 'Delete', '', array( 'variant' => 'danger' ) ), 'adam-button-danger' ) !== false,

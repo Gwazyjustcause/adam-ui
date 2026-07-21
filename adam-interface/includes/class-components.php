@@ -12,6 +12,24 @@ defined( 'ABSPATH' ) || exit;
  */
 final class ADAM_Interface_Components {
 	/**
+	 * Generates a shared card.
+	 *
+	 * @param string $content Card content.
+	 * @param array  $args Optional title, footer, allow_html, and attributes.
+	 * @return string
+	 */
+	public function card( $content, $args = array() ) {
+		$args = wp_parse_args( $args, array( 'title' => '', 'footer' => '', 'allow_html' => false, 'attributes' => array() ) );
+		$attributes          = (array) $args['attributes'];
+		$attributes['class'] = trim( 'adam-card ' . ( isset( $attributes['class'] ) ? $attributes['class'] : '' ) );
+		$content = $args['allow_html'] ? wp_kses_post( $content ) : esc_html( $content );
+		$header  = '' !== $args['title'] ? '<div class="adam-card-header"><h3>' . esc_html( $args['title'] ) . '</h3></div>' : '';
+		$footer  = '' !== $args['footer'] ? '<div class="adam-card-footer">' . wp_kses_post( $args['footer'] ) . '</div>' : '';
+
+		return '<section' . $this->attributes( $attributes ) . '>' . $header . '<div class="adam-card-body">' . $content . '</div>' . $footer . '</section>';
+	}
+
+	/**
 	 * Builds an attribute string from a safe associative array.
 	 *
 	 * @param array<string, scalar> $attributes Attributes keyed by name.

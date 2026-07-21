@@ -8,6 +8,9 @@
 	'use strict';
 
 	const config = window.adamInterfaceConfig || {};
+	const assetConfig = window.adamInterfaceAssetConfig || {};
+	delete window.adamInterfaceConfig;
+	delete window.adamInterfaceAssetConfig;
 	const modes = Array.isArray( config.modes ) ? config.modes : [];
 	const resolvedThemes = Array.isArray( config.resolvedThemes )
 		? config.resolvedThemes
@@ -32,6 +35,48 @@
 			window.localStorage.removeItem( key );
 		},
 	};
+
+	function saveUserPreference( value ) {
+		if ( ! storageConfig.saveUrl || ! window.fetch ) {
+			return;
+		}
+
+		const body = new window.URLSearchParams();
+		body.set( 'action', storageConfig.action );
+		body.set( 'nonce', storageConfig.nonce );
+		body.set( 'theme', value );
+		window.fetch( storageConfig.saveUrl, {
+			method: 'POST',
+			credentials: 'same-origin',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+			body: body.toString(),
+		} ).catch( () => {} );
+	}
+
+	storageAdapters.userMeta = {
+		load() {
+			return storageConfig.initial || null;
+		},
+		save( key, value ) {
+			saveUserPreference( value );
+		},
+		remove() {
+			saveUserPreference( '' );
+		},
+	};
+
+	function emit( name, detail = {} ) {
+		document.dispatchEvent( new window.CustomEvent( name, { detail } ) );
+	}
+
+	function on( name, listener, options ) {
+		document.addEventListener( name, listener, options );
+		return () => document.removeEventListener( name, listener, options );
+	}
+
+	function off( name, listener, options ) {
+		document.removeEventListener( name, listener, options );
+	}
 
 	function getStorageAdapter() {
 		return storageAdapters[ activeStorageAdapter ] || null;
@@ -114,12 +159,10 @@
 
 		const detail = { mode, theme, resolvedTheme: theme };
 
-		document.dispatchEvent( new window.CustomEvent( 'adam:themeChanged', { detail } ) );
+		emit( 'adam:themeChanged', detail );
 
 		// Retained for consumers built against the Phase 1 development API.
-		document.dispatchEvent(
-			new window.CustomEvent( 'adam-interface:theme-change', { detail } )
-		);
+		emit( 'adam-interface:theme-change', detail );
 	}
 
 	function syncThemeSwitchers() {
@@ -162,7 +205,7 @@
 	function resetTheme() {
 		safelyUseStorage( 'remove' );
 
-		return applyTheme( config.mode );
+		return applyTheme( modes.includes( config.fallbackMode ) ? config.fallbackMode : config.mode );
 	}
 
 	function handleSystemThemeChange() {
@@ -202,9 +245,12 @@
 
 	const api = {
 		applyTheme,
+		emit,
 		getMode: () => currentMode,
 		getResolvedTheme: () => resolveTheme( currentMode ),
 		getTheme: () => currentMode,
+		off,
+		on,
 		registerStorageAdapter( name, adapter ) {
 			if ( name && adapter ) {
 				storageAdapters[ name ] = adapter;
@@ -226,6 +272,9 @@
 		applyTheme( currentMode );
 		bindThemeSwitchers();
 		watchSystemTheme();
+		( Array.isArray( assetConfig.components ) ? assetConfig.components : [] ).forEach( ( component ) => {
+			emit( 'adam:componentLoaded', { component } );
+		} );
 	}
 
 	// The script is loaded in <head>; applying to <html> here prevents a flash

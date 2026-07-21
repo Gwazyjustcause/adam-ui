@@ -1,0 +1,97 @@
+<?php
+/** Phase 6 service contract smoke test. */
+
+define( 'ABSPATH', __DIR__ . '/' );
+define( 'ADAM_INTERFACE_VERSION', '0.6.0' );
+define( 'ADAM_INTERFACE_URL', 'https://example.test/adam-interface/' );
+
+$test_options = array();
+$test_meta = array();
+$test_logged_in = false;
+$test_admin = false;
+$test_styles = array();
+$test_scripts = array();
+$test_localized = array();
+
+function sanitize_key( $value ) { return strtolower( preg_replace( '/[^a-z0-9_-]/i', '', (string) $value ) ); }
+function sanitize_text_field( $value ) { return trim( strip_tags( (string) $value ) ); }
+function sanitize_html_class( $value ) { return sanitize_key( $value ); }
+function wp_parse_args( $args, $defaults ) { return array_merge( $defaults, (array) $args ); }
+function apply_filters( $hook, $value ) { return $value; }
+function do_action() {}
+function add_action() {}
+function add_filter() {}
+function is_admin() { global $test_admin; return $test_admin; }
+function is_user_logged_in() { global $test_logged_in; return $test_logged_in; }
+function get_current_user_id() { return 7; }
+function get_option( $key, $default = false ) { global $test_options; return array_key_exists( $key, $test_options ) ? $test_options[ $key ] : $default; }
+function get_user_meta( $user_id, $key ) { global $test_meta; return $test_meta[ $user_id ][ $key ] ?? ''; }
+function admin_url( $path = '' ) { return 'https://example.test/wp-admin/' . $path; }
+function wp_create_nonce() { return 'nonce'; }
+function __( $value ) { return $value; }
+function wp_register_style( $handle ) { global $test_styles; $test_styles['registered'][] = $handle; }
+function wp_enqueue_style( $handle ) { global $test_styles; $test_styles['enqueued'][] = $handle; }
+function wp_register_script( $handle ) { global $test_scripts; $test_scripts['registered'][] = $handle; }
+function wp_enqueue_script( $handle ) { global $test_scripts; $test_scripts['enqueued'][] = $handle; }
+function wp_localize_script( $handle, $name, $data ) { global $test_localized; $test_localized[ $name ] = $data; }
+
+require dirname( __DIR__ ) . '/includes/class-settings.php';
+require dirname( __DIR__ ) . '/includes/class-asset-registry.php';
+require dirname( __DIR__ ) . '/includes/class-plugin-registry.php';
+require dirname( __DIR__ ) . '/includes/class-theme-manager.php';
+
+function assert_contract( $condition, $message ) {
+	if ( ! $condition ) {
+		fwrite( STDERR, 'FAIL: ' . $message . "\n" );
+		exit( 1 );
+	}
+}
+
+$settings = new ADAM_Interface_Settings();
+$assets   = new ADAM_Interface_Asset_Registry();
+$themes   = new ADAM_Interface_Theme_Manager( $settings, $assets );
+$plugins  = new ADAM_Interface_Plugin_Registry();
+
+assert_contract( 'system' === $themes->get_theme_mode(), 'system preference precedes website default' );
+assert_contract( 'system' === $themes->get_theme_source(), 'system source reported' );
+
+$test_logged_in = true;
+$test_meta[7][ ADAM_Interface_Settings::USER_META_KEY ] = 'dark';
+assert_contract( 'dark' === $themes->get_theme_mode(), 'user meta has highest priority' );
+assert_contract( 'user' === $themes->get_theme_source(), 'user source reported' );
+assert_contract( 'system' === $themes->get_fallback_theme_mode(), 'clearing user preference restores system priority' );
+assert_contract( 'userMeta' === $settings->get_storage_config()['adapter'], 'logged-in storage adapter selected' );
+
+$test_logged_in = false;
+$test_options[ ADAM_Interface_Settings::OPTION_KEY ] = array(
+	'default_theme'          => 'light',
+	'allow_visitor_switcher' => false,
+	'allow_user_preferences' => true,
+	'enable_system_mode'     => false,
+	'enable_transitions'     => false,
+);
+assert_contract( 'light' === $themes->get_theme_mode(), 'website default used when system is disabled' );
+assert_contract( 'light' === $themes->get_fallback_theme_mode(), 'disabled system falls back to website default' );
+assert_contract( ! in_array( 'system', $themes->get_supported_modes(), true ), 'disabled system mode rejected' );
+assert_contract( '' === $settings->get_storage_config()['adapter'], 'visitor storage disabled globally' );
+
+$assets->enqueue_core();
+assert_contract( in_array( 'adam-interface', $test_styles['enqueued'], true ), 'core style enqueued' );
+assert_contract( ! in_array( 'adam-interface-utilities', $test_styles['enqueued'], true ), 'component bundle omitted from core' );
+$assets->enqueue_component( 'table' );
+assert_contract( in_array( 'adam-interface-utilities', $test_styles['enqueued'], true ), 'component bundle requested centrally' );
+assert_contract( ! in_array( 'adam-interface-components', $test_scripts['enqueued'] ?? array(), true ), 'static component does not load interaction JavaScript' );
+$assets->enqueue_component( 'modal' );
+assert_contract( in_array( 'adam-interface-components', $test_scripts['enqueued'], true ), 'interactive component loads one controller' );
+assert_contract( array( 'table', 'modal' ) === $assets->get_loaded_components(), 'loaded component diagnostics are deterministic' );
+
+$plugins->register( 'future-plugin', 'ADAM Future', array( 'version' => '1.0.0', 'requires_interface' => '9.0.0' ) );
+assert_contract( 1 === count( $plugins->get_warnings() ), 'incompatible versions produce warnings' );
+
+$test_admin = true;
+$themes->enable_admin_theme();
+$classes = $themes->add_admin_body_class( 'wp-admin adam-theme-light adam-theme-dark adam-transitions-enabled' );
+assert_contract( 1 === preg_match_all( '/adam-theme-(light|dark)/', $classes ), 'admin receives exactly one theme class' );
+assert_contract( false !== strpos( $classes, 'adam-transitions-disabled' ), 'transition setting reaches server body class' );
+
+echo "PASS: Phase 6 production service contract.\n";

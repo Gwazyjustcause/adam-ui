@@ -1,0 +1,57 @@
+/** ADAM Interface settings and diagnostics. */
+.adam-interface-settings {
+	max-width: 56rem;
+}
+
+.adam-interface-settings .adam-card {
+	margin-block-end: var(--adam-space-5);
+}
+
+.adam-interface-settings__field {
+	display: grid;
+	grid-template-columns: minmax(12rem, 1fr) minmax(16rem, 2fr);
+	gap: var(--adam-space-4);
+	align-items: start;
+	padding: var(--adam-space-4) 0;
+	border-bottom: var(--adam-border-width) solid var(--adam-border);
+}
+
+.adam-interface-settings__field:last-child {
+	border-bottom: 0;
+}
+
+.adam-interface-settings__control label {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--adam-space-2);
+}
+
+.adam-diagnostics-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+	gap: var(--adam-space-4);
+}
+
+.adam-diagnostics-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.adam-diagnostics-list li {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--adam-space-4);
+	padding: var(--adam-space-2) 0;
+	border-bottom: var(--adam-border-width) solid var(--adam-border);
+}
+
+.adam-diagnostics-list li:last-child {
+	border-bottom: 0;
+}
+
+@media (max-width: 782px) {
+	.adam-interface-settings__field {
+		grid-template-columns: 1fr;
+	}
+}

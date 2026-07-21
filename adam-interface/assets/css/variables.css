@@ -54,3 +54,9 @@
 	--adam-transition-timing: ease;
 	--adam-transition-emphasized: cubic-bezier(0.2, 0, 0, 1);
 }
+
+body.adam-transitions-disabled {
+	--adam-transition-fast: 0ms;
+	--adam-transition-duration: 0ms;
+	--adam-transition-slow: 0ms;
+}

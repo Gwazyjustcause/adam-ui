@@ -40,6 +40,20 @@ final class ADAM_Interface_Theme_Manager {
 	private $settings;
 
 	/**
+	 * Central asset registry.
+	 *
+	 * @var ADAM_Interface_Asset_Registry
+	 */
+	private $assets;
+
+	/**
+	 * Whether the public script configuration has been attached.
+	 *
+	 * @var bool
+	 */
+	private $script_configured = false;
+
+	/**
 	 * Tracks whether the switcher has already been rendered.
 	 *
 	 * @var bool
@@ -56,10 +70,12 @@ final class ADAM_Interface_Theme_Manager {
 	/**
 	 * Constructor.
 	 *
-	 * @param ADAM_Interface_Settings $settings Settings service.
+	 * @param ADAM_Interface_Settings       $settings Settings service.
+	 * @param ADAM_Interface_Asset_Registry $assets   Asset registry.
 	 */
-	public function __construct( ADAM_Interface_Settings $settings ) {
+	public function __construct( ADAM_Interface_Settings $settings, ADAM_Interface_Asset_Registry $assets ) {
 		$this->settings = $settings;
+		$this->assets   = $assets;
 	}
 
 	/**
@@ -74,12 +90,12 @@ final class ADAM_Interface_Theme_Manager {
 			return;
 		}
 
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_core_assets' ) );
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
 		add_action( 'wp_footer', array( $this, 'render_theme_switcher' ) );
 
 		// The WordPress login screen does not run the normal frontend hooks.
-		add_action( 'login_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_action( 'login_enqueue_scripts', array( $this, 'enqueue_core_assets' ) );
 		add_filter( 'login_body_class', array( $this, 'add_body_class' ) );
 		add_action( 'login_footer', array( $this, 'render_theme_switcher' ) );
 	}
@@ -102,7 +118,7 @@ final class ADAM_Interface_Theme_Manager {
 			$this->admin_theme_enabled = true;
 		}
 
-		$this->enqueue_assets();
+		$this->enqueue_core_assets();
 	}
 
 	/**
@@ -115,8 +131,9 @@ final class ADAM_Interface_Theme_Manager {
 		$class_list    = preg_split( '/\s+/', trim( (string) $classes ) );
 		$class_list    = is_array( $class_list ) ? $class_list : array();
 		$theme_classes = array_map( array( $this, 'get_body_class' ), $this->get_resolved_themes() );
-		$class_list    = array_diff( $class_list, $theme_classes, array( '' ) );
+		$class_list    = array_diff( $class_list, $theme_classes, array( 'adam-transitions-enabled', 'adam-transitions-disabled', '' ) );
 		$class_list[]  = $this->get_body_class( $this->get_resolved_theme() );
+		$class_list[]  = $this->get_transition_class();
 
 		return implode( ' ', array_values( array_unique( $class_list ) ) );
 	}
@@ -136,11 +153,16 @@ final class ADAM_Interface_Theme_Manager {
 	 * @return string[]
 	 */
 	public function get_supported_modes() {
-		return array(
+		$modes = array(
 			self::MODE_LIGHT,
 			self::MODE_DARK,
-			self::MODE_SYSTEM,
 		);
+
+		if ( $this->settings->is_enabled( 'enable_system_mode' ) ) {
+			$modes[] = self::MODE_SYSTEM;
+		}
+
+		return $modes;
 	}
 
 	/**
@@ -164,7 +186,13 @@ final class ADAM_Interface_Theme_Manager {
 	 * @return string
 	 */
 	public function get_theme_mode() {
-		$mode = $this->settings->get_default_theme_mode( self::MODE_SYSTEM );
+		$user_mode = $this->settings->get_user_preference();
+
+		if ( '' !== $user_mode ) {
+			$mode = $user_mode;
+		} else {
+			$mode = $this->get_fallback_theme_mode();
+		}
 
 		/**
 		 * Filters the current server-side theme mode.
@@ -174,7 +202,25 @@ final class ADAM_Interface_Theme_Manager {
 		 */
 		$mode = (string) apply_filters( 'adam_interface_theme_mode', $mode, $this );
 
-		return $this->is_supported_mode( $mode ) ? $mode : self::MODE_SYSTEM;
+		$fallback = $this->settings->get_default_theme_mode( self::MODE_LIGHT );
+
+		return $this->is_supported_mode( $mode ) ? $mode : $fallback;
+	}
+
+	/** Returns the System-or-website fallback used after clearing a preference. */
+	public function get_fallback_theme_mode() {
+		return $this->settings->is_enabled( 'enable_system_mode' )
+			? self::MODE_SYSTEM
+			: $this->settings->get_default_theme_mode( self::MODE_LIGHT );
+	}
+
+	/** Returns whether the active mode came from user, system, or website default. */
+	public function get_theme_source() {
+		if ( '' !== $this->settings->get_user_preference() ) {
+			return 'user';
+		}
+
+		return $this->settings->is_enabled( 'enable_system_mode' ) ? 'system' : 'website-default';
 	}
 
 	/**
@@ -229,8 +275,9 @@ final class ADAM_Interface_Theme_Manager {
 	 */
 	public function add_body_class( $classes ) {
 		$theme_classes = array_map( array( $this, 'get_body_class' ), $this->get_resolved_themes() );
-		$classes       = array_diff( $classes, $theme_classes );
-		$classes[] = $this->get_body_class( $this->get_resolved_theme() );
+		$classes       = array_diff( $classes, $theme_classes, array( 'adam-transitions-enabled', 'adam-transitions-disabled' ) );
+		$classes[]     = $this->get_body_class( $this->get_resolved_theme() );
+		$classes[]     = $this->get_transition_class();
 
 		return array_values( array_unique( $classes ) );
 	}
@@ -241,69 +288,22 @@ final class ADAM_Interface_Theme_Manager {
 	 * @return void
 	 */
 	public function enqueue_assets() {
-		wp_enqueue_style(
-			'adam-interface-variables',
-			ADAM_INTERFACE_URL . 'assets/css/variables.css',
-			array(),
-			ADAM_INTERFACE_VERSION
-		);
+		$this->enqueue_core_assets();
+		$this->assets->enqueue_all_components();
+	}
 
-		wp_enqueue_style(
-			'adam-interface-light',
-			ADAM_INTERFACE_URL . 'assets/css/light.css',
-			array( 'adam-interface-variables' ),
-			ADAM_INTERFACE_VERSION
-		);
+	/** Enqueues the minimal global theme foundation. */
+	public function enqueue_core_assets() {
+		$this->assets->enqueue_core();
 
-		wp_enqueue_style(
-			'adam-interface-dark',
-			ADAM_INTERFACE_URL . 'assets/css/dark.css',
-			array( 'adam-interface-variables' ),
-			ADAM_INTERFACE_VERSION
-		);
+		if ( $this->settings->can_change_theme() ) {
+			$this->assets->enqueue_switcher();
+		}
 
-		wp_enqueue_style(
-			'adam-interface',
-			ADAM_INTERFACE_URL . 'assets/css/interface.css',
-			array( 'adam-interface-light', 'adam-interface-dark' ),
-			ADAM_INTERFACE_VERSION
-		);
-
-		wp_enqueue_style(
-			$this->get_utility_style_handle(),
-			ADAM_INTERFACE_URL . 'assets/css/utilities.css',
-			array( 'adam-interface' ),
-			ADAM_INTERFACE_VERSION
-		);
-
-		wp_enqueue_style(
-			'adam-interface-theme-switcher',
-			ADAM_INTERFACE_URL . 'assets/css/theme-switcher.css',
-			array( 'adam-interface-utilities' ),
-			ADAM_INTERFACE_VERSION
-		);
-
-		wp_enqueue_script(
-			'adam-interface',
-			ADAM_INTERFACE_URL . 'assets/js/interface.js',
-			array(),
-			ADAM_INTERFACE_VERSION,
-			false
-		);
-
-		wp_enqueue_script(
-			'adam-interface-components',
-			ADAM_INTERFACE_URL . 'assets/js/components.js',
-			array( 'adam-interface' ),
-			ADAM_INTERFACE_VERSION,
-			true
-		);
-
-		wp_localize_script(
-			'adam-interface',
-			'adamInterfaceConfig',
-			$this->get_script_config()
-		);
+		if ( ! $this->script_configured ) {
+			wp_localize_script( 'adam-interface', 'adamInterfaceConfig', $this->get_script_config() );
+			$this->script_configured = true;
+		}
 	}
 
 	/**
@@ -315,7 +315,7 @@ final class ADAM_Interface_Theme_Manager {
 	 * @return void
 	 */
 	public function render_theme_switcher() {
-		if ( $this->switcher_rendered ) {
+		if ( $this->switcher_rendered || ! $this->settings->can_change_theme() ) {
 			return;
 		}
 
@@ -337,9 +337,9 @@ final class ADAM_Interface_Theme_Manager {
 				<option value="<?php echo esc_attr( self::MODE_DARK ); ?>" <?php selected( $current_mode, self::MODE_DARK ); ?>>
 					<?php echo esc_html__( 'Escuro', 'adam-interface' ); ?>
 				</option>
-				<option value="<?php echo esc_attr( self::MODE_SYSTEM ); ?>" <?php selected( $current_mode, self::MODE_SYSTEM ); ?>>
-					<?php echo esc_html__( 'Sistema', 'adam-interface' ); ?>
-				</option>
+				<?php if ( $this->settings->is_enabled( 'enable_system_mode' ) ) : ?>
+					<option value="<?php echo esc_attr( self::MODE_SYSTEM ); ?>" <?php selected( $current_mode, self::MODE_SYSTEM ); ?>><?php echo esc_html__( 'Sistema', 'adam-interface' ); ?></option>
+				<?php endif; ?>
 			</select>
 			<noscript>
 				<span class="adam-theme-switcher__notice">
@@ -355,7 +355,7 @@ final class ADAM_Interface_Theme_Manager {
 	 *
 	 * @return array<string, mixed>
 	 */
-	private function get_script_config() {
+	public function get_script_config() {
 		$class_map = array();
 
 		foreach ( $this->get_resolved_themes() as $theme ) {
@@ -364,6 +364,7 @@ final class ADAM_Interface_Theme_Manager {
 
 		return array(
 			'mode'           => $this->get_theme_mode(),
+			'fallbackMode'   => $this->get_fallback_theme_mode(),
 			'modes'          => $this->get_supported_modes(),
 			'resolvedThemes' => $this->get_resolved_themes(),
 			'classMap'       => $class_map,
@@ -372,6 +373,14 @@ final class ADAM_Interface_Theme_Manager {
 			'systemDark'     => self::MODE_DARK,
 			'systemFallback' => $this->get_resolved_theme( self::MODE_SYSTEM ),
 			'storage'        => $this->settings->get_storage_config(),
+			'themeSource'    => $this->get_theme_source(),
+			'transitions'    => $this->settings->is_enabled( 'enable_transitions' ),
+			'components'     => $this->assets->get_loaded_components(),
 		);
+	}
+
+	/** Returns the server-rendered transition preference class. */
+	private function get_transition_class() {
+		return $this->settings->is_enabled( 'enable_transitions' ) ? 'adam-transitions-enabled' : 'adam-transitions-disabled';
 	}
 }

@@ -85,6 +85,9 @@
 				if ( generated ) {
 					dialog.remove();
 				}
+				if ( typeof api.emit === 'function' ) {
+					api.emit( 'adam:modalClosed', { dialog, confirmed: result } );
+				}
 				if ( previousFocus && typeof previousFocus.focus === 'function' ) {
 					previousFocus.focus();
 				}
@@ -99,6 +102,9 @@
 			}, { once: true } );
 			dialog.addEventListener( 'close', () => finish( false ), { once: true } );
 			dialog.showModal();
+			if ( typeof api.emit === 'function' ) {
+				api.emit( 'adam:modalOpened', { dialog } );
+			}
 			cancelButton.focus();
 		} );
 	}

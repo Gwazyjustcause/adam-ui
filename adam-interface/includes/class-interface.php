@@ -39,6 +39,15 @@ final class ADAM_Interface {
 	 */
 	private $components;
 
+	/** @var ADAM_Interface_Asset_Registry */
+	private $assets;
+
+	/** @var ADAM_Interface_Plugin_Registry */
+	private $plugins;
+
+	/** @var ADAM_Interface_Admin */
+	private $admin;
+
 	/**
 	 * Returns the plugin singleton.
 	 *
@@ -53,14 +62,29 @@ final class ADAM_Interface {
 	}
 
 	/**
+	 * Registers an ecosystem plugin through the stable static API.
+	 *
+	 * @return bool
+	 */
+	public static function register_plugin( $slug, $name, $args = array() ) {
+		return self::instance()->get_plugin_registry()->register( $slug, $name, $args );
+	}
+
+	/**
 	 * Creates and starts the frontend services.
 	 */
 	private function __construct() {
 		$this->settings      = new ADAM_Interface_Settings();
-		$this->theme_manager = new ADAM_Interface_Theme_Manager( $this->settings );
+		$this->assets        = new ADAM_Interface_Asset_Registry();
+		$this->plugins       = new ADAM_Interface_Plugin_Registry();
+		$this->theme_manager = new ADAM_Interface_Theme_Manager( $this->settings, $this->assets );
 		$this->components    = new ADAM_Interface_Components();
+		$this->admin         = new ADAM_Interface_Admin( $this->settings, $this->theme_manager, $this->assets, $this->plugins );
 
+		$this->settings->register_hooks();
+		$this->plugins->register_hooks();
 		$this->theme_manager->init();
+		$this->admin->register_hooks();
 	}
 
 	/**
@@ -93,5 +117,20 @@ final class ADAM_Interface {
 	 */
 	public function get_components() {
 		return $this->components;
+	}
+
+	/** @return ADAM_Interface_Asset_Registry */
+	public function get_asset_registry() {
+		return $this->assets;
+	}
+
+	/** @return ADAM_Interface_Plugin_Registry */
+	public function get_plugin_registry() {
+		return $this->plugins;
+	}
+
+	/** Requests one shared component family. */
+	public function enqueue_component( $component ) {
+		return $this->assets->enqueue_component( $component );
 	}
 }

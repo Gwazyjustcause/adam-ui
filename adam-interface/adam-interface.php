@@ -3,7 +3,7 @@
  * Plugin Name:       ADAM Interface
  * Plugin URI:        https://github.com/Gwazyjustcause/adam-ui
  * Description:       Provides the shared visual foundation and theme infrastructure for ADAM plugins.
- * Version:           0.5.0
+ * Version:           0.6.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            ADAM
@@ -16,14 +16,17 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ADAM_INTERFACE_VERSION', '0.5.0' );
+define( 'ADAM_INTERFACE_VERSION', '0.6.0' );
 define( 'ADAM_INTERFACE_FILE', __FILE__ );
 define( 'ADAM_INTERFACE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ADAM_INTERFACE_URL', plugin_dir_url( __FILE__ ) );
 
 require_once ADAM_INTERFACE_PATH . 'includes/class-settings.php';
+require_once ADAM_INTERFACE_PATH . 'includes/class-asset-registry.php';
+require_once ADAM_INTERFACE_PATH . 'includes/class-plugin-registry.php';
 require_once ADAM_INTERFACE_PATH . 'includes/class-theme-manager.php';
 require_once ADAM_INTERFACE_PATH . 'includes/class-components.php';
+require_once ADAM_INTERFACE_PATH . 'includes/class-admin.php';
 require_once ADAM_INTERFACE_PATH . 'includes/class-interface.php';
 
 /**
@@ -162,6 +165,69 @@ function adam_interface_loading_indicator( $label = '', $args = array() ) {
  */
 function adam_interface_confirmation_dialog( $message, $args = array() ) {
 	return adam_interface_get_components()->confirmation_dialog( $message, $args );
+}
+
+/** Stable shorthand for the Theme Manager. */
+function adam_theme() {
+	return adam_interface_get_theme_manager();
+}
+
+/**
+ * Returns the central asset registry or a registered asset URL.
+ *
+ * @param string $asset Optional asset key.
+ * @return ADAM_Interface_Asset_Registry|string
+ */
+function adam_asset( $asset = '' ) {
+	$registry = adam_interface()->get_asset_registry();
+	return '' === $asset ? $registry : $registry->get_url( $asset );
+}
+
+/**
+ * Stable notice helper alias.
+ *
+ * @param string $message Notice text.
+ * @param string $type    Notice type.
+ * @param array  $args    Optional renderer arguments.
+ * @return string
+ */
+function adam_notice( $message, $type = 'info', $args = array() ) {
+	return adam_interface_notice( $message, $type, $args );
+}
+
+/**
+ * Stable button helper alias.
+ *
+ * @param string $label Button label.
+ * @param string $url   Optional URL.
+ * @param array  $args  Optional renderer arguments.
+ * @return string
+ */
+function adam_button( $label, $url = '', $args = array() ) {
+	return adam_interface_button( $label, $url, $args );
+}
+
+/**
+ * Generates shared card markup.
+ *
+ * @param string $content Card content.
+ * @param array  $args    Optional renderer arguments.
+ * @return string
+ */
+function adam_card( $content, $args = array() ) {
+	return adam_interface_get_components()->card( $content, $args );
+}
+
+/**
+ * Registers an ADAM ecosystem plugin and its compatibility metadata.
+ *
+ * @param string $slug Plugin identifier.
+ * @param string $name Human-readable plugin name.
+ * @param array  $args Version, minimum Interface version, and components.
+ * @return bool
+ */
+function adam_interface_register_plugin( $slug, $name, $args = array() ) {
+	return ADAM_Interface::register_plugin( $slug, $name, $args );
 }
 
 add_action( 'plugins_loaded', 'adam_interface' );

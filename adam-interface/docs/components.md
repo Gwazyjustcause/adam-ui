@@ -1,13 +1,13 @@
 # ADAM Interface component library
 
-ADAM Interface is the visual source of truth for ADAM-owned frontend and WordPress administration screens. It does not style native WordPress, WooCommerce, Forminator, or other third-party admin pages. An ADAM plugin opts its own admin hook suffix into the theme with `adam_interface_enable_admin_theme()`.
+ADAM Interface is the visual source of truth for ADAM-owned frontend and WordPress administration screens. It does not style native WordPress, WooCommerce, Forminator, or other third-party admin pages. An ADAM plugin opts its own admin hook suffix into the theme with `adam_interface_enable_admin_theme()`. Production registration, assets, settings, persistence, events, and diagnostics are documented in [production-api.md](production-api.md).
 
 All components inherit Light, Dark, and System mode through the `adam-theme-light` or `adam-theme-dark` body class. Component CSS must use `--adam-*` tokens and must not contain its own colour palette.
 
 ## Adoption contract
 
 1. Detect ADAM Interface with `function_exists( 'adam_interface_get_theme_manager' )`.
-2. On public pages, call the Theme Manager's `enqueue_assets()` method if the global frontend assets are not already present.
+2. On public pages, call the Theme Manager's `enqueue_core_assets()` method and request only the component families used on that request. `enqueue_assets()` remains the legacy full-bundle fallback.
 3. On `admin_enqueue_scripts`, call `adam_interface_enable_admin_theme()` only after confirming the hook suffix belongs to the plugin.
 4. Keep the plugin's existing stylesheet as a standalone fallback, using declarations such as `var(--adam-surface, #fff)`. When Interface is active, the token wins; without it, the old appearance remains usable.
 5. Keep plugin CSS limited to layout and domain-specific structure. Use the component classes below for visual presentation.
