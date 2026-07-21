@@ -1,10 +1,10 @@
 /**
- * Shared interaction helpers for ADAM Interface components.
+ * Shared interaction helpers for ADAM UI components.
  */
 ( function ( window, document ) {
 	'use strict';
 
-	const api = window.ADAMInterface || {};
+	const api = window.ADAMUI || {};
 
 	function setLoading( element, loading = true, label = '' ) {
 		if ( ! element ) {
@@ -60,7 +60,7 @@
 
 	function confirm( options = {} ) {
 		const settings = {
-			title: options.title || 'Confirmar ação',
+			title: options.title || 'Confirmar aÃ§Ã£o',
 			message: options.message || '',
 			confirmLabel: options.confirmLabel || 'Confirmar',
 			cancelLabel: options.cancelLabel || 'Cancelar',
@@ -139,7 +139,7 @@
 	api.components = Object.assign( api.components || {}, { bindDropdowns, confirm, setLoading } );
 	api.confirm = confirm;
 	api.setLoading = setLoading;
-	window.ADAMInterface = api;
+	window.ADAMUI = api;
 
 	if ( document.readyState === 'loading' ) {
 		document.addEventListener( 'DOMContentLoaded', () => bindDropdowns(), { once: true } );
@@ -147,3 +147,4 @@
 		bindDropdowns();
 	}
 } )( window, document );
+

@@ -2,8 +2,8 @@
 /** Phase 6 service contract smoke test. */
 
 define( 'ABSPATH', __DIR__ . '/' );
-define( 'ADAM_INTERFACE_VERSION', '0.6.0' );
-define( 'ADAM_INTERFACE_URL', 'https://example.test/adam-interface/' );
+define( 'ADAM_UI_VERSION', '1.0.0' );
+define( 'ADAM_UI_URL', 'https://example.test/adam-ui/' );
 
 $test_options = array();
 $test_meta = array();
@@ -25,7 +25,9 @@ function is_admin() { global $test_admin; return $test_admin; }
 function is_user_logged_in() { global $test_logged_in; return $test_logged_in; }
 function get_current_user_id() { return 7; }
 function get_option( $key, $default = false ) { global $test_options; return array_key_exists( $key, $test_options ) ? $test_options[ $key ] : $default; }
+function update_option( $key, $value ) { global $test_options; $test_options[ $key ] = $value; return true; }
 function get_user_meta( $user_id, $key ) { global $test_meta; return $test_meta[ $user_id ][ $key ] ?? ''; }
+function update_user_meta( $user_id, $key, $value ) { global $test_meta; $test_meta[ $user_id ][ $key ] = $value; return true; }
 function admin_url( $path = '' ) { return 'https://example.test/wp-admin/' . $path; }
 function wp_create_nonce() { return 'nonce'; }
 function __( $value ) { return $value; }
@@ -47,23 +49,29 @@ function assert_contract( $condition, $message ) {
 	}
 }
 
-$settings = new ADAM_Interface_Settings();
-$assets   = new ADAM_Interface_Asset_Registry();
-$themes   = new ADAM_Interface_Theme_Manager( $settings, $assets );
-$plugins  = new ADAM_Interface_Plugin_Registry();
+$settings = new ADAM_UI_Settings();
+$assets   = new ADAM_UI_Asset_Registry();
+$themes   = new ADAM_UI_Theme_Manager( $settings, $assets );
+$plugins  = new ADAM_UI_Plugin_Registry();
+
+$test_options[ 'adam_' . 'inter' . 'face_settings' ] = array( 'default_theme' => 'dark' );
+$settings->migrate_saved_settings();
+assert_contract( 'dark' === $test_options[ ADAM_UI_Settings::OPTION_KEY ]['default_theme'], 'saved settings migrate to the ADAM UI option' );
+$test_options = array();
 
 assert_contract( 'system' === $themes->get_theme_mode(), 'system preference precedes website default' );
 assert_contract( 'system' === $themes->get_theme_source(), 'system source reported' );
 
 $test_logged_in = true;
-$test_meta[7][ ADAM_Interface_Settings::USER_META_KEY ] = 'dark';
+$test_meta[7][ 'adam_' . 'inter' . 'face_theme' ] = 'dark';
 assert_contract( 'dark' === $themes->get_theme_mode(), 'user meta has highest priority' );
+assert_contract( 'dark' === $test_meta[7][ ADAM_UI_Settings::USER_META_KEY ], 'saved user preference migrates to ADAM UI user meta' );
 assert_contract( 'user' === $themes->get_theme_source(), 'user source reported' );
 assert_contract( 'system' === $themes->get_fallback_theme_mode(), 'clearing user preference restores system priority' );
 assert_contract( 'userMeta' === $settings->get_storage_config()['adapter'], 'logged-in storage adapter selected' );
 
 $test_logged_in = false;
-$test_options[ ADAM_Interface_Settings::OPTION_KEY ] = array(
+$test_options[ ADAM_UI_Settings::OPTION_KEY ] = array(
 	'default_theme'          => 'light',
 	'allow_visitor_switcher' => false,
 	'allow_user_preferences' => true,
@@ -76,16 +84,16 @@ assert_contract( ! in_array( 'system', $themes->get_supported_modes(), true ), '
 assert_contract( '' === $settings->get_storage_config()['adapter'], 'visitor storage disabled globally' );
 
 $assets->enqueue_core();
-assert_contract( in_array( 'adam-interface', $test_styles['enqueued'], true ), 'core style enqueued' );
-assert_contract( ! in_array( 'adam-interface-utilities', $test_styles['enqueued'], true ), 'component bundle omitted from core' );
+assert_contract( in_array( 'adam-ui', $test_styles['enqueued'], true ), 'core style enqueued' );
+assert_contract( ! in_array( 'adam-ui-utilities', $test_styles['enqueued'], true ), 'component bundle omitted from core' );
 $assets->enqueue_component( 'table' );
-assert_contract( in_array( 'adam-interface-utilities', $test_styles['enqueued'], true ), 'component bundle requested centrally' );
-assert_contract( ! in_array( 'adam-interface-components', $test_scripts['enqueued'] ?? array(), true ), 'static component does not load interaction JavaScript' );
+assert_contract( in_array( 'adam-ui-utilities', $test_styles['enqueued'], true ), 'component bundle requested centrally' );
+assert_contract( ! in_array( 'adam-ui-components', $test_scripts['enqueued'] ?? array(), true ), 'static component does not load interaction JavaScript' );
 $assets->enqueue_component( 'modal' );
-assert_contract( in_array( 'adam-interface-components', $test_scripts['enqueued'], true ), 'interactive component loads one controller' );
+assert_contract( in_array( 'adam-ui-components', $test_scripts['enqueued'], true ), 'interactive component loads one controller' );
 assert_contract( array( 'table', 'modal' ) === $assets->get_loaded_components(), 'loaded component diagnostics are deterministic' );
 
-$plugins->register( 'future-plugin', 'ADAM Future', array( 'version' => '1.0.0', 'requires_interface' => '9.0.0' ) );
+$plugins->register( 'future-plugin', 'ADAM Future', array( 'version' => '1.0.0', 'requires_ui' => '9.0.0' ) );
 assert_contract( 1 === count( $plugins->get_warnings() ), 'incompatible versions produce warnings' );
 
 $test_admin = true;

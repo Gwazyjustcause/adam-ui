@@ -2,7 +2,7 @@
 /**
  * Minimal component renderer smoke test.
  *
- * Run with: php adam-interface/tests/components-smoke.php
+ * Run with: php adam-ui/tests/components-smoke.php
  */
 
 define( 'ABSPATH', __DIR__ );
@@ -18,7 +18,7 @@ function __( $value ) { return $value; }
 
 require dirname( __DIR__ ) . '/includes/class-components.php';
 
-$components = new ADAM_Interface_Components();
+$components = new ADAM_UI_Components();
 $checks     = array(
 	strpos( $components->card( 'Content', array( 'title' => 'Summary' ) ), 'adam-card-header' ) !== false,
 	strpos( $components->notice( 'Saved', 'success' ), 'role="status"' ) !== false,
@@ -38,3 +38,4 @@ if ( in_array( false, $checks, true ) ) {
 }
 
 echo "PASS: component renderer contract.\n";
+

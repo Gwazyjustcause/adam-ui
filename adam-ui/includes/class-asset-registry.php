@@ -1,8 +1,8 @@
 <?php
 /**
- * Central ADAM Interface asset registry.
+ * Central ADAM UI asset registry.
  *
- * @package ADAM_Interface
+ * @package ADAM_UI
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Registers shared assets once and tracks requested component families.
  */
-final class ADAM_Interface_Asset_Registry {
+final class ADAM_UI_Asset_Registry {
 	/**
 	 * Registered component metadata.
 	 *
@@ -41,8 +41,8 @@ final class ADAM_Interface_Asset_Registry {
 			$this->register_component(
 				$name,
 				array(
-					'style_handle'  => 'adam-interface-utilities',
-					'script_handle' => in_array( $name, $interactive, true ) ? 'adam-interface-components' : '',
+					'style_handle'  => 'adam-ui-utilities',
+					'script_handle' => in_array( $name, $interactive, true ) ? 'adam-ui-components' : '',
 				)
 			);
 		}
@@ -67,7 +67,7 @@ final class ADAM_Interface_Asset_Registry {
 		$args                      = wp_parse_args(
 			$args,
 			array(
-				'style_handle'  => 'adam-interface-utilities',
+				'style_handle'  => 'adam-ui-utilities',
 				'script_handle' => '',
 			)
 		);
@@ -86,29 +86,29 @@ final class ADAM_Interface_Asset_Registry {
 		}
 
 		$this->registered = true;
-		wp_register_style( 'adam-interface-variables', ADAM_INTERFACE_URL . 'assets/css/variables.css', array(), ADAM_INTERFACE_VERSION );
-		wp_register_style( 'adam-interface-light', ADAM_INTERFACE_URL . 'assets/css/light.css', array( 'adam-interface-variables' ), ADAM_INTERFACE_VERSION );
-		wp_register_style( 'adam-interface-dark', ADAM_INTERFACE_URL . 'assets/css/dark.css', array( 'adam-interface-variables' ), ADAM_INTERFACE_VERSION );
-		wp_register_style( 'adam-interface', ADAM_INTERFACE_URL . 'assets/css/interface.css', array( 'adam-interface-light', 'adam-interface-dark' ), ADAM_INTERFACE_VERSION );
-		wp_register_style( 'adam-interface-utility-primitives', ADAM_INTERFACE_URL . 'assets/css/utilities.css', array( 'adam-interface' ), ADAM_INTERFACE_VERSION );
-		wp_register_style( 'adam-interface-utilities', ADAM_INTERFACE_URL . 'assets/css/components.css', array( 'adam-interface-utility-primitives' ), ADAM_INTERFACE_VERSION );
-		wp_register_style( 'adam-interface-theme-switcher', ADAM_INTERFACE_URL . 'assets/css/theme-switcher.css', array( 'adam-interface' ), ADAM_INTERFACE_VERSION );
-		wp_register_style( 'adam-interface-admin', ADAM_INTERFACE_URL . 'assets/css/admin.css', array( 'adam-interface-utilities' ), ADAM_INTERFACE_VERSION );
-		wp_register_script( 'adam-interface', ADAM_INTERFACE_URL . 'assets/js/interface.js', array(), ADAM_INTERFACE_VERSION, false );
-		wp_register_script( 'adam-interface-components', ADAM_INTERFACE_URL . 'assets/js/components.js', array( 'adam-interface' ), ADAM_INTERFACE_VERSION, true );
+		wp_register_style( 'adam-ui-variables', ADAM_UI_URL . 'assets/css/variables.css', array(), ADAM_UI_VERSION );
+		wp_register_style( 'adam-ui-light', ADAM_UI_URL . 'assets/css/light.css', array( 'adam-ui-variables' ), ADAM_UI_VERSION );
+		wp_register_style( 'adam-ui-dark', ADAM_UI_URL . 'assets/css/dark.css', array( 'adam-ui-variables' ), ADAM_UI_VERSION );
+		wp_register_style( 'adam-ui', ADAM_UI_URL . 'assets/css/ui.css', array( 'adam-ui-light', 'adam-ui-dark' ), ADAM_UI_VERSION );
+		wp_register_style( 'adam-ui-utility-primitives', ADAM_UI_URL . 'assets/css/utilities.css', array( 'adam-ui' ), ADAM_UI_VERSION );
+		wp_register_style( 'adam-ui-utilities', ADAM_UI_URL . 'assets/css/components.css', array( 'adam-ui-utility-primitives' ), ADAM_UI_VERSION );
+		wp_register_style( 'adam-ui-theme-switcher', ADAM_UI_URL . 'assets/css/theme-switcher.css', array( 'adam-ui' ), ADAM_UI_VERSION );
+		wp_register_style( 'adam-ui-admin', ADAM_UI_URL . 'assets/css/admin.css', array( 'adam-ui-utilities' ), ADAM_UI_VERSION );
+		wp_register_script( 'adam-ui', ADAM_UI_URL . 'assets/js/ui.js', array(), ADAM_UI_VERSION, false );
+		wp_register_script( 'adam-ui-components', ADAM_UI_URL . 'assets/js/components.js', array( 'adam-ui' ), ADAM_UI_VERSION, true );
 	}
 
 	/** Enqueues only the theme foundation. */
 	public function enqueue_core() {
 		$this->register_assets();
-		wp_enqueue_style( 'adam-interface' );
-		wp_enqueue_script( 'adam-interface' );
+		wp_enqueue_style( 'adam-ui' );
+		wp_enqueue_script( 'adam-ui' );
 	}
 
 	/** Enqueues the compact public switcher stylesheet. */
 	public function enqueue_switcher() {
 		$this->enqueue_core();
-		wp_enqueue_style( 'adam-interface-theme-switcher' );
+		wp_enqueue_style( 'adam-ui-theme-switcher' );
 	}
 
 	/**
@@ -141,8 +141,8 @@ final class ADAM_Interface_Asset_Registry {
 		}
 
 		wp_localize_script(
-			'adam-interface',
-			'adamInterfaceAssetConfig',
+			'adam-ui',
+			'adamUIAssetConfig',
 			array( 'components' => $this->loaded_components )
 		);
 
@@ -159,7 +159,7 @@ final class ADAM_Interface_Asset_Registry {
 	/** Enqueues the settings/diagnostics presentation. */
 	public function enqueue_admin() {
 		$this->enqueue_component( 'admin-layout' );
-		wp_enqueue_style( 'adam-interface-admin' );
+		wp_enqueue_style( 'adam-ui-admin' );
 	}
 
 	/**
@@ -191,15 +191,15 @@ final class ADAM_Interface_Asset_Registry {
 			'variables'    => 'assets/css/variables.css',
 			'light'        => 'assets/css/light.css',
 			'dark'         => 'assets/css/dark.css',
-			'interface'    => 'assets/css/interface.css',
+			'ui'           => 'assets/css/ui.css',
 			'utilities'    => 'assets/css/utilities.css',
 			'components'   => 'assets/css/components.css',
-			'theme'        => 'assets/js/interface.js',
+			'theme'        => 'assets/js/ui.js',
 			'interactions' => 'assets/js/components.js',
 		);
 
 		$asset = sanitize_key( $asset );
 
-		return isset( $assets[ $asset ] ) ? ADAM_INTERFACE_URL . $assets[ $asset ] : '';
+		return isset( $assets[ $asset ] ) ? ADAM_UI_URL . $assets[ $asset ] : '';
 	}
 }

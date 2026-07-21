@@ -2,7 +2,7 @@
 /**
  * Reusable ADAM component markup helpers.
  *
- * @package ADAM_Interface
+ * @package ADAM_UI
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Generates accessible, theme-aware component markup for ADAM plugins.
  */
-final class ADAM_Interface_Components {
+final class ADAM_UI_Components {
 	/**
 	 * Generates a shared card.
 	 *
@@ -161,7 +161,7 @@ final class ADAM_Interface_Components {
 		$attributes['class']           = trim( 'adam-loading' . $size . ' ' . ( isset( $attributes['class'] ) ? $attributes['class'] : '' ) );
 		$attributes['role']            = 'status';
 		$attributes['aria-live']       = 'polite';
-		$label = '' !== $label ? $label : __( 'A carregar…', 'adam-interface' );
+		$label = '' !== $label ? $label : __( 'A carregarâ€¦', 'adam-ui' );
 
 		return '<span' . $this->attributes( $attributes ) . '><span class="adam-loading__spinner" aria-hidden="true"></span><span class="adam-sr-only">' . esc_html( $label ) . '</span></span>';
 	}
@@ -174,7 +174,7 @@ final class ADAM_Interface_Components {
 	 * @return string
 	 */
 	public function confirmation_dialog( $message, $args = array() ) {
-		$args = wp_parse_args( $args, array( 'title' => __( 'Confirmar ação', 'adam-interface' ), 'confirm_label' => __( 'Confirmar', 'adam-interface' ), 'cancel_label' => __( 'Cancelar', 'adam-interface' ), 'attributes' => array() ) );
+		$args = wp_parse_args( $args, array( 'title' => __( 'Confirmar aÃ§Ã£o', 'adam-ui' ), 'confirm_label' => __( 'Confirmar', 'adam-ui' ), 'cancel_label' => __( 'Cancelar', 'adam-ui' ), 'attributes' => array() ) );
 		$attributes                       = (array) $args['attributes'];
 		$attributes['class']              = trim( 'adam-confirmation adam-modal ' . ( isset( $attributes['class'] ) ? $attributes['class'] : '' ) );
 		$attributes['data-adam-confirm']  = true;
@@ -184,3 +184,4 @@ final class ADAM_Interface_Components {
 		return '<dialog' . $this->attributes( $attributes ) . '><div class="adam-modal__header"><h2 id="' . esc_attr( $title_id ) . '" class="adam-modal__title">' . esc_html( $args['title'] ) . '</h2></div><div class="adam-modal__body"><p>' . esc_html( $message ) . '</p></div><div class="adam-modal__footer"><button class="adam-button adam-button-secondary" type="button" value="cancel" data-adam-confirm-cancel>' . esc_html( $args['cancel_label'] ) . '</button><button class="adam-button adam-button-danger" type="button" value="confirm" data-adam-confirm-accept>' . esc_html( $args['confirm_label'] ) . '</button></div></dialog>';
 	}
 }
+

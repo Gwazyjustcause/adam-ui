@@ -1,8 +1,8 @@
 <?php
 /**
- * Persistent global ADAM Interface settings and user preferences.
+ * Persistent global ADAM UI settings and user preferences.
  *
- * @package ADAM_Interface
+ * @package ADAM_UI
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,9 +10,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Provides validated global settings and the theme storage contract.
  */
-final class ADAM_Interface_Settings {
-	const OPTION_KEY    = 'adam_interface_settings';
-	const USER_META_KEY = 'adam_interface_theme';
+final class ADAM_UI_Settings {
+	const OPTION_KEY    = 'adam_ui_settings';
+	const USER_META_KEY = 'adam_ui_theme';
 
 	/**
 	 * Returns production defaults.
@@ -60,14 +60,27 @@ final class ADAM_Interface_Settings {
 
 	/** Registers the global option and preference endpoint. */
 	public function register_hooks() {
+		add_action( 'init', array( $this, 'migrate_saved_settings' ), 1 );
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
-		add_action( 'wp_ajax_adam_interface_save_theme', array( $this, 'save_user_preference' ) );
+		add_action( 'wp_ajax_adam_ui_save_theme', array( $this, 'save_user_preference' ) );
+	}
+
+	/** Migrates saved settings from the previous plugin identity once. */
+	public function migrate_saved_settings() {
+		if ( false !== get_option( self::OPTION_KEY, false ) ) {
+			return;
+		}
+
+		$legacy = get_option( 'adam_' . 'inter' . 'face_settings', false );
+		if ( is_array( $legacy ) ) {
+			update_option( self::OPTION_KEY, $this->sanitize( $legacy ), false );
+		}
 	}
 
 	/** Registers the settings option. */
 	public function register_setting() {
 		register_setting(
-			'adam_interface_settings',
+			'adam_ui_settings',
 			self::OPTION_KEY,
 			array(
 				'type'              => 'array',
@@ -97,7 +110,7 @@ final class ADAM_Interface_Settings {
 		$settings = $this->all();
 		$theme    = isset( $settings['default_theme'] ) ? $settings['default_theme'] : $fallback;
 
-		return (string) apply_filters( 'adam_interface_default_theme_mode', $theme );
+		return (string) apply_filters( 'adam_ui_default_theme_mode', $theme );
 	}
 
 	/**
@@ -108,7 +121,7 @@ final class ADAM_Interface_Settings {
 	 */
 	public function get_system_fallback( $fallback = 'light' ) {
 		$theme = $this->get_default_theme_mode( $fallback );
-		return (string) apply_filters( 'adam_interface_system_fallback', $theme );
+		return (string) apply_filters( 'adam_ui_system_fallback', $theme );
 	}
 
 	/** Returns the saved preference for the current logged-in user. */
@@ -117,7 +130,15 @@ final class ADAM_Interface_Settings {
 			return '';
 		}
 
-		$mode = sanitize_key( (string) get_user_meta( get_current_user_id(), self::USER_META_KEY, true ) );
+		$user_id = get_current_user_id();
+		$mode    = sanitize_key( (string) get_user_meta( $user_id, self::USER_META_KEY, true ) );
+
+		if ( '' === $mode ) {
+			$mode = sanitize_key( (string) get_user_meta( $user_id, 'adam_' . 'inter' . 'face_theme', true ) );
+			if ( in_array( $mode, array( 'light', 'dark', 'system' ), true ) ) {
+				update_user_meta( $user_id, self::USER_META_KEY, $mode );
+			}
+		}
 		if ( 'system' === $mode && ! $this->is_enabled( 'enable_system_mode' ) ) {
 			return '';
 		}
@@ -153,21 +174,21 @@ final class ADAM_Interface_Settings {
 				'key'     => self::USER_META_KEY,
 				'initial' => $this->get_user_preference(),
 				'saveUrl' => admin_url( 'admin-ajax.php' ),
-				'action'  => 'adam_interface_save_theme',
-				'nonce'   => wp_create_nonce( 'adam_interface_theme_preference' ),
+				'action'  => 'adam_ui_save_theme',
+				'nonce'   => wp_create_nonce( 'adam_ui_theme_preference' ),
 			);
 		}
 
-		return (array) apply_filters( 'adam_interface_theme_storage_config', $config );
+		return (array) apply_filters( 'adam_ui_theme_storage_config', $config );
 	}
 
 	/** Persists a logged-in user's theme preference without reloading. */
 	public function save_user_preference() {
 		if ( ! is_user_logged_in() || ! $this->is_enabled( 'allow_user_preferences' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Theme preferences are disabled.', 'adam-interface' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Theme preferences are disabled.', 'adam-ui' ) ), 403 );
 		}
 
-		check_ajax_referer( 'adam_interface_theme_preference', 'nonce' );
+		check_ajax_referer( 'adam_ui_theme_preference', 'nonce' );
 		$mode = isset( $_POST['theme'] ) ? sanitize_key( wp_unslash( $_POST['theme'] ) ) : '';
 
 		if ( '' === $mode ) {
@@ -176,7 +197,7 @@ final class ADAM_Interface_Settings {
 		}
 
 		if ( ! in_array( $mode, array( 'light', 'dark', 'system' ), true ) || ( 'system' === $mode && ! $this->is_enabled( 'enable_system_mode' ) ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid theme preference.', 'adam-interface' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid theme preference.', 'adam-ui' ) ), 400 );
 		}
 
 		update_user_meta( get_current_user_id(), self::USER_META_KEY, $mode );

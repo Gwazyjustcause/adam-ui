@@ -1,15 +1,15 @@
-# ADAM Interface component library
+# ADAM UI component library
 
-ADAM Interface is the visual source of truth for ADAM-owned frontend and WordPress administration screens. It does not style native WordPress, WooCommerce, Forminator, or other third-party admin pages. An ADAM plugin opts its own admin hook suffix into the theme with `adam_interface_enable_admin_theme()`. Production registration, assets, settings, persistence, events, and diagnostics are documented in [production-api.md](production-api.md).
+ADAM UI is the visual source of truth for ADAM-owned frontend and WordPress administration screens. It does not style native WordPress, WooCommerce, Forminator, or other third-party admin pages. An ADAM plugin opts its own admin hook suffix into the theme with `adam_ui_enable_admin_theme()`. Production registration, assets, settings, persistence, events, and diagnostics are documented in [production-api.md](production-api.md).
 
 All components inherit Light, Dark, and System mode through the `adam-theme-light` or `adam-theme-dark` body class. Component CSS must use `--adam-*` tokens and must not contain its own colour palette.
 
 ## Adoption contract
 
-1. Detect ADAM Interface with `function_exists( 'adam_interface_get_theme_manager' )`.
+1. Detect ADAM UI with `function_exists( 'adam_ui_get_theme_manager' )`.
 2. On public pages, call the Theme Manager's `enqueue_core_assets()` method and request only the component families used on that request. `enqueue_assets()` remains the legacy full-bundle fallback.
-3. On `admin_enqueue_scripts`, call `adam_interface_enable_admin_theme()` only after confirming the hook suffix belongs to the plugin.
-4. Keep the plugin's existing stylesheet as a standalone fallback, using declarations such as `var(--adam-surface, #fff)`. When Interface is active, the token wins; without it, the old appearance remains usable.
+3. On `admin_enqueue_scripts`, call `adam_ui_enable_admin_theme()` only after confirming the hook suffix belongs to the plugin.
+4. Keep the plugin's existing stylesheet as a standalone fallback, using declarations such as `var(--adam-surface, #fff)`. When ADAM UI is active, the token wins; without it, the old appearance remains usable.
 5. Keep plugin CSS limited to layout and domain-specific structure. Use the component classes below for visual presentation.
 
 ## Admin page structure
@@ -25,10 +25,10 @@ All components inherit Light, Dark, and System mode through the `adam-theme-ligh
       <a class="adam-button adam-button-primary" href="#">Add item</a>
     </div>
   </header>
-  <div class="adam-stat-grid">…</div>
+  <div class="adam-stat-grid">â€¦</div>
   <div class="adam-admin-layout">
-    <main>…</main>
-    <aside class="adam-card">…</aside>
+    <main>â€¦</main>
+    <aside class="adam-card">â€¦</aside>
   </div>
 </div>
 ```
@@ -47,7 +47,7 @@ Use `adam-admin-layout--single` when no sidebar is present. The layout collapses
 | Modal | native `<dialog class="adam-modal">` with `adam-modal__header`, `__body`, and `__footer` |
 | Notice | `adam-alert` with `adam-alert-info`, `-success`, `-warning`, or `-error` |
 | Badge | `adam-badge` with the Phase 4 semantic modifiers `adam-badge--success`, `--warning`, or `--danger` |
-| Breadcrumb | `<nav class="adam-breadcrumbs" aria-label="Breadcrumb"><ol>…</ol></nav>` |
+| Breadcrumb | `<nav class="adam-breadcrumbs" aria-label="Breadcrumb"><ol>â€¦</ol></nav>` |
 | Empty state | `adam-empty-state` and its `__icon`, `__title`, `__description`, and `__actions` parts |
 | Loading | `adam-loading`, `adam-loading__spinner`; always include an `adam-sr-only` status label |
 | Pagination | `<nav class="adam-pagination" aria-label="Pagination">`; mark the current item with `aria-current="page"` |
@@ -77,38 +77,38 @@ Phase 4 double-hyphen button and notice modifiers remain supported for increment
 Helpers return escaped HTML and do not echo it:
 
 ```php
-echo adam_interface_notice( 'Saved.', 'success' );
-echo adam_interface_button( 'Create', admin_url( 'admin.php?page=example' ) );
-echo adam_interface_stat_card( 'Members', '128', array( 'trend' => '+4 this month' ) );
-echo adam_interface_empty_state( 'No results', 'Try changing the filters.' );
-echo adam_interface_loading_indicator( 'Loading members' );
-echo adam_interface_confirmation_dialog( 'Delete this item?' );
+echo adam_ui_notice( 'Saved.', 'success' );
+echo adam_ui_button( 'Create', admin_url( 'admin.php?page=example' ) );
+echo adam_ui_stat_card( 'Members', '128', array( 'trend' => '+4 this month' ) );
+echo adam_ui_empty_state( 'No results', 'Try changing the filters.' );
+echo adam_ui_loading_indicator( 'Loading members' );
+echo adam_ui_confirmation_dialog( 'Delete this item?' );
 ```
 
-For advanced use, retrieve the renderer with `adam_interface_get_components()`. Text is escaped by default. Notice HTML and empty-state action HTML are passed through WordPress's safe post HTML allowlist.
+For advanced use, retrieve the renderer with `adam_ui_get_components()`. Text is escaped by default. Notice HTML and empty-state action HTML are passed through WordPress's safe post HTML allowlist.
 
 ## JavaScript API
 
 The existing theme API remains available:
 
 ```js
-ADAMInterface.setTheme('dark');
-ADAMInterface.getTheme();
-ADAMInterface.getResolvedTheme();
+ADAMUI.setTheme('dark');
+ADAMUI.getTheme();
+ADAMUI.getResolvedTheme();
 ```
 
 Component helpers:
 
 ```js
-const accepted = await ADAMInterface.confirm({
+const accepted = await ADAMUI.confirm({
   title: 'Delete member?',
   message: 'This action cannot be undone.',
   confirmLabel: 'Delete'
 });
 
-ADAMInterface.setLoading(button, true, 'Saving');
-ADAMInterface.setLoading(button, false);
-ADAMInterface.components.bindDropdowns(container);
+ADAMUI.setLoading(button, true, 'Saving');
+ADAMUI.setLoading(button, false);
+ADAMUI.components.bindDropdowns(container);
 ```
 
 `confirm()` restores focus when it closes and supports Escape. Dropdown triggers require `aria-controls` and receive synchronized `aria-expanded` state. Theme changes continue to dispatch `adam:themeChanged` with `mode`, `theme`, and `resolvedTheme` details.

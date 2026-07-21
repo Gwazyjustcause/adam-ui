@@ -1,13 +1,13 @@
-/** ADAM Interface settings and diagnostics. */
-.adam-interface-settings {
+/** ADAM UI settings and diagnostics. */
+.adam-ui-settings {
 	max-width: 56rem;
 }
 
-.adam-interface-settings .adam-card {
+.adam-ui-settings .adam-card {
 	margin-block-end: var(--adam-space-5);
 }
 
-.adam-interface-settings__field {
+.adam-ui-settings__field {
 	display: grid;
 	grid-template-columns: minmax(12rem, 1fr) minmax(16rem, 2fr);
 	gap: var(--adam-space-4);
@@ -16,11 +16,11 @@
 	border-bottom: var(--adam-border-width) solid var(--adam-border);
 }
 
-.adam-interface-settings__field:last-child {
+.adam-ui-settings__field:last-child {
 	border-bottom: 0;
 }
 
-.adam-interface-settings__control label {
+.adam-ui-settings__control label {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--adam-space-2);
@@ -51,7 +51,8 @@
 }
 
 @media (max-width: 782px) {
-	.adam-interface-settings__field {
+	.adam-ui-settings__field {
 		grid-template-columns: 1fr;
 	}
 }
+

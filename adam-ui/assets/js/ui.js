@@ -1,5 +1,5 @@
 /**
- * ADAM Interface theme controller.
+ * ADAM UI theme controller.
  *
  * Restores, applies, and persists the visitor's theme preference. The storage
  * adapter can be replaced later without changing the public theme API.
@@ -7,10 +7,10 @@
 ( function ( window, document ) {
 	'use strict';
 
-	const config = window.adamInterfaceConfig || {};
-	const assetConfig = window.adamInterfaceAssetConfig || {};
-	delete window.adamInterfaceConfig;
-	delete window.adamInterfaceAssetConfig;
+	const config = window.adamUIConfig || {};
+	const assetConfig = window.adamUIAssetConfig || {};
+	delete window.adamUIConfig;
+	delete window.adamUIAssetConfig;
 	const modes = Array.isArray( config.modes ) ? config.modes : [];
 	const resolvedThemes = Array.isArray( config.resolvedThemes )
 		? config.resolvedThemes
@@ -162,7 +162,7 @@
 		emit( 'adam:themeChanged', detail );
 
 		// Retained for consumers built against the Phase 1 development API.
-		emit( 'adam-interface:theme-change', detail );
+		emit( 'adam-ui:theme-change', detail );
 	}
 
 	function syncThemeSwitchers() {
@@ -266,7 +266,7 @@
 		setTheme: ( mode ) => applyTheme( mode, { persist: true } ),
 	};
 
-	window.ADAMInterface = api;
+	window.ADAMUI = api;
 
 	function init() {
 		applyTheme( currentMode );
@@ -287,3 +287,4 @@
 		init();
 	}
 } )( window, document );
+

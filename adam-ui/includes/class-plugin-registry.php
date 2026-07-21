@@ -2,7 +2,7 @@
 /**
  * ADAM ecosystem plugin registry and compatibility checks.
  *
- * @package ADAM_Interface
+ * @package ADAM_UI
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Tracks ADAM plugins without introducing hard dependencies between them.
  */
-final class ADAM_Interface_Plugin_Registry {
+final class ADAM_UI_Plugin_Registry {
 	/**
 	 * Registered plugin metadata.
 	 *
@@ -55,7 +55,7 @@ final class ADAM_Interface_Plugin_Registry {
 
 			$explicit_files = array_column( $this->plugins, 'plugin_file' );
 
-			if ( 'adam-interface' === $slug || isset( $this->plugins[ $slug ] ) || in_array( $file, $explicit_files, true ) ) {
+			if ( 'adam-ui' === $slug || isset( $this->plugins[ $slug ] ) || in_array( $file, $explicit_files, true ) ) {
 				continue;
 			}
 
@@ -86,7 +86,7 @@ final class ADAM_Interface_Plugin_Registry {
 			$args,
 			array(
 				'version'            => '',
-				'requires_interface' => '0.1.0',
+				'requires_ui' => '0.1.0',
 				'components'         => array(),
 				'plugin_file'        => '',
 			)
@@ -96,17 +96,17 @@ final class ADAM_Interface_Plugin_Registry {
 			'slug'               => $slug,
 			'name'               => sanitize_text_field( (string) $name ),
 			'version'            => sanitize_text_field( (string) $args['version'] ),
-			'requires_interface' => sanitize_text_field( (string) $args['requires_interface'] ),
+			'requires_ui' => sanitize_text_field( (string) $args['requires_ui'] ),
 			'components'         => array_values( array_unique( array_map( 'sanitize_key', (array) $args['components'] ) ) ),
 			'plugin_file'        => sanitize_text_field( (string) $args['plugin_file'] ),
 		);
 
 		/**
-		 * Fires after an ADAM plugin registers with the shared interface.
+		 * Fires after an ADAM plugin registers with the shared UI.
 		 *
 		 * @param array<string, mixed> $plugin Registered plugin metadata.
 		 */
-		do_action( 'adam_interface_plugin_registered', $this->plugins[ $slug ] );
+		do_action( 'adam_ui_plugin_registered', $this->plugins[ $slug ] );
 
 		return true;
 	}
@@ -129,19 +129,19 @@ final class ADAM_Interface_Plugin_Registry {
 		$warnings = array();
 
 		foreach ( $this->plugins as $plugin ) {
-			$required = $plugin['requires_interface'];
+			$required = $plugin['requires_ui'];
 
-			if ( '' !== $required && version_compare( ADAM_INTERFACE_VERSION, $required, '<' ) ) {
+			if ( '' !== $required && version_compare( ADAM_UI_VERSION, $required, '<' ) ) {
 				$warnings[] = array(
 					'plugin'   => $plugin['slug'],
 					'required' => $required,
-					'current'  => ADAM_INTERFACE_VERSION,
+					'current'  => ADAM_UI_VERSION,
 					'message'  => sprintf(
 						/* translators: 1: plugin name, 2: required version, 3: installed version. */
-						__( '%1$s requires ADAM Interface %2$s or newer; version %3$s is installed.', 'adam-interface' ),
+						__( '%1$s requires ADAM UI %2$s or newer; version %3$s is installed.', 'adam-ui' ),
 						$plugin['name'],
 						$required,
-						ADAM_INTERFACE_VERSION
+						ADAM_UI_VERSION
 					),
 				);
 			}

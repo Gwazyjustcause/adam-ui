@@ -2,56 +2,56 @@
 /**
  * Main plugin coordinator.
  *
- * @package ADAM_Interface
+ * @package ADAM_UI
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Coordinates the ADAM Interface services.
+ * Coordinates the ADAM UI services.
  */
-final class ADAM_Interface {
+final class ADAM_UI {
 	/**
 	 * Plugin instance.
 	 *
-	 * @var ADAM_Interface|null
+	 * @var ADAM_UI|null
 	 */
 	private static $instance = null;
 
 	/**
 	 * Settings service.
 	 *
-	 * @var ADAM_Interface_Settings
+	 * @var ADAM_UI_Settings
 	 */
 	private $settings;
 
 	/**
 	 * Theme manager service.
 	 *
-	 * @var ADAM_Interface_Theme_Manager
+	 * @var ADAM_UI_Theme_Manager
 	 */
 	private $theme_manager;
 
 	/**
 	 * Shared component renderer.
 	 *
-	 * @var ADAM_Interface_Components
+	 * @var ADAM_UI_Components
 	 */
 	private $components;
 
-	/** @var ADAM_Interface_Asset_Registry */
+	/** @var ADAM_UI_Asset_Registry */
 	private $assets;
 
-	/** @var ADAM_Interface_Plugin_Registry */
+	/** @var ADAM_UI_Plugin_Registry */
 	private $plugins;
 
-	/** @var ADAM_Interface_Admin */
+	/** @var ADAM_UI_Admin */
 	private $admin;
 
 	/**
 	 * Returns the plugin singleton.
 	 *
-	 * @return ADAM_Interface
+	 * @return ADAM_UI
 	 */
 	public static function instance() {
 		if ( null === self::$instance ) {
@@ -74,12 +74,12 @@ final class ADAM_Interface {
 	 * Creates and starts the frontend services.
 	 */
 	private function __construct() {
-		$this->settings      = new ADAM_Interface_Settings();
-		$this->assets        = new ADAM_Interface_Asset_Registry();
-		$this->plugins       = new ADAM_Interface_Plugin_Registry();
-		$this->theme_manager = new ADAM_Interface_Theme_Manager( $this->settings, $this->assets );
-		$this->components    = new ADAM_Interface_Components();
-		$this->admin         = new ADAM_Interface_Admin( $this->settings, $this->theme_manager, $this->assets, $this->plugins );
+		$this->settings      = new ADAM_UI_Settings();
+		$this->assets        = new ADAM_UI_Asset_Registry();
+		$this->plugins       = new ADAM_UI_Plugin_Registry();
+		$this->theme_manager = new ADAM_UI_Theme_Manager( $this->settings, $this->assets );
+		$this->components    = new ADAM_UI_Components();
+		$this->admin         = new ADAM_UI_Admin( $this->settings, $this->theme_manager, $this->assets, $this->plugins );
 
 		$this->settings->register_hooks();
 		$this->plugins->register_hooks();
@@ -95,7 +95,7 @@ final class ADAM_Interface {
 	/**
 	 * Returns the settings service.
 	 *
-	 * @return ADAM_Interface_Settings
+	 * @return ADAM_UI_Settings
 	 */
 	public function get_settings() {
 		return $this->settings;
@@ -104,7 +104,7 @@ final class ADAM_Interface {
 	/**
 	 * Returns the theme manager service.
 	 *
-	 * @return ADAM_Interface_Theme_Manager
+	 * @return ADAM_UI_Theme_Manager
 	 */
 	public function get_theme_manager() {
 		return $this->theme_manager;
@@ -113,18 +113,18 @@ final class ADAM_Interface {
 	/**
 	 * Returns the shared component renderer.
 	 *
-	 * @return ADAM_Interface_Components
+	 * @return ADAM_UI_Components
 	 */
 	public function get_components() {
 		return $this->components;
 	}
 
-	/** @return ADAM_Interface_Asset_Registry */
+	/** @return ADAM_UI_Asset_Registry */
 	public function get_asset_registry() {
 		return $this->assets;
 	}
 
-	/** @return ADAM_Interface_Plugin_Registry */
+	/** @return ADAM_UI_Plugin_Registry */
 	public function get_plugin_registry() {
 		return $this->plugins;
 	}
@@ -134,3 +134,4 @@ final class ADAM_Interface {
 		return $this->assets->enqueue_component( $component );
 	}
 }
+

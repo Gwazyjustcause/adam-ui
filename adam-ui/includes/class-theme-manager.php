@@ -2,7 +2,7 @@
 /**
  * Central theme manager.
  *
- * @package ADAM_Interface
+ * @package ADAM_UI
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Detects, resolves, and exposes ADAM themes and their assets.
  */
-final class ADAM_Interface_Theme_Manager {
+final class ADAM_UI_Theme_Manager {
 	/**
 	 * Light theme mode.
 	 *
@@ -35,14 +35,14 @@ final class ADAM_Interface_Theme_Manager {
 	/**
 	 * Settings service.
 	 *
-	 * @var ADAM_Interface_Settings
+	 * @var ADAM_UI_Settings
 	 */
 	private $settings;
 
 	/**
 	 * Central asset registry.
 	 *
-	 * @var ADAM_Interface_Asset_Registry
+	 * @var ADAM_UI_Asset_Registry
 	 */
 	private $assets;
 
@@ -70,10 +70,10 @@ final class ADAM_Interface_Theme_Manager {
 	/**
 	 * Constructor.
 	 *
-	 * @param ADAM_Interface_Settings       $settings Settings service.
-	 * @param ADAM_Interface_Asset_Registry $assets   Asset registry.
+	 * @param ADAM_UI_Settings       $settings Settings service.
+	 * @param ADAM_UI_Asset_Registry $assets   Asset registry.
 	 */
-	public function __construct( ADAM_Interface_Settings $settings, ADAM_Interface_Asset_Registry $assets ) {
+	public function __construct( ADAM_UI_Settings $settings, ADAM_UI_Asset_Registry $assets ) {
 		$this->settings = $settings;
 		$this->assets   = $assets;
 	}
@@ -144,7 +144,7 @@ final class ADAM_Interface_Theme_Manager {
 	 * @return string
 	 */
 	public function get_utility_style_handle() {
-		return 'adam-interface-utilities';
+		return 'adam-ui-utilities';
 	}
 
 	/**
@@ -180,7 +180,7 @@ final class ADAM_Interface_Theme_Manager {
 	/**
 	 * Returns the configured theme mode.
 	 *
-	 * Visitor preferences are restored from localStorage in interface.js because
+	 * Visitor preferences are restored from localStorage in ui.js because
 	 * localStorage is not available to PHP.
 	 *
 	 * @return string
@@ -198,9 +198,9 @@ final class ADAM_Interface_Theme_Manager {
 		 * Filters the current server-side theme mode.
 		 *
 		 * @param string                       $mode    Current mode.
-		 * @param ADAM_Interface_Theme_Manager $manager Theme manager.
+		 * @param ADAM_UI_Theme_Manager $manager Theme manager.
 		 */
-		$mode = (string) apply_filters( 'adam_interface_theme_mode', $mode, $this );
+		$mode = (string) apply_filters( 'adam_ui_theme_mode', $mode, $this );
 
 		$fallback = $this->settings->get_default_theme_mode( self::MODE_LIGHT );
 
@@ -301,7 +301,7 @@ final class ADAM_Interface_Theme_Manager {
 		}
 
 		if ( ! $this->script_configured ) {
-			wp_localize_script( 'adam-interface', 'adamInterfaceConfig', $this->get_script_config() );
+			wp_localize_script( 'adam-ui', 'adamUIConfig', $this->get_script_config() );
 			$this->script_configured = true;
 		}
 	}
@@ -322,9 +322,9 @@ final class ADAM_Interface_Theme_Manager {
 		$this->switcher_rendered = true;
 		$current_mode            = $this->get_theme_mode();
 		?>
-		<div class="adam-theme-switcher adam-interface" data-adam-theme-switcher>
+		<div class="adam-theme-switcher adam-ui" data-adam-theme-switcher>
 			<label class="adam-theme-switcher__label" for="adam-theme-select">
-				<?php echo esc_html__( 'Tema', 'adam-interface' ); ?>
+				<?php echo esc_html__( 'Tema', 'adam-ui' ); ?>
 			</label>
 			<select
 				class="adam-theme-switcher__select"
@@ -332,18 +332,18 @@ final class ADAM_Interface_Theme_Manager {
 				data-adam-theme-select
 			>
 				<option value="<?php echo esc_attr( self::MODE_LIGHT ); ?>" <?php selected( $current_mode, self::MODE_LIGHT ); ?>>
-					<?php echo esc_html__( 'Claro', 'adam-interface' ); ?>
+					<?php echo esc_html__( 'Claro', 'adam-ui' ); ?>
 				</option>
 				<option value="<?php echo esc_attr( self::MODE_DARK ); ?>" <?php selected( $current_mode, self::MODE_DARK ); ?>>
-					<?php echo esc_html__( 'Escuro', 'adam-interface' ); ?>
+					<?php echo esc_html__( 'Escuro', 'adam-ui' ); ?>
 				</option>
 				<?php if ( $this->settings->is_enabled( 'enable_system_mode' ) ) : ?>
-					<option value="<?php echo esc_attr( self::MODE_SYSTEM ); ?>" <?php selected( $current_mode, self::MODE_SYSTEM ); ?>><?php echo esc_html__( 'Sistema', 'adam-interface' ); ?></option>
+					<option value="<?php echo esc_attr( self::MODE_SYSTEM ); ?>" <?php selected( $current_mode, self::MODE_SYSTEM ); ?>><?php echo esc_html__( 'Sistema', 'adam-ui' ); ?></option>
 				<?php endif; ?>
 			</select>
 			<noscript>
 				<span class="adam-theme-switcher__notice">
-					<?php echo esc_html__( 'Ative o JavaScript para alterar o tema.', 'adam-interface' ); ?>
+					<?php echo esc_html__( 'Ative o JavaScript para alterar o tema.', 'adam-ui' ); ?>
 				</span>
 			</noscript>
 		</div>
@@ -384,3 +384,4 @@ final class ADAM_Interface_Theme_Manager {
 		return $this->settings->is_enabled( 'enable_transitions' ) ? 'adam-transitions-enabled' : 'adam-transitions-disabled';
 	}
 }
+

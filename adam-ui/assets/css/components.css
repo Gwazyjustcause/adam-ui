@@ -551,7 +551,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.adam-interface *,
+	.adam-ui *,
 	.adam-admin-page *,
 	.adam-admin-wrap *,
 	.adam-modal,
@@ -792,4 +792,5 @@
 	background-color: var(--adam-danger-bg);
 	border-color: var(--adam-danger);
 }
+
 
