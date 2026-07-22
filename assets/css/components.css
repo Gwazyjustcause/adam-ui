@@ -107,6 +107,77 @@
 	border-radius: 0 0 var(--adam-radius-lg) var(--adam-radius-lg);
 }
 
+/* Semantic page sections preserve hierarchy without page-specific palettes. */
+.adam-section,
+.adam-section--base {
+	color: var(--adam-on-section-base);
+	background: var(--adam-section-base);
+}
+
+.adam-section--muted {
+	color: var(--adam-on-section-base);
+	background: var(--adam-section-muted);
+}
+
+.adam-section--soft {
+	color: var(--adam-on-section-soft);
+	background: var(--adam-section-soft);
+}
+
+.adam-section--pale {
+	color: var(--adam-on-section-soft);
+	background: var(--adam-section-pale);
+}
+
+.adam-section--feature {
+	color: var(--adam-on-section-feature);
+	background: var(--adam-section-feature);
+}
+
+.adam-section--accent {
+	color: var(--adam-on-section-accent);
+	background: var(--adam-section-accent);
+}
+
+.adam-section--deep {
+	color: var(--adam-on-section-deep);
+	background: var(--adam-section-deep);
+}
+
+.adam-section--gradient-feature {
+	color: var(--adam-on-section-feature);
+	background: var(--adam-section-gradient-feature);
+}
+
+.adam-section--gradient-soft {
+	color: var(--adam-on-section-soft);
+	background: var(--adam-section-gradient-soft);
+}
+
+.adam-section--gradient-neutral {
+	color: var(--adam-on-section-base);
+	background: var(--adam-section-gradient-neutral);
+}
+
+:where(
+	.adam-section--feature,
+	.adam-section--accent,
+	.adam-section--deep,
+	.adam-section--gradient-feature
+) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, legend) {
+	color: inherit;
+}
+
+:where(
+	.adam-section--feature,
+	.adam-section--accent,
+	.adam-section--deep,
+	.adam-section--gradient-feature
+) :where(a:not(.adam-button)) {
+	color: inherit;
+	text-decoration-color: var(--adam-primary);
+}
+
 /* Standard ADAM-owned admin page composition. */
 .adam-admin-page,
 .adam-admin-wrap {
@@ -792,5 +863,3 @@
 	background-color: var(--adam-danger-bg);
 	border-color: var(--adam-danger);
 }
-
-

@@ -2,7 +2,7 @@
 
 ADAM UI is the visual source of truth for ADAM-owned frontend and WordPress administration screens. It does not style native WordPress, WooCommerce, Forminator, or other third-party admin pages. An ADAM plugin opts its own admin hook suffix into the theme with `adam_ui_enable_admin_theme()`. Production registration, assets, settings, persistence, events, and diagnostics are documented in [production-api.md](production-api.md).
 
-All components inherit Light, Dark, and System mode through the `adam-theme-light` or `adam-theme-dark` body class. Component CSS must use `--adam-*` tokens and must not contain its own colour palette.
+All components inherit Light, Night, and System mode through the `adam-theme-light` or `adam-theme-dark` body class. The stable API value for Night remains `dark`. Component CSS must use `--adam-*` tokens and must not contain its own colour palette.
 
 ## Adoption contract
 
@@ -57,6 +57,7 @@ Use `adam-admin-layout--single` when no sidebar is present. The layout collapses
 | Confirmation | `adam-confirmation adam-modal`, preferably through the PHP or JavaScript helper |
 | Statistic | `adam-stat-grid`, `adam-stat-card`, and the documented `adam-stat-card__*` parts |
 | Section header | `adam-section-header`, `__content`, `__title`, `__description`, and `__actions` |
+| Page section | `adam-section` or `adam-section--base`, `--muted`, `--soft`, `--pale`, `--feature`, `--accent`, `--deep`, `--gradient-feature`, `--gradient-soft`, or `--gradient-neutral` |
 | Icon | `adam-icon`; SVG markup should use `currentColor` so it follows the theme |
 
 Phase 4 double-hyphen button and notice modifiers remain supported for incremental migration.
@@ -64,6 +65,8 @@ Phase 4 double-hyphen button and notice modifiers remain supported for increment
 ## Design tokens
 
 - Colour: `--adam-bg`, `--adam-surface`, `--adam-surface-2`, `--adam-text`, semantic status tokens, borders, links, focus, overlays and shadows.
+- Section hierarchy: `--adam-section-canvas`, `--base`, `--muted`, `--soft`, `--pale`, `--feature`, `--accent`, and `--deep`, with matching `--adam-on-section-*` foregrounds. These roles preserve the Light Theme's page rhythm in the Night Theme instead of flattening every section to one dark surface.
+- Section gradients: `--adam-section-gradient-feature`, `--adam-section-gradient-soft`, and `--adam-section-gradient-neutral`. Use these tokens instead of replacing a gradient section with a solid dark background.
 - Spacing: `--adam-space-1` through `--adam-space-8`.
 - Typography: `--adam-font-family`, `--adam-font-size-xs` through `--adam-font-size-2xl`, weight and line-height tokens.
 - Shape: `--adam-radius-sm`, `--adam-radius`, `--adam-radius-lg`, `--adam-border-width`.

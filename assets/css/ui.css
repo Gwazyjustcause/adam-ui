@@ -70,7 +70,7 @@
 }
 
 /* Site chrome and navigation. */
-:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin), body.wp-admin:is(.adam-theme-light, .adam-theme-dark) #wpbody-content) :where(body > header, .site-header, #masthead, header.wp-block-template-part) {
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin), body.wp-admin:is(.adam-theme-light, .adam-theme-dark) #wpbody-content) :where(body > header, .site-header, .ct-header, #masthead, header.wp-block-template-part) {
 	color: var(--adam-header-text);
 	background-color: var(--adam-header-bg);
 	border-color: var(--adam-border);
@@ -103,6 +103,50 @@
 :where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin), body.wp-admin:is(.adam-theme-light, .adam-theme-dark) #wpbody-content) :where(body > footer, .site-footer, #colophon, footer.wp-block-template-part) :where(nav, .menu) {
 	color: var(--adam-footer-text);
 	background-color: inherit;
+}
+
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin), body.wp-admin:is(.adam-theme-light, .adam-theme-dark) #wpbody-content) :where(body > footer, .site-footer, #colophon, footer.wp-block-template-part) :where(a) {
+	color: var(--adam-footer-link);
+}
+
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin), body.wp-admin:is(.adam-theme-light, .adam-theme-dark) #wpbody-content) :where(body > footer, .site-footer, #colophon, footer.wp-block-template-part) :where(a:hover, a:focus-visible) {
+	color: var(--adam-footer-link-hover);
+}
+
+body.adam-theme-dark .ct-footer {
+	color: var(--adam-footer-text);
+	background-color: var(--adam-footer-bg);
+	border-color: var(--adam-border);
+}
+
+body.adam-theme-dark .ct-footer :where(h1, h2, h3, h4, h5, h6, p, li, nav, .menu, a) {
+	color: var(--adam-footer-text);
+}
+
+body.adam-theme-dark .ct-footer :where(a:hover, a:focus-visible) {
+	color: var(--adam-footer-link-hover);
+}
+
+/*
+ * Preserve the theme palette's content intent when the same palette slot is
+ * used for a light background in one section and light text in another.
+ */
+body.adam-theme-dark :where(
+	.has-palette-color-1-background-color,
+	.has-palette-color-2-background-color,
+	.has-palette-color-3-background-color,
+	.has-palette-color-4-background-color
+) :where(.has-palette-color-8-color, .has-white-color) {
+	color: var(--adam-on-section-feature) !important;
+}
+
+body.adam-theme-dark :where(
+	.has-palette-color-5-background-color,
+	.has-palette-color-6-background-color,
+	.has-palette-color-7-background-color,
+	.has-palette-color-8-background-color
+) :where(.has-palette-color-4-color, .has-black-color) {
+	color: var(--adam-text) !important;
 }
 
 /* Shared surfaces and cards. */

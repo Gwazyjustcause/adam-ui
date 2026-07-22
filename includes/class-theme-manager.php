@@ -19,7 +19,7 @@ final class ADAM_UI_Theme_Manager {
 	const MODE_LIGHT = 'light';
 
 	/**
-	 * Dark theme mode.
+	 * Night Theme mode. The stable API value remains "dark" for compatibility.
 	 *
 	 * @var string
 	 */
@@ -335,7 +335,7 @@ final class ADAM_UI_Theme_Manager {
 					<?php echo esc_html__( 'Claro', 'adam-ui' ); ?>
 				</option>
 				<option value="<?php echo esc_attr( self::MODE_DARK ); ?>" <?php selected( $current_mode, self::MODE_DARK ); ?>>
-					<?php echo esc_html__( 'Escuro', 'adam-ui' ); ?>
+					<?php echo esc_html__( 'Noite', 'adam-ui' ); ?>
 				</option>
 				<?php if ( $this->settings->is_enabled( 'enable_system_mode' ) ) : ?>
 					<option value="<?php echo esc_attr( self::MODE_SYSTEM ); ?>" <?php selected( $current_mode, self::MODE_SYSTEM ); ?>><?php echo esc_html__( 'Sistema', 'adam-ui' ); ?></option>
@@ -384,4 +384,3 @@ final class ADAM_UI_Theme_Manager {
 		return $this->settings->is_enabled( 'enable_transitions' ) ? 'adam-transitions-enabled' : 'adam-transitions-disabled';
 	}
 }
-
