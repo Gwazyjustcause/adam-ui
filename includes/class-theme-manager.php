@@ -157,16 +157,11 @@ final class ADAM_UI_Theme_Manager {
 	 * @return string[]
 	 */
 	public function get_supported_modes() {
-		$modes = array(
+		return array(
 			self::MODE_LIGHT,
 			self::MODE_DARK,
+			self::MODE_SYSTEM,
 		);
-
-		if ( $this->settings->is_enabled( 'enable_system_mode' ) ) {
-			$modes[] = self::MODE_SYSTEM;
-		}
-
-		return $modes;
 	}
 
 	/**
@@ -184,19 +179,13 @@ final class ADAM_UI_Theme_Manager {
 	/**
 	 * Returns the configured theme mode.
 	 *
-	 * Visitor preferences are restored from localStorage in ui.js because
+	 * Browser preferences are restored from localStorage in ui.js because
 	 * localStorage is not available to PHP.
 	 *
 	 * @return string
 	 */
 	public function get_theme_mode() {
-		$user_mode = $this->settings->get_user_preference();
-
-		if ( '' !== $user_mode ) {
-			$mode = $user_mode;
-		} else {
-			$mode = $this->get_fallback_theme_mode();
-		}
+		$mode = $this->settings->get_default_theme_mode( self::MODE_LIGHT );
 
 		/**
 		 * Filters the current server-side theme mode.
@@ -213,18 +202,12 @@ final class ADAM_UI_Theme_Manager {
 
 	/** Returns the System-or-website fallback used after clearing a preference. */
 	public function get_fallback_theme_mode() {
-		return $this->settings->is_enabled( 'enable_system_mode' )
-			? self::MODE_SYSTEM
-			: $this->settings->get_default_theme_mode( self::MODE_LIGHT );
+		return $this->settings->get_default_theme_mode( self::MODE_LIGHT );
 	}
 
 	/** Returns whether the active mode came from user, system, or website default. */
 	public function get_theme_source() {
-		if ( '' !== $this->settings->get_user_preference() ) {
-			return 'user';
-		}
-
-		return $this->settings->is_enabled( 'enable_system_mode' ) ? 'system' : 'website-default';
+		return 'website-default';
 	}
 
 	/**
@@ -346,9 +329,7 @@ final class ADAM_UI_Theme_Manager {
 				<option value="<?php echo esc_attr( self::MODE_DARK ); ?>" <?php selected( $current_mode, self::MODE_DARK ); ?>>
 					<?php echo esc_html__( 'Noite', 'adam-ui' ); ?>
 				</option>
-				<?php if ( $this->settings->is_enabled( 'enable_system_mode' ) ) : ?>
-					<option value="<?php echo esc_attr( self::MODE_SYSTEM ); ?>" <?php selected( $current_mode, self::MODE_SYSTEM ); ?>><?php echo esc_html__( 'Sistema', 'adam-ui' ); ?></option>
-				<?php endif; ?>
+				<option value="<?php echo esc_attr( self::MODE_SYSTEM ); ?>" <?php selected( $current_mode, self::MODE_SYSTEM ); ?>><?php echo esc_html__( 'Sistema', 'adam-ui' ); ?></option>
 			</select>
 			<noscript>
 				<span class="adam-theme-switcher__notice">

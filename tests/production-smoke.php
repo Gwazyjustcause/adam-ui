@@ -2,7 +2,7 @@
 /** Phase 6 service contract smoke test. */
 
 define( 'ABSPATH', __DIR__ . '/' );
-define( 'ADAM_UI_VERSION', '2.0.0' );
+define( 'ADAM_UI_VERSION', '2.0.1' );
 define( 'ADAM_UI_URL', 'https://example.test/adam-ui/' );
 
 $test_options = array();
@@ -70,16 +70,14 @@ $settings->migrate_saved_settings();
 assert_contract( 'dark' === $test_options[ ADAM_UI_Settings::OPTION_KEY ]['default_theme'], 'saved settings migrate to the ADAM UI option' );
 $test_options = array();
 
-assert_contract( 'system' === $themes->get_theme_mode(), 'system preference precedes website default' );
-assert_contract( 'system' === $themes->get_theme_source(), 'system source reported' );
+assert_contract( 'light' === $themes->get_theme_mode(), 'website default initializes new browsers' );
+assert_contract( 'website-default' === $themes->get_theme_source(), 'website default source reported' );
 
 $test_logged_in = true;
 $test_meta[7][ 'adam_' . 'inter' . 'face_theme' ] = 'dark';
-assert_contract( 'dark' === $themes->get_theme_mode(), 'user meta has highest priority' );
-assert_contract( 'dark' === $test_meta[7][ ADAM_UI_Settings::USER_META_KEY ], 'saved user preference migrates to ADAM UI user meta' );
-assert_contract( 'user' === $themes->get_theme_source(), 'user source reported' );
-assert_contract( 'system' === $themes->get_fallback_theme_mode(), 'clearing user preference restores system priority' );
-assert_contract( 'userMeta' === $settings->get_storage_config()['adapter'], 'logged-in storage adapter selected' );
+assert_contract( 'light' === $themes->get_theme_mode(), 'server user meta does not override the browser preference' );
+assert_contract( 'light' === $themes->get_fallback_theme_mode(), 'website default remains the browser fallback' );
+assert_contract( 'localStorage' === $settings->get_storage_config()['adapter'], 'logged-in members use browser storage' );
 
 $test_logged_in = false;
 $test_options[ ADAM_UI_Settings::OPTION_KEY ] = array(
@@ -91,8 +89,8 @@ $test_options[ ADAM_UI_Settings::OPTION_KEY ] = array(
 );
 assert_contract( 'light' === $themes->get_theme_mode(), 'website default used when system is disabled' );
 assert_contract( 'light' === $themes->get_fallback_theme_mode(), 'disabled system falls back to website default' );
-assert_contract( ! in_array( 'system', $themes->get_supported_modes(), true ), 'disabled system mode rejected' );
-assert_contract( '' === $settings->get_storage_config()['adapter'], 'visitor storage disabled globally' );
+assert_contract( in_array( 'system', $themes->get_supported_modes(), true ), 'System mode remains available to every visitor' );
+assert_contract( 'localStorage' === $settings->get_storage_config()['adapter'], 'visitor storage remains client-side' );
 
 $assets->enqueue_core();
 assert_contract( in_array( 'adam-ui', $test_styles['enqueued'], true ), 'core style enqueued' );

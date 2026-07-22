@@ -150,36 +150,23 @@ final class ADAM_UI_Settings {
 
 	/** Returns whether the current visitor may see and use the switcher. */
 	public function can_change_theme() {
-		if ( is_user_logged_in() && $this->is_enabled( 'allow_user_preferences' ) ) {
-			return true;
-		}
-
-		return $this->is_enabled( 'allow_visitor_switcher' );
+		return true;
 	}
 
 	/**
 	 * Returns browser storage configuration.
 	 *
-	 * Logged-in users use a user-meta adapter; visitors retain localStorage.
+	 * Browser storage is authoritative for visitors and logged-in members.
+	 * The user-meta adapter remains available as a future opt-in integration,
+	 * but it never replaces the browser choice in the public selector.
 	 *
 	 * @return array<string, mixed>
 	 */
 	public function get_storage_config() {
 		$config = array(
-			'adapter' => $this->is_enabled( 'allow_visitor_switcher' ) ? 'localStorage' : '',
+			'adapter' => 'localStorage',
 			'key'     => 'adam-theme',
 		);
-
-		if ( is_user_logged_in() && $this->is_enabled( 'allow_user_preferences' ) ) {
-			$config = array(
-				'adapter' => 'userMeta',
-				'key'     => self::USER_META_KEY,
-				'initial' => $this->get_user_preference(),
-				'saveUrl' => admin_url( 'admin-ajax.php' ),
-				'action'  => 'adam_ui_save_theme',
-				'nonce'   => wp_create_nonce( 'adam_ui_theme_preference' ),
-			);
-		}
 
 		return (array) apply_filters( 'adam_ui_theme_storage_config', $config );
 	}

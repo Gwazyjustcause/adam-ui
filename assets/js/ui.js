@@ -243,6 +243,35 @@
 		syncThemeSwitchers();
 	}
 
+	function placeThemeSwitcher() {
+		const switcher = document.querySelector( '[data-adam-theme-switcher]' );
+		const footer = document.querySelector( '.ct-footer, #colophon, .site-footer, footer.wp-block-template-part, body > footer' );
+
+		if ( ! switcher || ! footer ) {
+			return;
+		}
+
+		let copyright = footer.querySelector( '[data-id="copyright"], .ct-footer-copyright, .footer-copyright, .site-info, .copyright' );
+		const copyrightContainer = Boolean( copyright );
+
+		if ( ! copyright ) {
+			copyright = Array.from( footer.querySelectorAll( 'p, div, span' ) ).find( ( element ) => {
+				const text = element.textContent.trim();
+				return /(?:©|&copy;|copyright)/i.test( text ) && element.children.length < 3;
+			} );
+		}
+
+		if ( copyrightContainer ) {
+			copyright.insertBefore( switcher, copyright.firstChild );
+		} else if ( copyright && copyright.parentNode ) {
+			copyright.parentNode.insertBefore( switcher, copyright );
+		} else {
+			footer.appendChild( switcher );
+		}
+
+		switcher.dataset.adamFooterIntegrated = 'true';
+	}
+
 	const api = {
 		applyTheme,
 		emit,
@@ -276,6 +305,7 @@
 
 	function init() {
 		applyTheme( currentMode );
+		placeThemeSwitcher();
 		bindThemeSwitchers();
 		watchSystemTheme();
 		( Array.isArray( assetConfig.components ) ? assetConfig.components : [] ).forEach( ( component ) => {

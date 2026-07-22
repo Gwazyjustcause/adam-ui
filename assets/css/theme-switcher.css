@@ -19,6 +19,25 @@
 	font-size: var(--adam-font-size-sm);
 }
 
+.adam-theme-switcher[data-adam-footer-integrated="true"] {
+	justify-content: center;
+	margin: var(--adam-space-6) auto var(--adam-space-4);
+	padding: var(--adam-space-2) var(--adam-space-3);
+	color: var(--adam-footer-text);
+	background: transparent;
+	border-color: transparent;
+	box-shadow: none;
+}
+
+.adam-theme-switcher[data-adam-footer-integrated="true"] .adam-theme-switcher__label {
+	color: var(--adam-footer-text);
+}
+
+.adam-theme-switcher[data-adam-footer-integrated="true"] .adam-theme-switcher__select {
+	color: var(--adam-text);
+	background-color: var(--adam-surface-elevated);
+}
+
 .adam-theme-switcher__label {
 	color: var(--adam-text-muted);
 	font-weight: var(--adam-font-weight-semibold);

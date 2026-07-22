@@ -33,7 +33,7 @@ Administrators configure the framework at **ADAM UI â†’ Settings**:
 2. If enabled, System mode follows `prefers-color-scheme`.
 3. The website Light or Night default is the final fallback. Night retains the stable `dark` API value.
 
-Anonymous choices use `localStorage` only when visitor switching is enabled. Logged-in choices use the `adam_ui_theme` user-meta key and are saved asynchronously through an authenticated, nonce-protected WordPress endpoint. Disabling System mode removes it from both the selector and accepted persistence values.
+Theme choices use the browser's `localStorage` for visitors and logged-in members alike. The `adam-theme` value is authoritative after a person makes a selection; WordPress supplies only the initial website default for a browser with no saved choice. Light, Night, and System are always available, and System follows `prefers-color-scheme` live.
 
 The extension filters are:
 
