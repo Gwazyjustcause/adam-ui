@@ -12,6 +12,7 @@ $light_css  = file_get_contents( $root . '/assets/css/light.css' );
 $night_css  = file_get_contents( $root . '/assets/css/dark.css' );
 $all_css    = implode( "\n", array_map( 'file_get_contents', glob( $root . '/assets/css/*.css' ) ) );
 $components = file_get_contents( $root . '/assets/css/components.css' );
+$ui_css     = file_get_contents( $root . '/assets/css/ui.css' );
 
 function adam_ui_night_assert( $condition, $message ) {
 	if ( ! $condition ) {
@@ -56,9 +57,11 @@ foreach ( $section_roles as $role ) {
 adam_ui_night_assert( count( $section_roles ) === count( array_unique( $night_values ) ), 'Night section roles must use visibly distinct palette values.' );
 
 foreach ( array( 'feature', 'soft', 'neutral' ) as $gradient ) {
-	adam_ui_night_assert( false !== strpos( $night_css, '--adam-section-gradient-' . $gradient . ': linear-gradient(' ), 'Night Theme is missing the ' . $gradient . ' gradient.' );
+	adam_ui_night_assert( false !== strpos( $night_css, '--adam-section-gradient-' . $gradient . ': var(--adam-section-' ), 'Night Theme must simplify the ' . $gradient . ' decoration to a solid semantic surface.' );
 	adam_ui_night_assert( false !== strpos( $light_css, '--adam-section-gradient-' . $gradient . ': linear-gradient(' ), 'Light Theme is missing the ' . $gradient . ' gradient.' );
 }
+
+adam_ui_night_assert( false === strpos( $night_css, 'linear-gradient(' ), 'Night Theme token definitions must not contain decorative gradients.' );
 
 $contrast_pairs = array(
 	array( 'adam-on-section-base', 'adam-section-base' ),
@@ -79,5 +82,12 @@ foreach ( $contrast_pairs as $pair ) {
 adam_ui_night_assert( 0 === preg_match( '/(?:img|picture)[^{]*\{[^}]*(?:filter|mix-blend-mode|opacity)\s*:/is', $all_css ), 'Theme CSS must not alter photographs or graphics.' );
 adam_ui_night_assert( false !== strpos( $night_css, '--theme-palette-color-8: var(--adam-section-base);' ), 'Website palette slots must inherit the Night Theme section system.' );
 adam_ui_night_assert( false !== strpos( $components, '.adam-section--gradient-feature' ), 'Shared semantic section utilities are missing.' );
+
+foreach ( array( 'home', 'page-id-48', 'page-id-56', 'page-id-58', 'page-id-132', 'page-id-134', 'page-id-352', 'page-id-580', 'page-id-594', 'page-id-596', 'single-post' ) as $page_scope ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, $page_scope ), 'Manual Night Theme review is missing the ' . $page_scope . ' page scope.' );
+}
+
+adam_ui_night_assert( false !== strpos( $ui_css, 'body.adam-theme-dark .adam-member-area' ), 'ADAM Sócios public pages must follow the selected Night Theme.' );
+adam_ui_night_assert( false !== strpos( $ui_css, 'body.adam-theme-dark .adam-bot' ), 'ADAM BOT must follow the selected Night Theme.' );
 
 echo "PASS: Night Theme design contract.\n";

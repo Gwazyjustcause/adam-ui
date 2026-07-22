@@ -23,9 +23,9 @@ body.adam-theme-dark {
 	--adam-on-section-feature: #f2f4ee;
 	--adam-on-section-accent: #f7f8f2;
 	--adam-on-section-deep: #f2f4ee;
-	--adam-section-gradient-feature: linear-gradient(135deg, #205033 0%, #414c25 100%);
-	--adam-section-gradient-soft: linear-gradient(135deg, #394e2e 0%, #27382a 100%);
-	--adam-section-gradient-neutral: linear-gradient(135deg, #2d382e 0%, #192019 100%);
+	--adam-section-gradient-feature: var(--adam-section-feature);
+	--adam-section-gradient-soft: var(--adam-section-soft);
+	--adam-section-gradient-neutral: var(--adam-section-muted);
 	--adam-text: #f2f4ee;
 	--adam-text-muted: #b9c3b5;
 	--adam-text-disabled: #899485;
@@ -85,6 +85,18 @@ body.adam-theme-dark {
 	--theme-palette-color-7: var(--adam-section-muted);
 	--theme-palette-color-8: var(--adam-section-base);
 	--theme-text-color: var(--adam-text);
+	--theme-headings-color: var(--adam-text);
 	--theme-link-initial-color: var(--adam-link);
 	--theme-link-hover-color: var(--adam-link-hover);
+	--theme-border-color: var(--adam-border);
+	--theme-button-background-initial-color: var(--adam-primary);
+	--theme-button-background-hover-color: var(--adam-primary-hover);
+	--theme-button-text-initial-color: var(--adam-on-primary);
+	--theme-button-text-hover-color: var(--adam-on-primary);
+	--theme-form-field-border-initial-color: var(--adam-border);
+	--theme-form-field-border-focus-color: var(--adam-focus-ring);
+	--theme-form-selection-field-initial-color: var(--adam-border);
+	--theme-form-selection-field-active-color: var(--adam-primary);
+	--theme-selection-background-color: var(--adam-selection-bg);
+	--theme-selection-text-color: var(--adam-selection-text);
 }

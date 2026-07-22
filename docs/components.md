@@ -66,7 +66,7 @@ Phase 4 double-hyphen button and notice modifiers remain supported for increment
 
 - Colour: `--adam-bg`, `--adam-surface`, `--adam-surface-2`, `--adam-text`, semantic status tokens, borders, links, focus, overlays and shadows.
 - Section hierarchy: `--adam-section-canvas`, `--base`, `--muted`, `--soft`, `--pale`, `--feature`, `--accent`, and `--deep`, with matching `--adam-on-section-*` foregrounds. These roles preserve the Light Theme's page rhythm in the Night Theme instead of flattening every section to one dark surface.
-- Section gradients: `--adam-section-gradient-feature`, `--adam-section-gradient-soft`, and `--adam-section-gradient-neutral`. Use these tokens instead of replacing a gradient section with a solid dark background.
+- Decorative surfaces: `--adam-section-gradient-feature`, `--adam-section-gradient-soft`, and `--adam-section-gradient-neutral` preserve Light Theme gradients while resolving to calm, solid semantic surfaces in the Night Theme.
 - Spacing: `--adam-space-1` through `--adam-space-8`.
 - Typography: `--adam-font-family`, `--adam-font-size-xs` through `--adam-font-size-2xl`, weight and line-height tokens.
 - Shape: `--adam-radius-sm`, `--adam-radius`, `--adam-radius-lg`, `--adam-border-width`.

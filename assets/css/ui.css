@@ -375,3 +375,293 @@ body.adam-theme-dark :where(
 	background-color: var(--adam-code-bg);
 	border-color: var(--adam-border);
 }
+
+/*
+ * ADAM website Night Theme.
+ *
+ * These decisions follow the purpose of each live page section. They are
+ * intentionally scoped to Night mode so the Light Theme remains unchanged.
+ * Photographs and graphics are deliberately absent from every selector.
+ */
+body.adam-theme-dark:not(.wp-admin) :where(#main-container, main, .site-main, .content-area, .entries) {
+	color: var(--adam-text);
+	background-color: var(--adam-section-canvas);
+}
+
+body.adam-theme-dark:not(.wp-admin) .entry-content :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend) {
+	color: var(--adam-text);
+}
+
+body.adam-theme-dark:not(.wp-admin) :where(
+	.has-palette-color-1-background-color,
+	.has-palette-color-2-background-color,
+	.has-palette-color-3-background-color,
+	.has-palette-color-4-background-color
+) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend) {
+	color: var(--adam-on-section-feature) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :where(
+	.has-palette-color-1-background-color,
+	.has-palette-color-2-background-color,
+	.has-palette-color-3-background-color,
+	.has-palette-color-4-background-color
+) a:not(.wp-element-button):not(.adam-button) {
+	color: var(--adam-on-section-feature) !important;
+}
+
+/* Homepage: editorial hero, feature strip, then photographic calls to action. */
+body.home.adam-theme-dark .entry-content > :where(:nth-child(1), :nth-child(2)) {
+	color: var(--adam-text);
+	background-color: var(--adam-section-base) !important;
+}
+
+body.home.adam-theme-dark .entry-content > :where(:nth-child(1), :nth-child(2)) :where(h1, h2, h3, h4, p, li) {
+	color: var(--adam-text) !important;
+}
+
+body.home.adam-theme-dark .entry-content > :where(:nth-child(3), :nth-child(4)) {
+	color: var(--adam-on-section-feature);
+	background-color: var(--adam-section-feature) !important;
+}
+
+body.home.adam-theme-dark .entry-content > :where(:nth-child(3), :nth-child(4)) :where(h1, h2, h3, h4, p, li) {
+	color: var(--adam-on-section-feature) !important;
+}
+
+/* About: replace the page-wide decoration with calm editorial sections. */
+body.page-id-48.adam-theme-dark .entry-content > .wp-block-group.has-background {
+	color: var(--adam-text);
+	background-color: var(--adam-section-canvas) !important;
+	background-image: none !important;
+}
+
+body.page-id-48.adam-theme-dark .entry-content > .wp-block-group.has-background > .wp-block-group {
+	padding: var(--adam-space-7) var(--adam-space-6);
+	background-color: var(--adam-section-base);
+	border: var(--adam-border-width) solid var(--adam-border);
+	border-radius: var(--adam-radius-lg);
+}
+
+body.page-id-48.adam-theme-dark .entry-content > .wp-block-group.has-background > .wp-block-group.alignwide {
+	background-color: var(--adam-section-soft);
+}
+
+body.page-id-48.adam-theme-dark .entry-content > .wp-block-group.has-background > .wp-block-group.animated.zoomIn {
+	background-color: var(--adam-section-soft);
+}
+
+body.page-id-48.adam-theme-dark .entry-content > .wp-block-group.has-background > .wp-block-group:last-child {
+	color: var(--adam-on-section-feature);
+	background-color: var(--adam-section-feature);
+	border-color: var(--adam-section-accent);
+}
+
+body.page-id-48.adam-theme-dark .entry-content > .wp-block-group.has-background > .wp-block-group:last-child :where(h1, h2, h3, p, li, a:not(.wp-element-button)) {
+	color: var(--adam-on-section-feature) !important;
+}
+
+body.page-id-48.adam-theme-dark .entry-content > .wp-block-group.has-background > .wp-block-themeisle-blocks-advanced-columns {
+	padding: var(--adam-space-6);
+	background-color: var(--adam-section-muted);
+	border: var(--adam-border-width) solid var(--adam-border);
+}
+
+body.page-id-48.adam-theme-dark :where(
+	.wp-block-themeisle-blocks-advanced-columns.has-2-columns,
+	.wp-block-themeisle-blocks-advanced-columns.has-3-columns,
+	.wp-block-themeisle-blocks-advanced-columns.has-4-columns,
+	.wp-block-themeisle-blocks-advanced-columns.has-6-columns
+) > .wp-block-themeisle-blocks-advanced-column {
+	padding: var(--adam-space-4);
+	background-color: var(--adam-section-base);
+	border: var(--adam-border-width) solid var(--adam-border);
+	border-radius: var(--adam-radius);
+}
+
+/* Membership: a confident introduction followed by readable benefit cards. */
+body.page-id-56.adam-theme-dark .entry-content > .wp-block-group:first-child {
+	color: var(--adam-on-section-feature);
+	background-color: var(--adam-section-feature) !important;
+}
+
+body.page-id-56.adam-theme-dark .entry-content > .wp-block-group:first-child :where(h1, h2, h3, p, li, a:not(.wp-element-button)) {
+	color: var(--adam-on-section-feature) !important;
+}
+
+body.page-id-56.adam-theme-dark .entry-content > .wp-block-group:nth-child(2) {
+	color: var(--adam-text);
+	background-color: var(--adam-section-soft) !important;
+}
+
+body.page-id-56.adam-theme-dark .entry-content > .wp-block-group:nth-child(2) .wp-block-group .wp-block-group {
+	padding: var(--adam-space-4);
+	background-color: var(--adam-section-base);
+	border-inline-start: 0.25rem solid var(--adam-primary);
+	border-radius: var(--adam-radius);
+}
+
+/* News: the index is a collection; an article is a focused reading surface. */
+body.page-id-352.adam-theme-dark .wp-block-query {
+	color: var(--adam-text);
+	background-color: var(--adam-section-canvas);
+}
+
+body.page-id-352.adam-theme-dark .wp-block-post {
+	padding: var(--adam-space-5);
+	background-color: var(--adam-section-base);
+	border: var(--adam-border-width) solid var(--adam-border);
+	border-radius: var(--adam-radius-lg);
+	box-shadow: var(--adam-shadow);
+}
+
+body.single-post.adam-theme-dark :where(.hero-section, article, .entry-content) {
+	color: var(--adam-text);
+	background-color: var(--adam-section-canvas);
+}
+
+/* Contact: supporting information is quiet; the form is the primary surface. */
+body.page-id-58.adam-theme-dark .entry-content > .wp-block-themeisle-blocks-advanced-columns {
+	padding: var(--adam-space-6);
+	background-color: var(--adam-section-canvas);
+}
+
+body.page-id-58.adam-theme-dark .entry-content > .wp-block-themeisle-blocks-advanced-columns .wp-block-themeisle-blocks-advanced-column {
+	padding: var(--adam-space-6);
+	background-color: var(--adam-section-soft);
+	border: var(--adam-border-width) solid var(--adam-border);
+}
+
+body.page-id-58.adam-theme-dark .entry-content > .wp-block-themeisle-blocks-advanced-columns .wp-block-themeisle-blocks-advanced-column:last-child {
+	background-color: var(--adam-section-base);
+}
+
+body.page-id-58.adam-theme-dark :where(.otter-form__container, .wp-block-themeisle-blocks-form) {
+	color: var(--adam-text);
+	background-color: var(--adam-section-base);
+}
+
+body.page-id-58.adam-theme-dark :where(.otter-form-input, .otter-form-textarea-input) {
+	color: var(--adam-text);
+	background-color: var(--adam-input-bg);
+	border-color: var(--adam-border);
+}
+
+/* FAQ: each question and answer becomes one calm, scannable unit. */
+body.page-id-132.adam-theme-dark .entry-content > .wp-block-group {
+	color: var(--adam-text);
+	background-color: var(--adam-section-canvas);
+}
+
+body.page-id-132.adam-theme-dark .entry-content > .wp-block-group > h2 {
+	padding: var(--adam-space-4) var(--adam-space-5);
+	margin-block: var(--adam-space-5) 0 !important;
+	color: var(--adam-text) !important;
+	background-color: var(--adam-section-base);
+	border: var(--adam-border-width) solid var(--adam-border);
+	border-radius: var(--adam-radius-lg) var(--adam-radius-lg) 0 0;
+}
+
+body.page-id-132.adam-theme-dark .entry-content > .wp-block-group > h2 + p {
+	padding: 0 var(--adam-space-5) var(--adam-space-5);
+	margin: 0;
+	color: var(--adam-text-muted) !important;
+	background-color: var(--adam-section-base);
+	border: var(--adam-border-width) solid var(--adam-border);
+	border-top: 0;
+	border-radius: 0 0 var(--adam-radius-lg) var(--adam-radius-lg);
+}
+
+body.page-id-132.adam-theme-dark .entry-content > .wp-block-group > .wp-block-separator {
+	display: none;
+}
+
+/* Policies: long-form documents use one stable reading surface and clear tables. */
+body:is(.page-id-134, .page-id-580, .page-id-594, .page-id-596).adam-theme-dark .entry-content > .wp-block-group {
+	padding: var(--adam-space-6);
+	color: var(--adam-text);
+	background-color: var(--adam-section-base);
+	border: var(--adam-border-width) solid var(--adam-border);
+	border-radius: var(--adam-radius-lg);
+}
+
+body:is(.page-id-134, .page-id-580, .page-id-594, .page-id-596).adam-theme-dark .entry-content :where(h1, h2, h3, h4, p, li, td, th) {
+	color: var(--adam-text) !important;
+}
+
+body:is(.page-id-134, .page-id-580, .page-id-594, .page-id-596).adam-theme-dark .entry-content :where(table, td, th) {
+	background-color: var(--adam-section-base);
+	border-color: var(--adam-border);
+}
+
+body:is(.page-id-134, .page-id-580, .page-id-594, .page-id-596).adam-theme-dark .entry-content th {
+	background-color: var(--adam-section-soft);
+}
+
+/* ADAM Sócios: account pages use one focused hero and stable card surfaces. */
+body.adam-theme-dark .adam-member-area {
+	color: var(--adam-text);
+}
+
+body.adam-theme-dark .adam-member-area .adam-member-hero {
+	color: var(--adam-on-section-feature);
+	background: var(--adam-section-feature);
+	border-color: var(--adam-section-accent);
+}
+
+body.adam-theme-dark .adam-member-area .adam-member-hero :where(h1, h2, h3, p, li) {
+	color: var(--adam-on-section-feature) !important;
+}
+
+body.adam-theme-dark .adam-member-area :where(.adam-card, .adam-login-panel, .adam-form-card) {
+	color: var(--adam-text);
+	background: var(--adam-section-base);
+	border-color: var(--adam-border);
+}
+
+body.adam-theme-dark .adam-member-area :where(.adam-card, .adam-login-panel, .adam-form-card) :where(h1, h2, h3, h4, p, label) {
+	color: var(--adam-text);
+}
+
+/* ADAM BOT follows the selected website mode, not only the operating system. */
+body.adam-theme-dark .adam-bot {
+	--adam-accent: var(--adam-primary);
+	--adam-accent-strong: var(--adam-primary-hover);
+	--adam-accent-soft: var(--adam-primary-soft);
+	--adam-ink: var(--adam-text);
+	--adam-ink-muted: var(--adam-text-muted);
+	--adam-surface: var(--adam-section-base);
+	--adam-surface-soft: var(--adam-section-muted);
+	--adam-surface-raised: var(--adam-section-base);
+	--adam-border: var(--adam-border-strong);
+	--adam-user-bubble: var(--adam-primary);
+	--adam-user-text: var(--adam-on-primary);
+	--adam-bot-bubble: var(--adam-section-soft);
+	--adam-bot-text: var(--adam-text);
+}
+
+body.adam-theme-dark :where(.adam-bot__launcher, .adam-bot__header) {
+	color: var(--adam-on-section-feature);
+	background: var(--adam-section-feature);
+}
+
+body.adam-theme-dark .adam-bot__conversation {
+	background: var(--adam-section-muted);
+}
+
+body.adam-theme-dark .adam-bot__message--user .adam-bot__bubble {
+	color: var(--adam-on-primary);
+	background: var(--adam-primary);
+}
+
+@media (max-width: 48rem) {
+	body.page-id-48.adam-theme-dark .entry-content > .wp-block-group.has-background > :where(.wp-block-group, .wp-block-themeisle-blocks-advanced-columns),
+	body.page-id-58.adam-theme-dark .entry-content > .wp-block-themeisle-blocks-advanced-columns,
+	body:is(.page-id-134, .page-id-580, .page-id-594, .page-id-596).adam-theme-dark .entry-content > .wp-block-group {
+		padding: var(--adam-space-5);
+	}
+
+	body.page-id-58.adam-theme-dark .entry-content > .wp-block-themeisle-blocks-advanced-columns .wp-block-themeisle-blocks-advanced-column {
+		padding: var(--adam-space-5);
+	}
+}

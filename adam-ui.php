@@ -3,7 +3,7 @@
  * Plugin Name:       ADAM UI
  * Plugin URI:        https://github.com/Gwazyjustcause/adam-ui
  * Description:       Shared UI framework, theme manager and design system for the ADAM ecosystem.
- * Version:           1.0.1
+ * Version:           1.1.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            ADAM
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ADAM_UI_VERSION', '1.0.1' );
+define( 'ADAM_UI_VERSION', '1.1.0' );
 define( 'ADAM_UI_FILE', __FILE__ );
 define( 'ADAM_UI_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ADAM_UI_URL', plugin_dir_url( __FILE__ ) );
