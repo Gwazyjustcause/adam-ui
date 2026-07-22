@@ -2,7 +2,7 @@
 /** Phase 6 service contract smoke test. */
 
 define( 'ABSPATH', __DIR__ . '/' );
-define( 'ADAM_UI_VERSION', '2.2.0' );
+define( 'ADAM_UI_VERSION', '3.0.0' );
 define( 'ADAM_UI_URL', 'https://example.test/adam-ui/' );
 
 $test_options = array();
@@ -63,24 +63,30 @@ $plugins  = new ADAM_UI_Plugin_Registry();
 
 $repository->ensure_storage();
 assert_contract( isset( $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ]['themes']['adam-night'] ), 'built-in Night preset is persisted' );
+assert_contract( ! isset( $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ]['themes']['adam-light'] ), 'ADAM UI must not create a Light preset' );
 assert_contract( isset( $repository->schema()['adam-card-radius'] ), 'component token schema is available' );
 assert_contract( false !== strpos( $repository->generated_css(), 'body.adam-theme-dark' ), 'saved tokens generate scoped runtime CSS' );
-assert_contract( '#416900' === $repository->token( 'adam-btn-primary-bg', 'light' ), 'component token API returns the active Light value' );
+assert_contract( false === strpos( $repository->generated_css(), 'adam-theme-light' ), 'runtime CSS must contain Night overrides only' );
+assert_contract( array() === $repository->tokens( 'light' ), 'Light mode must not expose an ADAM palette' );
+assert_contract( '#9bc85a' === $repository->token( 'adam-btn-primary-bg', 'dark' ), 'component token API returns the active Night value' );
 assert_contract( isset( $repository->schema()['adam-header-bg'], $repository->schema()['adam-footer-bg'], $repository->schema()['adam-section-overlay-bg'], $repository->schema()['adam-btn-outline-hover-border'] ), 'component-oriented editor schema is complete' );
 
 $stored = $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ];
-$stored['themes']['adam-light']['tokens']['adam-header-bg'] = '#000';
-$stored['themes']['adam-light']['tokens']['adam-footer-bg'] = 'rgb(255 255 255 / 85%)';
-$stored['themes']['adam-light']['tokens']['adam-section-overlay-bg'] = 'hsl(120 20% 10% / 0.8)';
-$stored['themes']['adam-light']['tokens']['adam-header-logo-bg'] = 'transparent';
-$stored['themes']['adam-light']['tokens']['adam-card-bg'] = '#FFFFFF';
+$stored['themes']['adam-night']['tokens']['adam-header-bg'] = '#000';
+$stored['themes']['adam-night']['tokens']['adam-header-nav-bg'] = '#777777';
+$stored['themes']['adam-night']['tokens']['adam-footer-bg'] = 'rgb(255 255 255 / 85%)';
+$stored['themes']['adam-night']['tokens']['adam-section-overlay-bg'] = 'hsl(120 20% 10% / 0.8)';
+$stored['themes']['adam-night']['tokens']['adam-header-logo-bg'] = 'transparent';
+$stored['themes']['adam-night']['tokens']['adam-card-bg'] = '#FFFFFF';
 $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ] = $stored;
 $repository = new ADAM_UI_Theme_Repository();
-assert_contract( '#000' === $repository->token( 'adam-header-bg', 'light' ), 'three-digit HEX colours are accepted' );
-assert_contract( 'rgb(255 255 255 / 85%)' === $repository->token( 'adam-footer-bg', 'light' ), 'modern RGB colours are accepted' );
-assert_contract( 'hsl(120 20% 10% / 0.8)' === $repository->token( 'adam-section-overlay-bg', 'light' ), 'HSL alpha colours are accepted' );
-assert_contract( 'transparent' === $repository->token( 'adam-header-logo-bg', 'light' ), 'transparent colours are accepted' );
-assert_contract( '#FFFFFF' === $repository->token( 'adam-card-bg', 'light' ), 'pure white is accepted without palette restrictions' );
+assert_contract( '#000' === $repository->token( 'adam-header-bg', 'dark' ), 'three-digit HEX colours are accepted' );
+assert_contract( '#000000' === $repository->token( 'adam-header-nav-text', 'dark' ), 'mid-tone Night surfaces receive a WCAG-safe fallback foreground' );
+assert_contract( 'rgb(255 255 255 / 85%)' === $repository->token( 'adam-footer-bg', 'dark' ), 'modern RGB colours are accepted' );
+assert_contract( 'hsl(120 20% 10% / 0.8)' === $repository->token( 'adam-section-overlay-bg', 'dark' ), 'HSL alpha colours are accepted' );
+assert_contract( 'transparent' === $repository->token( 'adam-header-logo-bg', 'dark' ), 'transparent colours are accepted' );
+assert_contract( '#FFFFFF' === $repository->token( 'adam-card-bg', 'dark' ), 'pure white is accepted without palette restrictions' );
+assert_contract( '#172107' === $repository->token( 'adam-card-text', 'dark' ), 'light Night surfaces automatically receive readable dark text' );
 
 $test_options[ 'adam_' . 'inter' . 'face_settings' ] = array( 'default_theme' => 'dark' );
 $settings->migrate_saved_settings();
@@ -109,9 +115,14 @@ assert_contract( 'light' === $themes->get_fallback_theme_mode(), 'disabled syste
 assert_contract( in_array( 'system', $themes->get_supported_modes(), true ), 'System mode remains available to every visitor' );
 assert_contract( 'localStorage' === $settings->get_storage_config()['adapter'], 'visitor storage remains client-side' );
 
+$script_config = $themes->get_script_config();
+assert_contract( array( 'dark' => 'adam-theme-dark' ) === $script_config['classMap'], 'only Night owns a runtime theme class' );
+assert_contract( ! isset( $script_config['tokens']['light'] ), 'Light tokens must not be sent to the browser' );
+
 $assets->enqueue_core();
 assert_contract( in_array( 'adam-ui', $test_styles['enqueued'], true ), 'core style enqueued' );
 assert_contract( array( 'ct-main-styles' ) === $test_styles['dependencies']['adam-ui-variables'], 'ADAM styles load after Blocksy when its handle is registered' );
+assert_contract( array( 'adam-ui-variables' ) === $test_styles['dependencies']['adam-ui'], 'core CSS depends only on the Blocksy bridge, not separate Light/Dark stylesheets' );
 assert_contract( ! in_array( 'adam-ui-utilities', $test_styles['enqueued'], true ), 'component bundle omitted from core' );
 $assets->enqueue_component( 'table' );
 assert_contract( in_array( 'adam-ui-utilities', $test_styles['enqueued'], true ), 'component bundle requested centrally' );
@@ -126,7 +137,7 @@ assert_contract( 1 === count( $plugins->get_warnings() ), 'incompatible versions
 $test_admin = true;
 $themes->enable_admin_theme();
 $classes = $themes->add_admin_body_class( 'wp-admin adam-theme-light adam-theme-dark adam-transitions-enabled' );
-assert_contract( 1 === preg_match_all( '/adam-theme-(light|dark)/', $classes ), 'admin receives exactly one theme class' );
+assert_contract( 0 === preg_match_all( '/adam-theme-(light|dark)/', $classes ), 'Light mode removes every ADAM theme override class' );
 assert_contract( false !== strpos( $classes, 'adam-transitions-disabled' ), 'transition setting reaches server body class' );
 
 echo "PASS: Phase 6 production service contract.\n";

@@ -54,7 +54,7 @@ Object.defineProperty(window, 'adamUIConfig', {
 	writable: true,
 	value: {
 		mode: 'light', fallbackMode: 'light', modes: ['light', 'dark', 'system'],
-		resolvedThemes: ['light', 'dark'], classMap: { light: 'adam-theme-light', dark: 'adam-theme-dark' },
+		resolvedThemes: ['light', 'dark'], classMap: { dark: 'adam-theme-dark' },
 		systemMode: 'system', systemQuery: '(prefers-color-scheme: dark)', systemDark: 'dark', systemFallback: 'light',
 		storage: { adapter: 'localStorage', key: 'adam-theme' },
 	},
@@ -72,5 +72,12 @@ listeners.change();
 assert(document.body.classList.contains('adam-theme-dark'), 'Night selection must update the body class.');
 assert(document.body.dataset.adamTheme === 'dark', 'Night selection must update the body data attribute.');
 assert(stored.get('adam-theme') === 'dark', 'Night selection must persist in localStorage.');
+
+select.value = 'light';
+listeners.change();
+assert(!document.body.classList.contains('adam-theme-dark'), 'Light selection must disable Night overrides.');
+assert(!document.body.classList.contains('adam-theme-light'), 'Light selection must not add an ADAM replacement theme class.');
+assert(document.body.dataset.adamTheme === 'light', 'Light pass-through state must remain observable through data attributes.');
+assert(stored.get('adam-theme') === 'light', 'Light selection must persist in localStorage.');
 
 console.log('PASS: Theme controller runtime contract.');

@@ -550,7 +550,7 @@
 	outline-color: var(--adam-form-focus);
 }
 .adam-form .adam-button,
-.adam-field .adam-button { background-color: var(--adam-form-button); }
+.adam-field .adam-button { color: var(--adam-form-button-text); background-color: var(--adam-form-button); }
 
 .adam-table { background-color: var(--adam-table-row-bg); }
 .adam-table :where(th, td) { border-color: var(--adam-table-border); }

@@ -135,9 +135,8 @@ final class ADAM_UI_Theme_Manager {
 	public function add_admin_body_class( $classes ) {
 		$class_list    = preg_split( '/\s+/', trim( (string) $classes ) );
 		$class_list    = is_array( $class_list ) ? $class_list : array();
-		$theme_classes = array_map( array( $this, 'get_body_class' ), $this->get_resolved_themes() );
-		$class_list    = array_diff( $class_list, $theme_classes, array( 'adam-transitions-enabled', 'adam-transitions-disabled', '' ) );
-		$class_list[]  = $this->get_body_class( $this->get_resolved_theme() );
+		$class_list    = array_diff( $class_list, array( 'adam-theme-light', 'adam-theme-dark', 'adam-transitions-enabled', 'adam-transitions-disabled', '' ) );
+		if ( self::MODE_DARK === $this->get_resolved_theme() ) { $class_list[] = $this->get_body_class( self::MODE_DARK ); }
 		$class_list[]  = $this->get_transition_class();
 
 		return implode( ' ', array_values( array_unique( $class_list ) ) );
@@ -248,11 +247,7 @@ final class ADAM_UI_Theme_Manager {
 	 * @return string
 	 */
 	public function get_body_class( $theme ) {
-		if ( ! in_array( $theme, $this->get_resolved_themes(), true ) ) {
-			$theme = $this->get_resolved_theme( $theme );
-		}
-
-		return 'adam-theme-' . sanitize_html_class( $theme );
+		return self::MODE_DARK === $this->get_resolved_theme( $theme ) ? 'adam-theme-dark' : '';
 	}
 
 	/**
@@ -262,9 +257,8 @@ final class ADAM_UI_Theme_Manager {
 	 * @return string[]
 	 */
 	public function add_body_class( $classes ) {
-		$theme_classes = array_map( array( $this, 'get_body_class' ), $this->get_resolved_themes() );
-		$classes       = array_diff( $classes, $theme_classes, array( 'adam-transitions-enabled', 'adam-transitions-disabled' ) );
-		$classes[]     = $this->get_body_class( $this->get_resolved_theme() );
+		$classes       = array_diff( $classes, array( 'adam-theme-light', 'adam-theme-dark', 'adam-transitions-enabled', 'adam-transitions-disabled' ) );
+		if ( self::MODE_DARK === $this->get_resolved_theme() ) { $classes[] = 'adam-theme-dark'; }
 		$classes[]     = $this->get_transition_class();
 
 		return array_values( array_unique( $classes ) );
@@ -376,11 +370,7 @@ final class ADAM_UI_Theme_Manager {
 	 * @return array<string, mixed>
 	 */
 	public function get_script_config() {
-		$class_map = array();
-
-		foreach ( $this->get_resolved_themes() as $theme ) {
-			$class_map[ $theme ] = $this->get_body_class( $theme );
-		}
+		$class_map = array( self::MODE_DARK => 'adam-theme-dark' );
 
 		return array(
 			'mode'           => $this->get_theme_mode(),
@@ -396,8 +386,8 @@ final class ADAM_UI_Theme_Manager {
 			'themeSource'    => $this->get_theme_source(),
 			'transitions'    => $this->settings->is_enabled( 'enable_transitions' ),
 			'components'     => $this->assets->get_loaded_components(),
-			'presets'        => array( 'light' => $this->repository->active_id( 'light' ), 'dark' => $this->repository->active_id( 'dark' ) ),
-			'tokens'         => array( 'light' => $this->repository->tokens( 'light' ), 'dark' => $this->repository->tokens( 'dark' ) ),
+			'presets'        => array( 'dark' => $this->repository->active_id( 'dark' ) ),
+			'tokens'         => array( 'dark' => $this->repository->tokens( 'dark' ) ),
 		);
 	}
 

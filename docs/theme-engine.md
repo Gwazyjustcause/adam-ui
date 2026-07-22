@@ -1,22 +1,28 @@
-# ADAM UI theme engine
+# ADAM UI Night Theme engine
 
-ADAM UI stores theme definitions in the `adam_ui_themes` WordPress option. The bundled **ADAM Light**, **ADAM Night**, and **High Contrast** presets provide safe defaults; bundled presets cannot be deleted. Administrators can edit tokens under **ADAM UI → Theme Editor**, duplicate a preset, rename or delete custom themes, and import/export complete JSON theme packages.
+ADAM UI stores Night presets in the `adam_ui_themes` WordPress option. **ADAM Night** is the safe built-in default and cannot be deleted. Administrators can edit Night overrides under **ADAM UI → Theme Editor**, duplicate a preset, rename or delete custom Night presets, and import/export complete JSON packages. Legacy Light theme data remains stored for backwards compatibility but is no longer exposed or emitted.
 
-The editor is driven by one PHP schema, but its normal interface intentionally exposes only six approachable component areas: Header, Sections, Cards, Buttons, Forms, and Footer. A seventh Advanced destination retains every detailed Hero, table, notification, text, border, hover, and state control. Administrators work with familiar interface parts while ADAM UI maps every field to the existing stable CSS custom properties. Saving a theme validates every colour and component value, then the Theme Manager emits scoped CSS variables for `.adam-theme-light` and `.adam-theme-dark`. The existing Light, Night, and System selector remains the runtime mode controller.
+The editor exposes six approachable component areas: Header, Sections, Cards, Buttons, Forms, and Footer. Advanced retains detailed Night surface, border, hover, and state controls. Foreground colours are derived automatically from component backgrounds, so administrators do not maintain separate text colours.
 
-The simplified and Advanced controls are two views of the same stored value. They remain synchronised in the editor, so using the approachable controls never discards a detailed setting and older themes require no data migration.
+Light, Night, and System remain preference modes:
 
-Every component panel includes a compact live example. A change is applied immediately to that panel and to the complete page preview without saving or refreshing. The native colour control is paired with a free-form CSS colour field so it supports short and long HEX, RGB/RGBA, HSL/HSLA, named colours, and `transparent`; the server validates the value again before storing it.
+- Light removes the Night override class and renders the normal Blocksy website.
+- Night adds `adam-theme-dark` and activates saved Night overrides.
+- System follows `prefers-color-scheme` and resolves to either state.
+
+ADAM UI does not generate a Light palette or a Light stylesheet. `variables.css` provides only structural tokens and a neutral bridge to Blocksy/browser values. `ui.css` is scoped exclusively to Night mode.
+
+Every component panel includes a compact live example. Changes update the preview immediately. Colour fields support short and long HEX, RGB/RGBA, HSL/HSLA, named colours, and `transparent`; values are validated again before storage.
 
 ## PHP API
 
 ```php
-$all_light_tokens = adam_tokens( 'light' );
-$surface = adam_token( 'adam-surface', '#fff', 'light' );
+$night_tokens = adam_tokens();
+$surface = adam_token( 'adam-card-bg', '#1a2019' );
 $repository = adam_ui_themes();
 ```
 
-Ecosystem plugins should consume component variables such as `--adam-header-bg`, `--adam-footer-bg`, `--adam-card-bg`, `--adam-btn-primary-bg`, `--adam-form-border`, and `--adam-table-row-bg`. Stable semantic aliases such as `--adam-bg`, `--adam-surface`, `--adam-text`, `--adam-primary`, and `--adam-border` remain available for incremental migration. Plugins must not ship an independent colour palette when ADAM UI is active.
+Ecosystem plugins should consume component variables such as `--adam-header-bg`, `--adam-footer-bg`, `--adam-card-bg`, `--adam-btn-primary-bg`, `--adam-form-border`, and `--adam-table-row-bg`. In Light mode the interoperability bridge resolves through Blocksy or browser values; in Night mode saved ADAM overrides replace them. Plugins must not ship an independent Night palette.
 
 ## Component token examples
 
@@ -34,21 +40,20 @@ Ecosystem plugins should consume component variables such as `--adam-header-bg`,
 }
 ```
 
-Reusable section modifiers map to the five editor roles: `adam-section--base` (Standard), `--muted`/`--soft` (Alternate), `--pale`/`--feature` (Feature Strip), `--accent` (CTA), and `--deep` (Image Overlay).
+Reusable section modifiers map to Standard, Alternate, Feature Strip, CTA, and Image Overlay roles. Their foreground tokens are calculated from the selected Night backgrounds.
 
 ## JavaScript API
 
 ```js
-ADAMUI.getToken('adam-surface');
-ADAMUI.getTokens();
+ADAMUI.setTheme('light'); // removes Night overrides
+ADAMUI.setTheme('dark');  // enables Night overrides
+ADAMUI.setTheme('system');
+ADAMUI.getTheme();
+ADAMUI.getResolvedTheme();
 ```
 
-The existing `setTheme()`, `getTheme()`, `getResolvedTheme()`, and `adam:themeChanged` contract is unchanged.
-
-## Theme Inspector
-
-Administrators can opt in under **ADAM UI → Settings**. A small “Inspect ADAM UI” control then identifies the inferred surface, background, text, border, and radius token beneath the pointer. It is not loaded for ordinary visitors or when disabled.
+The `adam:themeChanged` event contract is unchanged.
 
 ## JSON format
 
-Exports contain the format name, schema version, metadata, and every token—including colours, typography, spacing, radii, shadows, and component dimensions. Imports are validated against the installed schema and always create a custom theme.
+Exports contain the format name, schema version, metadata, and every Night token. Imports are validated against the installed schema and always become custom Night presets.

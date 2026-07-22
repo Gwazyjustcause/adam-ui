@@ -108,7 +108,7 @@
 .adam-mini-form input { padding: var(--adam-space-2); color: var(--adam-form-input-text); background: var(--adam-form-input-bg); border: 1px solid var(--adam-form-border); border-radius: var(--adam-input-radius); }
 .adam-mini-form input::placeholder { color: var(--adam-form-placeholder); }
 .adam-mini-form input:focus { border-color: var(--adam-form-focus); outline: 2px solid var(--adam-form-focus); }
-.adam-mini-form button { justify-self: start; padding: var(--adam-space-2) var(--adam-space-3); color: var(--adam-btn-primary-text); background: var(--adam-form-button); border-radius: var(--adam-button-radius); }
+.adam-mini-form button { justify-self: start; padding: var(--adam-space-2) var(--adam-space-3); color: var(--adam-form-button-text); background: var(--adam-form-button); border-radius: var(--adam-button-radius); }
 
 .adam-mini-table { width: 100%; border-collapse: collapse; }
 .adam-mini-table th,.adam-mini-table td { padding: var(--adam-space-2); border: 1px solid var(--adam-table-border); text-align: left; }
@@ -272,3 +272,11 @@
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
+
+/* The complete preview uses Night component tokens directly. */
+.adam-preview-nav { color: var(--adam-header-nav-text); background: var(--adam-header-bg); border-color: var(--adam-header-border); }
+.adam-preview-content { background: var(--adam-section-standard-bg); }
+.adam-preview-card { color: var(--adam-card-text); background: var(--adam-card-bg); border-color: var(--adam-card-border); }
+.adam-preview-card h3 { color: var(--adam-card-heading); }
+.adam-preview-card input { color: var(--adam-form-input-text); background: var(--adam-form-input-bg); border-color: var(--adam-form-border); }
+.adam-preview-footer { color: var(--adam-footer-text); background: var(--adam-footer-bg); }

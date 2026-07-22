@@ -2,7 +2,7 @@
 
 ADAM UI is the visual source of truth for ADAM-owned frontend and WordPress administration screens. It does not style native WordPress, WooCommerce, Forminator, or other third-party admin pages. An ADAM plugin opts its own admin hook suffix into the theme with `adam_ui_enable_admin_theme()`. Production registration, assets, settings, persistence, events, and diagnostics are documented in [production-api.md](production-api.md).
 
-All components inherit Light, Night, and System mode through the `adam-theme-light` or `adam-theme-dark` body class. The stable API value for Night remains `dark`. Component CSS must use `--adam-*` tokens and must not contain its own colour palette.
+Components inherit the website's normal Blocksy appearance in Light mode. Night mode adds the `adam-theme-dark` body class and supplies ADAM override tokens; System resolves to either state. The stable API value for Night remains `dark`. Component CSS must use `--adam-*` tokens and must not contain its own Night palette.
 
 ## Adoption contract
 
@@ -68,7 +68,7 @@ The Theme Editor exposes tokens by component rather than by page. Prefer direct 
 
 - Colour: `--adam-bg`, `--adam-surface`, `--adam-surface-2`, `--adam-text`, semantic status tokens, borders, links, focus, overlays and shadows.
 - Section hierarchy: `--adam-section-canvas`, `--base`, `--muted`, `--soft`, `--pale`, `--feature`, `--accent`, and `--deep`, with matching `--adam-on-section-*` foregrounds. These roles preserve the Light Theme's page rhythm in the Night Theme instead of flattening every section to one dark surface.
-- Decorative surfaces: `--adam-section-gradient-feature`, `--adam-section-gradient-soft`, and `--adam-section-gradient-neutral` preserve Light Theme gradients while resolving to calm, solid semantic surfaces in the Night Theme.
+- Decorative surfaces: Night resolves `--adam-section-gradient-feature`, `--adam-section-gradient-soft`, and `--adam-section-gradient-neutral` to calm semantic surfaces. Light decorations remain entirely controlled by the website.
 - Spacing: `--adam-space-1` through `--adam-space-8`.
 - Typography: `--adam-font-family`, `--adam-font-size-xs` through `--adam-font-size-2xl`, weight and line-height tokens.
 - Shape: `--adam-radius-sm`, `--adam-radius`, `--adam-radius-lg`, `--adam-border-width`.

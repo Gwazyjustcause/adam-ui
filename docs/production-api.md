@@ -158,12 +158,11 @@ Diagnostics are read-only and require `manage_options`.
 
 ## File boundaries
 
-- `variables.css` â€” theme-independent design tokens.
-- `light.css` and `dark.css` â€” color-dependent tokens only.
-- `ui.css` â€” low-specificity theme integration.
-- `utilities.css` â€” lightweight layout utilities.
-- `components.css` â€” the reusable component library.
-- `theme-switcher.css` â€” the optional public selector.
-- `admin.css` â€” ADAM UI-owned settings and diagnostics only.
+- `variables.css` — structural tokens and a neutral bridge to Blocksy/browser values.
+- `ui.css` — Night-only integration scoped to `adam-theme-dark`.
+- `utilities.css` — lightweight layout utilities.
+- `components.css` — the reusable component library.
+- `theme-switcher.css` — the optional public selector.
+- `admin.css` — ADAM UI-owned settings and diagnostics only.
 
-Plugin stylesheets should contain domain layout and standalone token fallbacks, never an active competing palette.
+There is no ADAM Light stylesheet. Plugin stylesheets should contain domain layout and standalone token fallbacks, never an active competing Night palette.

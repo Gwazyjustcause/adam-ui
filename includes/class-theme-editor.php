@@ -18,9 +18,9 @@ final class ADAM_UI_Theme_Editor {
 
 	public function render() {
 		if ( ! current_user_can( 'manage_options' ) ) { wp_die( esc_html__( 'Permission denied.', 'adam-ui' ) ); }
-		$themes = $this->repository->themes();
-		$id = isset( $_GET['theme'] ) ? sanitize_key( wp_unslash( $_GET['theme'] ) ) : $this->repository->active_id( 'light' );
-		if ( ! isset( $themes[ $id ] ) ) { $id = 'adam-light'; }
+		$themes = $this->repository->night_themes();
+		$id = isset( $_GET['theme'] ) ? sanitize_key( wp_unslash( $_GET['theme'] ) ) : $this->repository->active_id( 'dark' );
+		if ( ! isset( $themes[ $id ] ) ) { $id = 'adam-night'; }
 		$theme = $themes[ $id ]; $schema = $this->repository->schema(); $sections = array();
 		foreach ( $schema as $key => $field ) { if ( ! empty( $field['editable'] ) ) { $sections[ $field['section'] ][ $key ] = $field; } }
 		$section_order = array_flip( array( 'Header', 'Hero', 'Sections', 'Cards', 'Buttons', 'Forms', 'Tables', 'Notifications', 'Footer' ) );
@@ -32,17 +32,17 @@ final class ADAM_UI_Theme_Editor {
 		);
 		$primary_groups = $this->get_primary_groups();
 		?>
-		<div class="wrap adam-admin-page adam-theme-editor" data-adam-theme-editor>
-			<header class="adam-page-header"><div><h1><?php esc_html_e( 'Theme Editor', 'adam-ui' ); ?></h1><p><?php esc_html_e( 'Configure the shared visual language used by every ADAM plugin.', 'adam-ui' ); ?></p></div></header>
+		<div class="wrap adam-admin-page adam-theme-editor" data-adam-theme-editor data-adam-contrast-map="<?php echo esc_attr( wp_json_encode( $this->repository->contrast_map() ) ); ?>">
+			<header class="adam-page-header"><div><h1><?php esc_html_e( 'Night Theme Editor', 'adam-ui' ); ?></h1><p><?php esc_html_e( 'Configure the Night overrides. Light mode always uses the website\'s normal Blocksy appearance.', 'adam-ui' ); ?></p></div></header>
 			<div class="adam-theme-editor__toolbar adam-card">
-				<label for="adam-theme-preset"><strong><?php esc_html_e( 'Theme', 'adam-ui' ); ?></strong></label>
+				<label for="adam-theme-preset"><strong><?php esc_html_e( 'Night preset', 'adam-ui' ); ?></strong></label>
 				<select id="adam-theme-preset" class="adam-select" onchange="location.href=this.value"><?php foreach ( $themes as $theme_id => $item ) : ?><option value="<?php echo esc_url( add_query_arg( array( 'page'=>'adam-ui-theme-editor','theme'=>$theme_id ), admin_url( 'admin.php' ) ) ); ?>" <?php selected( $id, $theme_id ); ?>><?php echo esc_html( $item['name'] ); ?></option><?php endforeach; ?></select>
 				<a class="adam-button adam-button-secondary" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'action'=>'adam_ui_export_theme','theme'=>$id ), admin_url( 'admin-post.php' ) ), 'adam_ui_export_theme' ) ); ?>"><?php esc_html_e( 'Export JSON', 'adam-ui' ); ?></a>
 			</div>
 			<div class="adam-theme-editor__split">
 			<form class="adam-theme-editor__settings" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="adam_ui_theme_action"><input type="hidden" name="theme_operation" value="save"><input type="hidden" name="theme_id" value="<?php echo esc_attr( $id ); ?>"><?php wp_nonce_field( 'adam_ui_theme_action' ); ?>
-				<div class="adam-card adam-theme-editor__identity"><label><?php esc_html_e( 'Name', 'adam-ui' ); ?><input class="adam-input" name="theme_name" value="<?php echo esc_attr( $theme['name'] ); ?>" <?php disabled( ! empty( $theme['builtin'] ) ); ?>></label><label><?php esc_html_e( 'Theme family', 'adam-ui' ); ?><select class="adam-select" name="theme_mode"><option value="light" <?php selected($theme['mode'],'light'); ?>><?php esc_html_e('Light','adam-ui'); ?></option><option value="dark" <?php selected($theme['mode'],'dark'); ?>><?php esc_html_e('Night','adam-ui'); ?></option></select></label><label><?php esc_html_e( 'Use for selector mode', 'adam-ui' ); ?><select class="adam-select" name="active_slot"><option value=""><?php esc_html_e('Do not change','adam-ui'); ?></option><option value="light"><?php esc_html_e('Light','adam-ui'); ?></option><option value="dark"><?php esc_html_e('Night','adam-ui'); ?></option></select></label></div>
+				<div class="adam-card adam-theme-editor__identity"><label><?php esc_html_e( 'Night preset name', 'adam-ui' ); ?><input class="adam-input" name="theme_name" value="<?php echo esc_attr( $theme['name'] ); ?>" <?php disabled( ! empty( $theme['builtin'] ) ); ?>></label><p><?php esc_html_e( 'Saving this preset makes it the active Night Theme. Readable foreground colours are calculated automatically from each surface.', 'adam-ui' ); ?></p></div>
 				<div class="adam-theme-editor__workspace">
 					<nav class="adam-theme-editor__nav" aria-label="<?php echo esc_attr__( 'Theme components', 'adam-ui' ); ?>" role="tablist" aria-orientation="vertical">
 						<?php $nav_index = 0; foreach ( array_keys( $primary_groups ) as $group_id ) : $is_active = 0 === $nav_index++; ?>
@@ -91,7 +91,7 @@ final class ADAM_UI_Theme_Editor {
 				'sets'        => array(
 					__( 'Background', 'adam-ui' )        => array( 'adam-header-bg' => __( 'Header background', 'adam-ui' ) ),
 					__( 'Navigation accent', 'adam-ui' ) => array( 'adam-header-active-bg' => __( 'Active item accent', 'adam-ui' ) ),
-					__( 'Style', 'adam-ui' )             => array( 'adam-header-nav-text' => __( 'Navigation text', 'adam-ui' ), 'adam-header-border' => __( 'Bottom divider', 'adam-ui' ) ),
+					__( 'Style', 'adam-ui' )             => array( 'adam-header-border' => __( 'Bottom divider', 'adam-ui' ) ),
 				),
 			),
 			'sections' => array(
@@ -99,7 +99,7 @@ final class ADAM_UI_Theme_Editor {
 				'description' => __( 'Control the major surfaces that create hierarchy across pages.', 'adam-ui' ),
 				'previews'    => array( 'Hero', 'Sections' ),
 				'sets'        => array(
-					__( 'Hero', 'adam-ui' )              => array( 'adam-hero-bg' => __( 'Hero background', 'adam-ui' ), 'adam-hero-heading' => __( 'Hero heading', 'adam-ui' ) ),
+					__( 'Hero', 'adam-ui' )              => array( 'adam-hero-bg' => __( 'Hero background', 'adam-ui' ) ),
 					__( 'Content', 'adam-ui' )           => array( 'adam-section-standard-bg' => __( 'Standard section', 'adam-ui' ), 'adam-section-alternate-bg' => __( 'Alternate section', 'adam-ui' ) ),
 					__( 'Feature areas', 'adam-ui' )     => array( 'adam-section-feature-bg' => __( 'Feature strip', 'adam-ui' ), 'adam-section-cta-bg' => __( 'Call to action', 'adam-ui' ) ),
 				),
@@ -138,7 +138,7 @@ final class ADAM_UI_Theme_Editor {
 				'previews'    => array( 'Footer' ),
 				'sets'        => array(
 					__( 'Background', 'adam-ui' )     => array( 'adam-footer-bg' => __( 'Footer background', 'adam-ui' ) ),
-					__( 'Style', 'adam-ui' )          => array( 'adam-footer-heading' => __( 'Heading', 'adam-ui' ), 'adam-footer-link' => __( 'Link accent', 'adam-ui' ) ),
+					__( 'Style', 'adam-ui' )          => array( 'adam-footer-divider' => __( 'Content divider', 'adam-ui' ) ),
 					__( 'Theme switcher', 'adam-ui' ) => array( 'adam-footer-switcher-bg' => __( 'Switcher background', 'adam-ui' ) ),
 				),
 			),

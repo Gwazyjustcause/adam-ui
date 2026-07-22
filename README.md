@@ -1,6 +1,6 @@
 # ADAM UI
 
-ADAM UI is the shared UI framework, theme manager, and design system for the ADAM ecosystem.
+ADAM UI is the shared UI framework and Night Theme override system for the ADAM ecosystem. Light mode remains the website's native Blocksy appearance.
 
 ## Installation
 

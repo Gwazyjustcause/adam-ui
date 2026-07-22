@@ -7,8 +7,49 @@
 		return;
 	}
 
+	let contrastMap = {};
+	try {
+		contrastMap = JSON.parse( root.dataset.adamContrastMap || '{}' );
+	} catch ( error ) {
+		contrastMap = {};
+	}
+
 	function isValidColor( value ) {
 		return Boolean( value ) && window.CSS && window.CSS.supports( 'color', value );
+	}
+
+	function readableText( color ) {
+		const probe = document.createElement( 'span' );
+		probe.style.color = color;
+		probe.hidden = true;
+		root.appendChild( probe );
+		const resolved = window.getComputedStyle( probe ).color;
+		probe.remove();
+		const channels = resolved.match( /[\d.]+/g );
+		if ( ! channels || channels.length < 3 ) {
+			return '#f2f4ee';
+		}
+		const luminance = [ 0.2126, 0.7152, 0.0722 ].reduce( ( total, weight, index ) => {
+			let channel = Number( channels[ index ] ) / 255;
+			channel = channel <= 0.04045 ? channel / 12.92 : Math.pow( ( channel + 0.055 ) / 1.055, 2.4 );
+			return total + ( channel * weight );
+		}, 0 );
+		const lightRatio = ( Math.max( 0.904, luminance ) + 0.05 ) / ( Math.min( 0.904, luminance ) + 0.05 );
+		const darkRatio = ( Math.max( 0.014, luminance ) + 0.05 ) / ( Math.min( 0.014, luminance ) + 0.05 );
+		if ( Math.max( lightRatio, darkRatio ) < 4.5 ) {
+			return luminance <= 0.179 ? '#ffffff' : '#000000';
+		}
+		return lightRatio >= darkRatio ? '#f2f4ee' : '#172107';
+	}
+
+	function applyAutomaticContrast( token, background ) {
+		const name = token.replace( /^--/, '' );
+		const foregrounds = contrastMap[ name ] || [];
+		const contrast = readableText( background );
+		foregrounds.forEach( ( foreground ) => root.style.setProperty( '--' + foreground, contrast ) );
+		if ( 'adam-section-standard-bg' === name ) {
+			root.style.setProperty( '--adam-form-label', contrast );
+		}
 	}
 
 	function syncTokenControls( source, value ) {
@@ -61,6 +102,7 @@
 		}
 
 		root.style.setProperty( input.dataset.adamToken, value );
+		applyAutomaticContrast( input.dataset.adamToken, value );
 		const output = input.parentNode.querySelector( 'output' );
 		if ( output ) {
 			output.value = value;

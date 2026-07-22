@@ -117,7 +117,8 @@
 	}
 
 	function updateBodyClass( theme, mode ) {
-		Object.values( classMap ).forEach( ( className ) => {
+		const removableClasses = Array.from( new Set( Object.values( classMap ).concat( [ 'adam-theme-light' ] ) ) );
+		removableClasses.forEach( ( className ) => {
 			document.documentElement.classList.remove( className );
 		} );
 
@@ -129,7 +130,7 @@
 			return;
 		}
 
-		Object.values( classMap ).forEach( ( className ) => {
+		removableClasses.forEach( ( className ) => {
 			document.body.classList.remove( className );
 		} );
 
@@ -142,7 +143,7 @@
 
 		// The root class is only an early-paint bridge. Once body exists, it is
 		// the single source of truth used by ADAM styles and integrations.
-		Object.values( classMap ).forEach( ( className ) => {
+		removableClasses.forEach( ( className ) => {
 			document.documentElement.classList.remove( className );
 		} );
 	}

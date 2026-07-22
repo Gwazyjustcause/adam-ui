@@ -3,7 +3,7 @@
  * Plugin Name:       ADAM UI
  * Plugin URI:        https://github.com/Gwazyjustcause/adam-ui
  * Description:       Shared UI framework, theme manager and design system for the ADAM ecosystem.
- * Version:           2.2.0
+ * Version:           3.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            ADAM
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ADAM_UI_VERSION', '2.2.0' );
+define( 'ADAM_UI_VERSION', '3.0.0' );
 define( 'ADAM_UI_FILE', __FILE__ );
 define( 'ADAM_UI_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ADAM_UI_URL', plugin_dir_url( __FILE__ ) );
@@ -177,11 +177,11 @@ function adam_theme() {
 /** Returns the persistent theme repository. */
 function adam_ui_themes() { return adam_ui()->get_theme_repository(); }
 
-/** Returns all active design tokens for a resolved theme. */
-function adam_tokens( $mode = 'light' ) { return adam_ui_themes()->tokens( $mode ); }
+/** Returns active Night design tokens. Light mode intentionally has no ADAM palette. */
+function adam_tokens( $mode = 'dark' ) { return adam_ui_themes()->tokens( $mode ); }
 
 /** Returns one stable design token value. */
-function adam_token( $name, $fallback = '', $mode = 'light' ) { return adam_ui_themes()->token( $name, $mode, $fallback ); }
+function adam_token( $name, $fallback = '', $mode = 'dark' ) { return adam_ui_themes()->token( $name, $mode, $fallback ); }
 
 /**
  * Returns the central asset registry or a registered asset URL.
