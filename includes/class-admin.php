@@ -100,6 +100,7 @@ final class ADAM_UI_Admin {
 					<?php $this->checkbox_field( $name, 'allow_user_preferences', __( 'Save logged-in user preferences', 'adam-ui' ), __( 'Stores the selected mode in WordPress user meta.', 'adam-ui' ), $values ); ?>
 					<?php $this->checkbox_field( $name, 'enable_system_mode', __( 'Enable System mode', 'adam-ui' ), __( 'Follows the operating-system color preference when no explicit mode overrides it.', 'adam-ui' ), $values ); ?>
 					<?php $this->checkbox_field( $name, 'enable_transitions', __( 'Enable transition animations', 'adam-ui' ), __( 'Uses the shared short transition tokens; reduced-motion preferences are always respected.', 'adam-ui' ), $values ); ?>
+					<?php $this->checkbox_field( $name, 'enable_inspector', __( 'Enable Theme Inspector', 'adam-ui' ), __( 'Shows token information on hover for administrators on ADAM-themed pages.', 'adam-ui' ), $values ); ?>
 				</div></section>
 				<?php submit_button( __( 'Save settings', 'adam-ui' ), 'primary adam-button adam-button-primary' ); ?>
 			</form>

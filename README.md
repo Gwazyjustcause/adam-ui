@@ -17,4 +17,4 @@ The plugin does not style native WordPress or third-party administration pages. 
 - Asset handles: `adam-ui-*`
 - Theme event: `adam:themeChanged`
 
-See [Component library](docs/components.md) and [Production API](docs/production-api.md) for the supported tokens, components, helpers, asset loading, plugin registration, events, and compatibility contract.
+See [Component library](docs/components.md), [Production API](docs/production-api.md), and [Theme engine](docs/theme-engine.md) for the supported tokens, visual editor, presets, import/export, inspector, components, helpers, asset loading, events, and compatibility contract.

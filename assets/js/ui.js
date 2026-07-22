@@ -249,6 +249,12 @@
 		getMode: () => currentMode,
 		getResolvedTheme: () => resolveTheme( currentMode ),
 		getTheme: () => currentMode,
+		getToken( name, theme ) {
+			const tokens = config.tokens || {};
+			const selected = tokens[ theme || resolveTheme( currentMode ) ] || {};
+			return selected[ String( name ).replace( /^--/, '' ) ];
+		},
+		getTokens: ( theme ) => Object.assign( {}, ( config.tokens || {} )[ theme || resolveTheme( currentMode ) ] || {} ),
 		off,
 		on,
 		registerStorageAdapter( name, adapter ) {
@@ -287,4 +293,3 @@
 		init();
 	}
 } )( window, document );
-

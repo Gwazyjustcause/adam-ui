@@ -3,7 +3,7 @@
  * Plugin Name:       ADAM UI
  * Plugin URI:        https://github.com/Gwazyjustcause/adam-ui
  * Description:       Shared UI framework, theme manager and design system for the ADAM ecosystem.
- * Version:           1.1.0
+ * Version:           2.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            ADAM
@@ -16,17 +16,19 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ADAM_UI_VERSION', '1.1.0' );
+define( 'ADAM_UI_VERSION', '2.0.0' );
 define( 'ADAM_UI_FILE', __FILE__ );
 define( 'ADAM_UI_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ADAM_UI_URL', plugin_dir_url( __FILE__ ) );
 
 require_once ADAM_UI_PATH . 'includes/class-settings.php';
+require_once ADAM_UI_PATH . 'includes/class-theme-repository.php';
 require_once ADAM_UI_PATH . 'includes/class-asset-registry.php';
 require_once ADAM_UI_PATH . 'includes/class-plugin-registry.php';
 require_once ADAM_UI_PATH . 'includes/class-theme-manager.php';
 require_once ADAM_UI_PATH . 'includes/class-components.php';
 require_once ADAM_UI_PATH . 'includes/class-admin.php';
+require_once ADAM_UI_PATH . 'includes/class-theme-editor.php';
 require_once ADAM_UI_PATH . 'includes/class-ui.php';
 
 /**
@@ -171,6 +173,15 @@ function adam_ui_confirmation_dialog( $message, $args = array() ) {
 function adam_theme() {
 	return adam_ui_get_theme_manager();
 }
+
+/** Returns the persistent theme repository. */
+function adam_ui_themes() { return adam_ui()->get_theme_repository(); }
+
+/** Returns all active design tokens for a resolved theme. */
+function adam_tokens( $mode = 'light' ) { return adam_ui_themes()->tokens( $mode ); }
+
+/** Returns one stable design token value. */
+function adam_token( $name, $fallback = '', $mode = 'light' ) { return adam_ui_themes()->token( $name, $mode, $fallback ); }
 
 /**
  * Returns the central asset registry or a registered asset URL.

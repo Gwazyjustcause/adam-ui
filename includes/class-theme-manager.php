@@ -45,6 +45,8 @@ final class ADAM_UI_Theme_Manager {
 	 * @var ADAM_UI_Asset_Registry
 	 */
 	private $assets;
+	/** @var ADAM_UI_Theme_Repository */
+	private $repository;
 
 	/**
 	 * Whether the public script configuration has been attached.
@@ -71,11 +73,13 @@ final class ADAM_UI_Theme_Manager {
 	 * Constructor.
 	 *
 	 * @param ADAM_UI_Settings       $settings Settings service.
-	 * @param ADAM_UI_Asset_Registry $assets   Asset registry.
+	 * @param ADAM_UI_Asset_Registry    $assets     Asset registry.
+	 * @param ADAM_UI_Theme_Repository $repository Optional theme repository.
 	 */
-	public function __construct( ADAM_UI_Settings $settings, ADAM_UI_Asset_Registry $assets ) {
+	public function __construct( ADAM_UI_Settings $settings, ADAM_UI_Asset_Registry $assets, ADAM_UI_Theme_Repository $repository = null ) {
 		$this->settings = $settings;
 		$this->assets   = $assets;
+		$this->repository = $repository ? $repository : new ADAM_UI_Theme_Repository();
 	}
 
 	/**
@@ -295,9 +299,14 @@ final class ADAM_UI_Theme_Manager {
 	/** Enqueues the minimal global theme foundation. */
 	public function enqueue_core_assets() {
 		$this->assets->enqueue_core();
+		wp_add_inline_style( 'adam-ui', $this->repository->generated_css() );
 
 		if ( $this->settings->can_change_theme() ) {
 			$this->assets->enqueue_switcher();
+		}
+		if ( $this->settings->is_enabled( 'enable_inspector' ) && is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+			wp_enqueue_style( 'adam-ui-inspector' );
+			wp_enqueue_script( 'adam-ui-inspector' );
 		}
 
 		if ( ! $this->script_configured ) {
@@ -376,6 +385,8 @@ final class ADAM_UI_Theme_Manager {
 			'themeSource'    => $this->get_theme_source(),
 			'transitions'    => $this->settings->is_enabled( 'enable_transitions' ),
 			'components'     => $this->assets->get_loaded_components(),
+			'presets'        => array( 'light' => $this->repository->active_id( 'light' ), 'dark' => $this->repository->active_id( 'dark' ) ),
+			'tokens'         => array( 'light' => $this->repository->tokens( 'light' ), 'dark' => $this->repository->tokens( 'dark' ) ),
 		);
 	}
 

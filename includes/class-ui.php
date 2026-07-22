@@ -31,6 +31,8 @@ final class ADAM_UI {
 	 * @var ADAM_UI_Theme_Manager
 	 */
 	private $theme_manager;
+	/** @var ADAM_UI_Theme_Repository */
+	private $theme_repository;
 
 	/**
 	 * Shared component renderer.
@@ -47,6 +49,8 @@ final class ADAM_UI {
 
 	/** @var ADAM_UI_Admin */
 	private $admin;
+	/** @var ADAM_UI_Theme_Editor */
+	private $theme_editor;
 
 	/**
 	 * Returns the plugin singleton.
@@ -76,15 +80,19 @@ final class ADAM_UI {
 	private function __construct() {
 		$this->settings      = new ADAM_UI_Settings();
 		$this->assets        = new ADAM_UI_Asset_Registry();
+		$this->theme_repository = new ADAM_UI_Theme_Repository();
 		$this->plugins       = new ADAM_UI_Plugin_Registry();
-		$this->theme_manager = new ADAM_UI_Theme_Manager( $this->settings, $this->assets );
+		$this->theme_manager = new ADAM_UI_Theme_Manager( $this->settings, $this->assets, $this->theme_repository );
 		$this->components    = new ADAM_UI_Components();
 		$this->admin         = new ADAM_UI_Admin( $this->settings, $this->theme_manager, $this->assets, $this->plugins );
+		$this->theme_editor  = new ADAM_UI_Theme_Editor( $this->theme_repository, $this->assets );
 
 		$this->settings->register_hooks();
+		$this->theme_repository->register_hooks();
 		$this->plugins->register_hooks();
 		$this->theme_manager->init();
 		$this->admin->register_hooks();
+		$this->theme_editor->register_hooks();
 	}
 
 	/**
@@ -110,6 +118,9 @@ final class ADAM_UI {
 		return $this->theme_manager;
 	}
 
+	/** @return ADAM_UI_Theme_Repository */
+	public function get_theme_repository() { return $this->theme_repository; }
+
 	/**
 	 * Returns the shared component renderer.
 	 *
@@ -134,4 +145,3 @@ final class ADAM_UI {
 		return $this->assets->enqueue_component( $component );
 	}
 }
-

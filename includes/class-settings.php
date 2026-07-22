@@ -26,6 +26,7 @@ final class ADAM_UI_Settings {
 			'allow_user_preferences' => true,
 			'enable_system_mode'     => true,
 			'enable_transitions'     => true,
+			'enable_inspector'       => false,
 		);
 	}
 
@@ -55,6 +56,7 @@ final class ADAM_UI_Settings {
 			'allow_user_preferences' => ! empty( $input['allow_user_preferences'] ),
 			'enable_system_mode'     => ! empty( $input['enable_system_mode'] ),
 			'enable_transitions'     => ! empty( $input['enable_transitions'] ),
+			'enable_inspector'       => ! empty( $input['enable_inspector'] ),
 		);
 	}
 

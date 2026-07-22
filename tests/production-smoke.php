@@ -2,7 +2,7 @@
 /** Phase 6 service contract smoke test. */
 
 define( 'ABSPATH', __DIR__ . '/' );
-define( 'ADAM_UI_VERSION', '1.1.0' );
+define( 'ADAM_UI_VERSION', '2.0.0' );
 define( 'ADAM_UI_URL', 'https://example.test/adam-ui/' );
 
 $test_options = array();
@@ -15,6 +15,8 @@ $test_localized = array();
 
 function sanitize_key( $value ) { return strtolower( preg_replace( '/[^a-z0-9_-]/i', '', (string) $value ) ); }
 function sanitize_text_field( $value ) { return trim( strip_tags( (string) $value ) ); }
+function sanitize_hex_color( $value ) { return preg_match('/^#[0-9a-f]{6}$/i',(string)$value) ? $value : null; }
+function wp_unslash( $value ) { return $value; }
 function sanitize_html_class( $value ) { return sanitize_key( $value ); }
 function wp_parse_args( $args, $defaults ) { return array_merge( $defaults, (array) $args ); }
 function apply_filters( $hook, $value ) { return $value; }
@@ -36,8 +38,10 @@ function wp_enqueue_style( $handle ) { global $test_styles; $test_styles['enqueu
 function wp_register_script( $handle ) { global $test_scripts; $test_scripts['registered'][] = $handle; }
 function wp_enqueue_script( $handle ) { global $test_scripts; $test_scripts['enqueued'][] = $handle; }
 function wp_localize_script( $handle, $name, $data ) { global $test_localized; $test_localized[ $name ] = $data; }
+function wp_add_inline_style() { return true; }
 
 require dirname( __DIR__ ) . '/includes/class-settings.php';
+require dirname( __DIR__ ) . '/includes/class-theme-repository.php';
 require dirname( __DIR__ ) . '/includes/class-asset-registry.php';
 require dirname( __DIR__ ) . '/includes/class-plugin-registry.php';
 require dirname( __DIR__ ) . '/includes/class-theme-manager.php';
@@ -51,8 +55,15 @@ function assert_contract( $condition, $message ) {
 
 $settings = new ADAM_UI_Settings();
 $assets   = new ADAM_UI_Asset_Registry();
-$themes   = new ADAM_UI_Theme_Manager( $settings, $assets );
+$repository = new ADAM_UI_Theme_Repository();
+$themes   = new ADAM_UI_Theme_Manager( $settings, $assets, $repository );
 $plugins  = new ADAM_UI_Plugin_Registry();
+
+$repository->ensure_storage();
+assert_contract( isset( $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ]['themes']['adam-night'] ), 'built-in Night preset is persisted' );
+assert_contract( isset( $repository->schema()['adam-card-radius'] ), 'component token schema is available' );
+assert_contract( false !== strpos( $repository->generated_css(), 'body.adam-theme-dark' ), 'saved tokens generate scoped runtime CSS' );
+assert_contract( '#416900' === $repository->token( 'adam-primary', 'light' ), 'stable token API returns the active Light value' );
 
 $test_options[ 'adam_' . 'inter' . 'face_settings' ] = array( 'default_theme' => 'dark' );
 $settings->migrate_saved_settings();
