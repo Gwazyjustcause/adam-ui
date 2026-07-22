@@ -130,6 +130,19 @@ Document events:
 
 Events allow plugins to cooperate without importing or polling one another.
 
+## CSS ownership and theme order
+
+ADAM UI enqueues its frontend foundation at priority `100`. When Blocksy's
+canonical `ct-main-styles` handle is registered, `adam-ui-variables` declares it
+as a dependency; every theme, utility, and component stylesheet then follows
+through the ADAM UI dependency chain. Other themes can extend the base dependency
+list with the `adam_ui_theme_style_dependencies` filter.
+
+ADAM UI owns markup rooted in `.adam-ui` and dedicated component roots such as
+`.adam-ui-theme-switcher`. Component rules should scope through those roots so
+theme-level element selectors cannot override them accidentally. Do not use this
+boundary to restyle native WordPress, Blocksy, or third-party interfaces.
+
 ## Diagnostics
 
 **ADAM UI â†’ Diagnostics** reports:

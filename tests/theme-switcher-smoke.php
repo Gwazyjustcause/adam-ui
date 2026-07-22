@@ -20,6 +20,8 @@ adam_ui_switcher_assert( false !== strpos( $js, "mediaQuery.addEventListener( 'c
 adam_ui_switcher_assert( false === strpos( $js, 'function placeThemeSwitcher()' ), 'Footer placement must not rely on client-side DOM relocation.' );
 adam_ui_switcher_assert( false !== strpos( $php, "add_filter( 'blocksy:footer:copyright:value'" ), 'Blocksy copyright markup integration is missing.' );
 adam_ui_switcher_assert( false !== strpos( $php, 'adam-footer-theme-layout' ), 'The structural footer layout wrapper is missing.' );
+adam_ui_switcher_assert( false !== strpos( $php, 'adam-ui-theme-switcher' ), 'The switcher must expose a dedicated ADAM-owned component root.' );
+adam_ui_switcher_assert( false !== strpos( $css, '.adam-ui-theme-switcher.adam-theme-switcher' ), 'Switcher rules must be scoped with sufficient component specificity.' );
 adam_ui_switcher_assert( strpos( $php, 'get_theme_switcher_markup( true )' ) < strpos( $php, 'adam-footer-copyright-text' ), 'Theme selector markup must precede copyright markup.' );
 adam_ui_switcher_assert( false !== strpos( $css, '[data-adam-footer-integrated="true"]' ), 'Integrated footer presentation is missing.' );
 adam_ui_switcher_assert( false !== strpos( $css, 'justify-content: center' ), 'The footer switcher must be centered.' );

@@ -94,7 +94,7 @@ final class ADAM_UI_Theme_Manager {
 			return;
 		}
 
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_core_assets' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_core_assets' ), 100 );
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
 		add_filter( 'blocksy:footer:copyright:value', array( $this, 'add_switcher_to_blocksy_copyright' ), 20 );
 		add_action( 'wp_footer', array( $this, 'render_theme_switcher' ) );
@@ -332,7 +332,7 @@ final class ADAM_UI_Theme_Manager {
 
 		$this->switcher_rendered = true;
 
-		return '<div class="adam-footer-theme-layout">'
+		return '<div class="adam-ui adam-footer-theme-layout">'
 			. $this->get_theme_switcher_markup( true )
 			. '<div class="adam-footer-copyright-text">' . $copyright . '</div>'
 			. '</div>';
@@ -343,7 +343,7 @@ final class ADAM_UI_Theme_Manager {
 		$current_mode = $this->get_theme_mode();
 		ob_start();
 		?>
-		<div class="adam-theme-switcher adam-ui" data-adam-theme-switcher<?php echo $footer_integrated ? ' data-adam-footer-integrated="true"' : ''; ?>>
+		<div class="adam-ui adam-ui-theme-switcher adam-theme-switcher" data-adam-theme-switcher<?php echo $footer_integrated ? ' data-adam-footer-integrated="true"' : ''; ?>>
 			<label class="adam-theme-switcher__label" for="adam-theme-select">
 				<?php echo esc_html__( 'Tema', 'adam-ui' ); ?>
 			</label>

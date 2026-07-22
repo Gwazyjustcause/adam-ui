@@ -86,7 +86,8 @@ final class ADAM_UI_Asset_Registry {
 		}
 
 		$this->registered = true;
-		wp_register_style( 'adam-ui-variables', ADAM_UI_URL . 'assets/css/variables.css', array(), ADAM_UI_VERSION );
+		$theme_dependencies = $this->get_theme_style_dependencies();
+		wp_register_style( 'adam-ui-variables', ADAM_UI_URL . 'assets/css/variables.css', $theme_dependencies, ADAM_UI_VERSION );
 		wp_register_style( 'adam-ui-light', ADAM_UI_URL . 'assets/css/light.css', array( 'adam-ui-variables' ), ADAM_UI_VERSION );
 		wp_register_style( 'adam-ui-dark', ADAM_UI_URL . 'assets/css/dark.css', array( 'adam-ui-variables' ), ADAM_UI_VERSION );
 		wp_register_style( 'adam-ui', ADAM_UI_URL . 'assets/css/ui.css', array( 'adam-ui-light', 'adam-ui-dark' ), ADAM_UI_VERSION );
@@ -98,6 +99,24 @@ final class ADAM_UI_Asset_Registry {
 		wp_register_script( 'adam-ui', ADAM_UI_URL . 'assets/js/ui.js', array(), ADAM_UI_VERSION, false );
 		wp_register_script( 'adam-ui-components', ADAM_UI_URL . 'assets/js/components.js', array( 'adam-ui' ), ADAM_UI_VERSION, true );
 		wp_register_script( 'adam-ui-inspector', ADAM_UI_URL . 'assets/js/inspector.js', array( 'adam-ui' ), ADAM_UI_VERSION, true );
+	}
+
+	/**
+	 * Returns active-theme styles that must load before the ADAM foundation.
+	 *
+	 * The dependency is conditional so ADAM UI remains portable to themes that
+	 * do not register Blocksy's handle. Integrations may extend this list.
+	 *
+	 * @return string[]
+	 */
+	private function get_theme_style_dependencies() {
+		$dependencies = array();
+
+		if ( wp_style_is( 'ct-main-styles', 'registered' ) ) {
+			$dependencies[] = 'ct-main-styles';
+		}
+
+		return array_values( array_unique( (array) apply_filters( 'adam_ui_theme_style_dependencies', $dependencies ) ) );
 	}
 
 	/** Enqueues only the theme foundation. */

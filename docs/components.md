@@ -40,7 +40,7 @@ Use `adam-admin-layout--single` when no sidebar is present. The layout collapses
 | Component | Classes |
 | --- | --- |
 | Card | `adam-card`, `adam-card-header`, `adam-card-body`, `adam-card-footer` |
-| Button | `adam-button` with `adam-button-primary`, `-secondary`, `-success`, `-warning`, or `-danger` |
+| Button | `adam-button` with `adam-button-primary`, `-secondary`, `-outline`, `-success`, `-warning`, or `-danger` |
 | Form | `adam-field`, `adam-field__label`, `adam-field__help`, `adam-input`, `adam-select`, `adam-textarea` |
 | Table | `adam-table`; wrap in `adam-table-responsive` when columns may overflow |
 | Tabs | `adam-tabs`, `adam-tabs__list`, `adam-tabs__tab`, `adam-tabs__panel`; tabs require correct tab ARIA roles and relationships |
@@ -63,6 +63,8 @@ Use `adam-admin-layout--single` when no sidebar is present. The layout collapses
 Phase 4 double-hyphen button and notice modifiers remain supported for incremental migration.
 
 ## Design tokens
+
+The Theme Editor exposes tokens by component rather than by page. Prefer direct component tokens (`--adam-card-bg`, `--adam-card-heading`, `--adam-btn-primary-bg`, `--adam-form-border`, `--adam-table-header-bg`, and `--adam-notice-success-bg`) when styling a shared component. Semantic compatibility aliases remain available for older integrations.
 
 - Colour: `--adam-bg`, `--adam-surface`, `--adam-surface-2`, `--adam-text`, semantic status tokens, borders, links, focus, overlays and shadows.
 - Section hierarchy: `--adam-section-canvas`, `--base`, `--muted`, `--soft`, `--pale`, `--feature`, `--accent`, and `--deep`, with matching `--adam-on-section-*` foregrounds. These roles preserve the Light Theme's page rhythm in the Night Theme instead of flattening every section to one dark surface.

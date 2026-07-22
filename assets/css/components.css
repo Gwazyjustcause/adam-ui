@@ -394,6 +394,196 @@
 	border-color: var(--adam-danger);
 }
 
+/* Component Theme Editor bindings. These rules are the public component contract. */
+.adam-card {
+	color: var(--adam-card-text);
+	background-color: var(--adam-card-bg);
+	border-color: var(--adam-card-border);
+	border-width: var(--adam-card-border-width);
+	border-radius: var(--adam-card-radius);
+	box-shadow: var(--adam-card-shadow);
+}
+
+.adam-card--muted,
+.adam-card__header,
+.adam-card__footer,
+.adam-card-header,
+.adam-card-footer {
+	background-color: var(--adam-card-elevated-bg);
+	border-color: var(--adam-card-border);
+}
+
+.adam-card :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-card-heading); }
+.adam-card :where(p, li, dt, dd) { color: var(--adam-card-text); }
+.adam-card a:not(.adam-button) { color: var(--adam-card-link); }
+
+.adam-section,
+.adam-section--base {
+	color: var(--adam-section-standard-text);
+	background: var(--adam-section-standard-bg);
+}
+.adam-section--muted,
+.adam-section--soft {
+	color: var(--adam-section-alternate-text);
+	background: var(--adam-section-alternate-bg);
+}
+.adam-section--pale,
+.adam-section--feature {
+	color: var(--adam-section-feature-text);
+	background: var(--adam-section-feature-bg);
+}
+.adam-section--accent {
+	color: var(--adam-section-cta-text);
+	background: var(--adam-section-cta-bg);
+}
+.adam-section--deep {
+	color: var(--adam-section-overlay-text);
+	background: var(--adam-section-overlay-bg);
+}
+.adam-section :where(h1, h2, h3, h4, h5, h6),
+.adam-section--base :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-section-standard-heading); }
+.adam-section--muted :where(h1, h2, h3, h4, h5, h6),
+.adam-section--soft :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-section-alternate-heading); }
+.adam-section--pale :where(h1, h2, h3, h4, h5, h6),
+.adam-section--feature :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-section-feature-heading); }
+.adam-section--accent :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-section-cta-heading); }
+.adam-section--deep :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-section-overlay-heading); }
+.adam-section a:not(.adam-button),
+.adam-section--base a:not(.adam-button) { color: var(--adam-section-standard-link); }
+.adam-section--muted a:not(.adam-button),
+.adam-section--soft a:not(.adam-button) { color: var(--adam-section-alternate-link); }
+.adam-section--pale a:not(.adam-button),
+.adam-section--feature a:not(.adam-button) { color: var(--adam-section-feature-link); }
+.adam-section--accent a:not(.adam-button) { color: var(--adam-section-cta-link); }
+.adam-section--deep a:not(.adam-button) { color: var(--adam-section-overlay-link); }
+
+.adam-button,
+.adam-button-primary,
+.adam-button--primary {
+	color: var(--adam-btn-primary-text);
+	background-color: var(--adam-btn-primary-bg);
+	border-color: var(--adam-btn-primary-border);
+}
+.adam-button:hover,
+.adam-button:focus-visible,
+.adam-button-primary:hover,
+.adam-button-primary:focus-visible,
+.adam-button--primary:hover,
+.adam-button--primary:focus-visible {
+	color: var(--adam-btn-primary-hover-text);
+	background-color: var(--adam-btn-primary-hover-bg);
+	border-color: var(--adam-btn-primary-hover-border);
+}
+.adam-button-secondary,
+.adam-button--secondary {
+	color: var(--adam-btn-secondary-text);
+	background-color: var(--adam-btn-secondary-bg);
+	border-color: var(--adam-btn-secondary-border);
+}
+.adam-button-secondary:hover,
+.adam-button-secondary:focus-visible,
+.adam-button--secondary:hover,
+.adam-button--secondary:focus-visible {
+	color: var(--adam-btn-secondary-hover-text);
+	background-color: var(--adam-btn-secondary-hover-bg);
+	border-color: var(--adam-btn-secondary-hover-border);
+}
+.adam-button-outline,
+.adam-button--outline {
+	color: var(--adam-btn-outline-text);
+	background-color: var(--adam-btn-outline-bg);
+	border-color: var(--adam-btn-outline-border);
+}
+.adam-button-outline:hover,
+.adam-button-outline:focus-visible,
+.adam-button--outline:hover,
+.adam-button--outline:focus-visible {
+	color: var(--adam-btn-outline-hover-text);
+	background-color: var(--adam-btn-outline-hover-bg);
+	border-color: var(--adam-btn-outline-hover-border);
+}
+.adam-button-danger,
+.adam-button--danger {
+	color: var(--adam-btn-danger-text);
+	background-color: var(--adam-btn-danger-bg);
+	border-color: var(--adam-btn-danger-border);
+}
+.adam-button-danger:hover,
+.adam-button-danger:focus-visible,
+.adam-button--danger:hover,
+.adam-button--danger:focus-visible {
+	color: var(--adam-btn-danger-hover-text);
+	background-color: var(--adam-btn-danger-hover-bg);
+	border-color: var(--adam-btn-danger-hover-border);
+}
+.adam-button-success,
+.adam-button--success {
+	color: var(--adam-btn-success-text);
+	background-color: var(--adam-btn-success-bg);
+	border-color: var(--adam-btn-success-border);
+}
+.adam-button-success:hover,
+.adam-button-success:focus-visible,
+.adam-button--success:hover,
+.adam-button--success:focus-visible {
+	color: var(--adam-btn-success-hover-text);
+	background-color: var(--adam-btn-success-hover-bg);
+	border-color: var(--adam-btn-success-hover-border);
+}
+
+.adam-field__label { color: var(--adam-form-label); }
+.adam-input,
+.adam-select,
+.adam-textarea {
+	color: var(--adam-form-input-text);
+	background-color: var(--adam-form-input-bg);
+	border-color: var(--adam-form-border);
+	border-radius: var(--adam-input-radius);
+}
+.adam-input::placeholder,
+.adam-textarea::placeholder { color: var(--adam-form-placeholder); }
+.adam-input:focus,
+.adam-select:focus,
+.adam-textarea:focus {
+	border-color: var(--adam-form-focus);
+	box-shadow: 0 0 0 1px var(--adam-form-focus);
+	outline-color: var(--adam-form-focus);
+}
+.adam-form .adam-button,
+.adam-field .adam-button { background-color: var(--adam-form-button); }
+
+.adam-table { background-color: var(--adam-table-row-bg); }
+.adam-table :where(th, td) { border-color: var(--adam-table-border); }
+.adam-table :where(thead, tfoot) { background-color: var(--adam-table-header-bg); }
+.adam-table tbody tr { background-color: var(--adam-table-row-bg); }
+.adam-table tbody tr:nth-child(even) { background-color: var(--adam-table-alt-row-bg); }
+
+.adam-alert,
+.adam-notice {
+	color: var(--adam-notice-info-text);
+	background-color: var(--adam-notice-info-bg);
+	border-color: var(--adam-notice-info-border);
+}
+.adam-alert-success,
+.adam-notice--success {
+	color: var(--adam-notice-success-text);
+	background-color: var(--adam-notice-success-bg);
+	border-color: var(--adam-notice-success-border);
+}
+.adam-alert-warning,
+.adam-notice--warning {
+	color: var(--adam-notice-warning-text);
+	background-color: var(--adam-notice-warning-bg);
+	border-color: var(--adam-notice-warning-border);
+}
+.adam-alert-error,
+.adam-notice--danger,
+.adam-notice--error {
+	color: var(--adam-notice-error-text);
+	background-color: var(--adam-notice-error-bg);
+	border-color: var(--adam-notice-error-border);
+}
+
 /* Empty states, statistics, and loading. */
 .adam-empty-state {
 	padding: var(--adam-space-7) var(--adam-space-5);

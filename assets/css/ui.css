@@ -73,13 +73,41 @@
 :where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin), body.wp-admin:is(.adam-theme-light, .adam-theme-dark) #wpbody-content) :where(body > header, .site-header, .ct-header, #masthead, header.wp-block-template-part) {
 	color: var(--adam-header-text);
 	background-color: var(--adam-header-bg);
-	border-color: var(--adam-border);
+	border-color: var(--adam-header-border);
 }
 
 :where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin), body.wp-admin:is(.adam-theme-light, .adam-theme-dark) #wpbody-content) :where(body > footer, .site-footer, #colophon, footer.wp-block-template-part) {
 	color: var(--adam-footer-text);
 	background-color: var(--adam-footer-bg);
 	border-color: var(--adam-border);
+}
+
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(nav, .menu, .sub-menu) {
+	color: var(--adam-header-nav-text);
+	background-color: var(--adam-header-nav-bg);
+}
+
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(.menu-item > a, .wp-block-navigation-item__content) {
+	color: var(--adam-header-nav-text);
+}
+
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(.menu-item > a, .wp-block-navigation-item__content):hover {
+	color: var(--adam-header-hover-text);
+	background-color: var(--adam-header-hover-bg);
+}
+
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(.current-menu-item > a, .current_page_item > a) {
+	color: var(--adam-header-active-text);
+	background-color: var(--adam-header-active-bg);
+}
+
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where([data-id="logo"], .site-branding) {
+	background-color: var(--adam-header-logo-bg);
+}
+
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(.ct-header-search, .ct-search-item, [data-id="search"]) :where(svg, .ct-icon) {
+	color: var(--adam-header-search-icon);
+	fill: currentColor;
 }
 
 :where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin), body.wp-admin:is(.adam-theme-light, .adam-theme-dark) #wpbody-content) :where(nav, .navigation, .main-navigation, .wp-block-navigation, .wp-block-navigation__responsive-container) {
@@ -126,6 +154,35 @@ body.adam-theme-dark .ct-footer :where(h1, h2, h3, h4, h5, h6, p, li, nav, .menu
 body.adam-theme-dark .ct-footer :where(a:hover, a:focus-visible) {
 	color: var(--adam-footer-link-hover);
 }
+
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin)) :where(.ct-footer, .site-footer, #colophon) :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-footer-heading); }
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin)) :where(.ct-footer-socials, .site-footer .socials) :where(svg, .ct-icon) { color: var(--adam-footer-social); fill: currentColor; }
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin)) :where(.ct-footer, .site-footer, #colophon) :where([data-row], hr) { border-color: var(--adam-footer-divider); }
+:where(body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin)) :where(.ct-footer-copyright, .site-info, .footer-copyright) { color: var(--adam-footer-copyright); }
+
+/* ADAM-owned chrome tokens intentionally outrank the active theme's generic rules. */
+body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(nav, .menu, .sub-menu) {
+	color: var(--adam-header-nav-text);
+	background-color: var(--adam-header-nav-bg);
+}
+body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(.menu-item > a, .wp-block-navigation-item__content) { color: var(--adam-header-nav-text); }
+body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(.menu-item > a, .wp-block-navigation-item__content):hover {
+	color: var(--adam-header-hover-text);
+	background-color: var(--adam-header-hover-bg);
+}
+body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(.current-menu-item > a, .current_page_item > a) {
+	color: var(--adam-header-active-text);
+	background-color: var(--adam-header-active-bg);
+}
+body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is([data-id="logo"], .site-branding) { background-color: var(--adam-header-logo-bg); }
+body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(.ct-header-search, .ct-search-item, [data-id="search"]) :is(svg, .ct-icon) {
+	color: var(--adam-header-search-icon);
+	fill: currentColor;
+}
+body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin) :is(.ct-footer, .site-footer, #colophon) :is(h1, h2, h3, h4, h5, h6) { color: var(--adam-footer-heading); }
+body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin) :is(.ct-footer-socials, .site-footer .socials) :is(svg, .ct-icon) { color: var(--adam-footer-social); fill: currentColor; }
+body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin) :is(.ct-footer, .site-footer, #colophon) :is([data-row], hr) { border-color: var(--adam-footer-divider); }
+body:is(.adam-theme-light, .adam-theme-dark):not(.wp-admin) :is(.ct-footer-copyright, .site-info, .footer-copyright) { color: var(--adam-footer-copyright); }
 
 /*
  * Preserve the theme palette's content intent when the same palette slot is
