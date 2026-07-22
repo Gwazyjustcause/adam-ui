@@ -21,12 +21,25 @@
 
 .adam-theme-switcher[data-adam-footer-integrated="true"] {
 	justify-content: center;
-	margin: var(--adam-space-6) auto var(--adam-space-4);
+	margin: 0;
 	padding: var(--adam-space-2) var(--adam-space-3);
 	color: var(--adam-footer-text);
 	background: transparent;
 	border-color: transparent;
 	box-shadow: none;
+}
+
+.adam-footer-theme-layout {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--adam-space-4);
+	width: 100%;
+	text-align: center;
+}
+
+.adam-footer-copyright-text {
+	display: block;
 }
 
 .adam-theme-switcher[data-adam-footer-integrated="true"] .adam-theme-switcher__label {

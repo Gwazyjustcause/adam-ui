@@ -96,6 +96,7 @@ final class ADAM_UI_Theme_Manager {
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_core_assets' ) );
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
+		add_filter( 'blocksy:footer:copyright:value', array( $this, 'add_switcher_to_blocksy_copyright' ), 20 );
 		add_action( 'wp_footer', array( $this, 'render_theme_switcher' ) );
 
 		// The WordPress login screen does not run the normal frontend hooks.
@@ -312,9 +313,37 @@ final class ADAM_UI_Theme_Manager {
 		}
 
 		$this->switcher_rendered = true;
-		$current_mode            = $this->get_theme_mode();
+		echo $this->get_theme_switcher_markup(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Places the selector inside Blocksy's copyright element before its text.
+	 *
+	 * The wp_footer callback remains a fallback for themes without a structural
+	 * footer hook. On Blocksy this filter runs first, so the fallback is skipped.
+	 *
+	 * @param string $copyright Existing copyright markup.
+	 * @return string
+	 */
+	public function add_switcher_to_blocksy_copyright( $copyright ) {
+		if ( $this->switcher_rendered || ! $this->settings->can_change_theme() ) {
+			return $copyright;
+		}
+
+		$this->switcher_rendered = true;
+
+		return '<div class="adam-footer-theme-layout">'
+			. $this->get_theme_switcher_markup( true )
+			. '<div class="adam-footer-copyright-text">' . $copyright . '</div>'
+			. '</div>';
+	}
+
+	/** Returns accessible selector markup for theme and fallback integrations. */
+	private function get_theme_switcher_markup( $footer_integrated = false ) {
+		$current_mode = $this->get_theme_mode();
+		ob_start();
 		?>
-		<div class="adam-theme-switcher adam-ui" data-adam-theme-switcher>
+		<div class="adam-theme-switcher adam-ui" data-adam-theme-switcher<?php echo $footer_integrated ? ' data-adam-footer-integrated="true"' : ''; ?>>
 			<label class="adam-theme-switcher__label" for="adam-theme-select">
 				<?php echo esc_html__( 'Tema', 'adam-ui' ); ?>
 			</label>
@@ -338,6 +367,7 @@ final class ADAM_UI_Theme_Manager {
 			</noscript>
 		</div>
 		<?php
+		return (string) ob_get_clean();
 	}
 
 	/**
