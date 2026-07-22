@@ -2,7 +2,7 @@
 /** Phase 6 service contract smoke test. */
 
 define( 'ABSPATH', __DIR__ . '/' );
-define( 'ADAM_UI_VERSION', '2.1.0' );
+define( 'ADAM_UI_VERSION', '2.2.0' );
 define( 'ADAM_UI_URL', 'https://example.test/adam-ui/' );
 
 $test_options = array();

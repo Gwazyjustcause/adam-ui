@@ -2,7 +2,9 @@
 
 ADAM UI stores theme definitions in the `adam_ui_themes` WordPress option. The bundled **ADAM Light**, **ADAM Night**, and **High Contrast** presets provide safe defaults; bundled presets cannot be deleted. Administrators can edit tokens under **ADAM UI → Theme Editor**, duplicate a preset, rename or delete custom themes, and import/export complete JSON theme packages.
 
-The editor is driven by one PHP schema organised around component families: Header, Footer, Hero, Sections, Cards, Buttons, Forms, Tables, and Notifications. Administrators work with familiar interface parts while ADAM UI maps every field to a stable CSS custom property. Saving a theme validates every colour and component value, then the Theme Manager emits scoped CSS variables for `.adam-theme-light` and `.adam-theme-dark`. The existing Light, Night, and System selector remains the runtime mode controller.
+The editor is driven by one PHP schema, but its normal interface intentionally exposes only six approachable component areas: Header, Sections, Cards, Buttons, Forms, and Footer. A seventh Advanced destination retains every detailed Hero, table, notification, text, border, hover, and state control. Administrators work with familiar interface parts while ADAM UI maps every field to the existing stable CSS custom properties. Saving a theme validates every colour and component value, then the Theme Manager emits scoped CSS variables for `.adam-theme-light` and `.adam-theme-dark`. The existing Light, Night, and System selector remains the runtime mode controller.
+
+The simplified and Advanced controls are two views of the same stored value. They remain synchronised in the editor, so using the approachable controls never discards a detailed setting and older themes require no data migration.
 
 Every component panel includes a compact live example. A change is applied immediately to that panel and to the complete page preview without saving or refreshing. The native colour control is paired with a free-form CSS colour field so it supports short and long HEX, RGB/RGBA, HSL/HSLA, named colours, and `transparent`; the server validates the value again before storing it.
 

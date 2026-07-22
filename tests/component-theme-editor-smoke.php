@@ -30,5 +30,15 @@ adam_ui_editor_assert( false !== strpos( $repository, 'sanitize_css_color' ), 'F
 adam_ui_editor_assert( false !== strpos( $script, "CSS.supports( 'color', value )" ), 'Live CSS colour validation is missing.' );
 adam_ui_editor_assert( false !== strpos( $editor, 'adam-css-color-picker' ) && false !== strpos( $editor, 'adam-css-color-value' ), 'The visual picker and free-form colour field must both be available.' );
 adam_ui_editor_assert( false !== strpos( $editor, 'render_component_preview' ), 'Per-component previews are missing.' );
+foreach ( array( 'header', 'sections', 'cards', 'buttons', 'forms', 'footer' ) as $group ) {
+	adam_ui_editor_assert( false !== strpos( $editor, "'{$group}' => array(" ), "{$group} is missing from simplified navigation." );
+}
+adam_ui_editor_assert( false !== strpos( $editor, 'data-adam-editor-tab="advanced"' ), 'Advanced is missing from simplified navigation.' );
+adam_ui_editor_assert( false === strpos( $editor, 'data-adam-editor-tab="hero"' ), 'Hero must not be a first-level destination.' );
+adam_ui_editor_assert( false === strpos( $editor, 'data-adam-editor-tab="tables"' ), 'Tables must not be a first-level destination.' );
+adam_ui_editor_assert( false === strpos( $editor, 'data-adam-editor-tab="notifications"' ), 'Notifications must not be a first-level destination.' );
+adam_ui_editor_assert( false !== strpos( $editor, 'adam-theme-editor__advanced-section' ), 'Detailed controls must remain available under Advanced.' );
+adam_ui_editor_assert( false !== strpos( $script, 'syncTokenControls' ), 'Simple and Advanced controls are not synchronized.' );
+adam_ui_editor_assert( false !== strpos( $script, "'ArrowDown'" ) && false !== strpos( $script, "'Home'" ), 'Component navigation is not keyboard accessible.' );
 
 echo "PASS: component-oriented Theme Editor contract.\n";
