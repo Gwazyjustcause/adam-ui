@@ -20,13 +20,40 @@ final class ADAM_UI_Theme_Component_Registry {
 	/** @var bool */
 	private $discovered = false;
 
+	/** @var bool */
+	private $builtins_registered = false;
+
+	/**
+	 * Keeps non-WordPress consumers backwards compatible without translating
+	 * during the WordPress plugin bootstrap.
+	 */
 	public function __construct() {
-		$this->register_builtins();
+		$this->register_builtin_components();
 	}
 
 	/** Invites every active ADAM plugin to declare its components after loading. */
 	public function register_hooks() {
+		add_action( 'init', array( $this, 'register_builtin_components' ), 0 );
 		add_action( 'init', array( $this, 'discover_components' ), 1 );
+	}
+
+	/**
+	 * Registers translated core definitions after the text domain is available.
+	 *
+	 * @return void
+	 */
+	public function register_builtin_components() {
+		if ( $this->builtins_registered ) {
+			return;
+		}
+
+		// Never let a direct call during plugin bootstrap trigger JIT translations.
+		if ( function_exists( 'did_action' ) && ! did_action( 'init' ) ) {
+			return;
+		}
+
+		$this->builtins_registered = true;
+		$this->register_builtins();
 	}
 
 	/** Runs the standard discovery action once per request. */
@@ -85,8 +112,8 @@ final class ADAM_UI_Theme_Component_Registry {
 				'description' => '',
 				'identifier'  => $slug,
 				'owner'       => $owner,
-				'owner_name'  => 'adam-ui' === $owner ? __( 'ADAM UI', 'adam-ui' ) : $owner,
-				'category'    => 'adam-ui' === $owner ? __( 'Core Components', 'adam-ui' ) : $owner,
+				'owner_name'  => 'adam-ui' === $owner ? $this->translate_when_ready( 'ADAM UI' ) : $owner,
+				'category'    => 'adam-ui' === $owner ? $this->translate_when_ready( 'Core Components' ) : $owner,
 				'controls'    => array(),
 				'styles'      => array(),
 				'default_styles' => array(),
@@ -196,8 +223,8 @@ final class ADAM_UI_Theme_Component_Registry {
 					'description' => '',
 					'identifier'  => sanitize_key( $slug ),
 					'owner'       => 'adam-ui',
-					'owner_name'  => __( 'ADAM UI', 'adam-ui' ),
-					'category'    => __( 'Core Components', 'adam-ui' ),
+					'owner_name'  => $this->translate_when_ready( 'ADAM UI' ),
+					'category'    => $this->translate_when_ready( 'Core Components' ),
 					'controls'    => array(),
 					'styles'      => array(),
 					'default_styles' => array(),
@@ -222,7 +249,7 @@ final class ADAM_UI_Theme_Component_Registry {
 			$key      = 'adam-ui' === $component['owner'] ? 'core-components' : sanitize_key( $component['owner'] );
 			if ( ! isset( $groups[ $key ] ) ) {
 				$groups[ $key ] = array(
-					'label'      => 'adam-ui' === $component['owner'] ? __( 'Core Components', 'adam-ui' ) : $component['owner_name'],
+					'label'      => 'adam-ui' === $component['owner'] ? $this->translate_when_ready( 'Core Components' ) : $component['owner_name'],
 					'components' => array(),
 				);
 			}
@@ -800,11 +827,11 @@ final class ADAM_UI_Theme_Component_Registry {
 		}
 		$default = $args['default_preset'] && isset( $options[ $args['default_preset'] ] ) ? $args['default_preset'] : key( $options );
 		$args['controls'][] = array(
-			'label'  => __( 'Appearance', 'adam-ui' ),
+			'label'  => $this->translate_when_ready( 'Appearance' ),
 			'fields' => array(
 				array(
 					'token'         => 'adam-' . preg_replace( '/^adam-/', '', $args['owner'] ) . '-' . $args['identifier'] . '-style',
-					'label'         => __( 'Visual style', 'adam-ui' ),
+					'label'         => $this->translate_when_ready( 'Visual style' ),
 					'type'          => 'select',
 					'default'       => $default,
 					'options'       => $options,
@@ -813,5 +840,23 @@ final class ADAM_UI_Theme_Component_Registry {
 			),
 		);
 		return $args;
+	}
+
+	/**
+	 * Translates generated fallback labels only after init.
+	 *
+	 * Plugin APIs may be called on plugins_loaded by older integrations. Returning
+	 * the source string in that case preserves registration without asking
+	 * WordPress to load the text domain prematurely.
+	 *
+	 * @param string $text Source text.
+	 * @return string
+	 */
+	private function translate_when_ready( $text ) {
+		if ( function_exists( 'did_action' ) && ! did_action( 'init' ) ) {
+			return $text;
+		}
+
+		return __( $text, 'adam-ui' );
 	}
 }

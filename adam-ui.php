@@ -279,4 +279,25 @@ function adam_ui_component_class( $plugin_slug, $component_id, $extra = '' ) {
 	return adam_ui()->get_theme_component_registry()->component_class( $plugin_slug, $component_id, $extra );
 }
 
+/**
+ * Loads translations at WordPress' supported lifecycle point.
+ *
+ * WordPress 6.7 reports just-in-time text-domain loading before init, so the
+ * bootstrap and service constructors must remain translation-free.
+ */
+function adam_ui_load_textdomain() {
+	if ( ! did_action( 'init' ) ) {
+		return false;
+	}
+
+	load_plugin_textdomain(
+		'adam-ui',
+		false,
+		dirname( plugin_basename( ADAM_UI_FILE ) ) . '/languages'
+	);
+
+	return true;
+}
+
+add_action( 'init', 'adam_ui_load_textdomain', -1 );
 add_action( 'plugins_loaded', 'adam_ui' );

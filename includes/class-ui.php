@@ -79,9 +79,13 @@ final class ADAM_UI {
 	/** Registers a Theme Editor component through the stable ecosystem API. */
 	public static function register_theme_component( $slug, $args ) {
 		if ( is_array( $args ) && empty( $args['owner'] ) ) {
+			$legacy_label = 'Legacy Integrations';
+			if ( ! function_exists( 'did_action' ) || did_action( 'init' ) ) {
+				$legacy_label = __( 'Legacy Integrations', 'adam-ui' );
+			}
 			$args['owner']      = 'legacy-integrations';
-			$args['owner_name'] = __( 'Legacy Integrations', 'adam-ui' );
-			$args['category']   = __( 'Legacy Integrations', 'adam-ui' );
+			$args['owner_name'] = $legacy_label;
+			$args['category']   = $legacy_label;
 		}
 		return self::instance()->get_theme_component_registry()->register( $slug, $args );
 	}

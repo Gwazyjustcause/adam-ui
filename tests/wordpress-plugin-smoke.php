@@ -17,6 +17,9 @@ set_error_handler(
 $plugin_file = dirname( __DIR__ ) . '/adam-ui.php';
 $source      = file_get_contents( $plugin_file );
 $hooks       = array();
+$did_actions = array();
+$translation_calls = array();
+$loaded_textdomains = array();
 
 function adam_ui_smoke_assert( $condition, $message ) {
 	if ( ! $condition ) {
@@ -37,6 +40,10 @@ function plugin_dir_url( $file ) {
 	return 'https://example.test/wp-content/plugins/' . basename( dirname( $file ) ) . '/';
 }
 
+function plugin_basename( $file ) {
+	return basename( dirname( $file ) ) . '/' . basename( $file );
+}
+
 function add_action( $hook, $callback, $priority = 10 ) {
 	global $hooks;
 	$hooks[ $hook ][ $priority ][] = $callback;
@@ -52,7 +59,8 @@ function apply_filters( $hook, $value ) {
 }
 
 function do_action( $hook, ...$args ) {
-	global $hooks;
+	global $hooks, $did_actions;
+	$did_actions[ $hook ] = isset( $did_actions[ $hook ] ) ? $did_actions[ $hook ] + 1 : 1;
 	if ( empty( $hooks[ $hook ] ) ) {
 		return;
 	}
@@ -62,6 +70,11 @@ function do_action( $hook, ...$args ) {
 			call_user_func_array( $callback, $args );
 		}
 	}
+}
+
+function did_action( $hook ) {
+	global $did_actions;
+	return isset( $did_actions[ $hook ] ) ? $did_actions[ $hook ] : 0;
 }
 
 function is_admin() {
@@ -92,8 +105,22 @@ function wp_parse_args( $args, $defaults = array() ) {
 	return array_merge( $defaults, is_array( $args ) ? $args : array() );
 }
 
-function __( $text ) {
+function __( $text, $domain = 'default' ) {
+	global $translation_calls;
+	if ( 'adam-ui' === $domain && ! did_action( 'init' ) ) {
+		throw new RuntimeException( 'ADAM UI translated before init: ' . $text );
+	}
+	$translation_calls[] = array( 'text' => $text, 'domain' => $domain );
 	return $text;
+}
+
+function load_plugin_textdomain( $domain, $deprecated = false, $path = '' ) {
+	global $loaded_textdomains;
+	if ( ! did_action( 'init' ) ) {
+		throw new RuntimeException( 'Text domain loaded before init: ' . $domain );
+	}
+	$loaded_textdomains[] = array( 'domain' => $domain, 'path' => $path );
+	return true;
 }
 
 define( 'ABSPATH', dirname( __DIR__ ) . DIRECTORY_SEPARATOR );
@@ -112,7 +139,31 @@ adam_ui_smoke_assert( defined( 'ADAM_UI_VERSION' ) && '5.0.0' === ADAM_UI_VERSIO
 adam_ui_smoke_assert( class_exists( 'ADAM_UI' ), 'ADAM_UI coordinator did not load.' );
 adam_ui_smoke_assert( function_exists( 'adam_ui' ), 'adam_ui() API did not load.' );
 adam_ui_smoke_assert( isset( $hooks['plugins_loaded'][10] ) && in_array( 'adam_ui', $hooks['plugins_loaded'][10], true ), 'WordPress bootstrap hook was not registered.' );
+do_action( 'plugins_loaded' );
 adam_ui_smoke_assert( adam_ui() instanceof ADAM_UI, 'Plugin could not initialize.' );
+adam_ui_smoke_assert( array() === $translation_calls, 'Plugin bootstrap translated before init.' );
+adam_ui_smoke_assert( array() === $loaded_textdomains, 'Plugin bootstrap loaded its text domain before init.' );
+
+adam_ui_register_theme_component(
+	'legacy-panel',
+	array(
+		'name'    => 'Legacy Panel',
+		'presets' => array(
+			'flat' => array( 'label' => 'Flat', 'tokens' => array() ),
+		),
+	)
+);
+adam_ui_register_component(
+	'adam-bot',
+	'early-chat',
+	array(
+		'name'    => 'Early Chat',
+		'presets' => array(
+			'compact' => array( 'label' => 'Compact', 'tokens' => array() ),
+		),
+	)
+);
+adam_ui_smoke_assert( array() === $translation_calls, 'Pre-init public component registration translated fallback labels.' );
 
 add_action(
 	'adam_ui_register_components',
@@ -132,7 +183,11 @@ add_action(
 	}
 );
 do_action( 'init' );
+$core_header = adam_ui()->get_theme_component_registry()->get( 'header' );
 $team_card = adam_ui()->get_theme_component_registry()->get( 'adam-community--team-card' );
+adam_ui_smoke_assert( $core_header && 'Header' === $core_header['label'], 'Core components were not registered on init.' );
+adam_ui_smoke_assert( 1 === count( $loaded_textdomains ) && 'adam-ui' === $loaded_textdomains[0]['domain'], 'Text domain was not loaded exactly once on init.' );
+adam_ui_smoke_assert( 'adam-ui/languages' === str_replace( '\\', '/', $loaded_textdomains[0]['path'] ), 'Text domain language path is invalid.' );
 adam_ui_smoke_assert( $team_card && 'adam-community' === $team_card['owner'], 'Plugin component discovery failed.' );
 adam_ui_smoke_assert( isset( adam_ui()->get_plugin_registry()->all()['adam-community'] ), 'Discovered component owner was not registered.' );
 adam_ui_smoke_assert( null !== adam_ui()->get_asset_registry()->get_component_definition( 'adam-community--team-card' ), 'Plugin component assets were not registered centrally.' );
