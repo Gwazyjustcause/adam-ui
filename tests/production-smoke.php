@@ -67,27 +67,40 @@ $repository->ensure_storage();
 assert_contract( isset( $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ]['themes']['adam-night'] ), 'built-in Night preset is persisted' );
 assert_contract( ! isset( $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ]['themes']['adam-light'] ), 'ADAM UI must not create a Light preset' );
 assert_contract( isset( $repository->schema()['adam-card-radius'] ), 'component token schema is available' );
+assert_contract( isset( $repository->schema()['adam-global-heading'], $repository->schema()['adam-global-text'], $repository->schema()['adam-global-link'], $repository->schema()['adam-global-button-text'], $repository->schema()['adam-global-border'], $repository->schema()['adam-global-shadow-strength'], $repository->schema()['adam-global-radius'] ), 'global Night foundation token schema is complete' );
 assert_contract( isset( $repository->schema()['adam-card-style'], $repository->schema()['adam-header-style'] ), 'component style choices are persisted as design tokens' );
-assert_contract( '.35' === $repository->token( 'adam-card-shadow-strength', 'dark' ), 'the Elevated card preset applies its shared structural tokens' );
+assert_contract( 0.35 === (float) $repository->token( 'adam-card-shadow-strength', 'dark' ), 'the global shadow strength reaches the Elevated card preset' );
 assert_contract( false !== strpos( $repository->generated_css(), 'body.adam-theme-dark' ), 'saved tokens generate scoped runtime CSS' );
 assert_contract( false === strpos( $repository->generated_css(), 'adam-theme-light' ), 'runtime CSS must contain Night overrides only' );
 assert_contract( false !== strpos( $repository->generated_css(), '--adam-night-bg:var(--adam-section-standard-bg)' ), 'Night canvas follows the main page surface' );
-assert_contract( false !== strpos( $repository->generated_css(), '--adam-header-bg:var(--adam-night-bg);--adam-header-nav-bg:var(--adam-night-bg);--adam-footer-bg:var(--adam-night-bg)' ), 'header and footer share the canonical Night canvas' );
+assert_contract( $repository->token( 'adam-header-bg', 'dark' ) === $repository->token( 'adam-section-standard-bg', 'dark' ) && $repository->token( 'adam-footer-bg', 'dark' ) === $repository->token( 'adam-section-standard-bg', 'dark' ), 'header and footer inherit the global primary surface by default' );
 assert_contract( array() === $repository->tokens( 'light' ), 'Light mode must not expose an ADAM palette' );
 assert_contract( '#9bc85a' === $repository->token( 'adam-btn-primary-bg', 'dark' ), 'component token API returns the active Night value' );
 assert_contract( isset( $repository->schema()['adam-header-bg'], $repository->schema()['adam-footer-bg'], $repository->schema()['adam-section-overlay-bg'], $repository->schema()['adam-btn-outline-hover-border'] ), 'component-oriented editor schema is complete' );
 
 $stored = $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ];
-$stored['themes']['adam-night']['tokens']['adam-header-bg'] = '#000';
-$stored['themes']['adam-night']['tokens']['adam-header-nav-bg'] = '#777777';
-$stored['themes']['adam-night']['tokens']['adam-footer-bg'] = 'rgb(255 255 255 / 85%)';
+$stored['themes']['adam-night']['tokens']['adam-global-heading'] = '#F2F5EF';
+$stored['themes']['adam-night']['tokens']['adam-global-text'] = '#E7EBE3';
+$stored['themes']['adam-night']['tokens']['adam-global-link'] = '#B5DB70';
+$stored['themes']['adam-night']['tokens']['adam-global-button-text'] = '#A4C85A';
+$stored['themes']['adam-night']['overrides']['adam-header-bg'] = '#000';
+$stored['themes']['adam-night']['overrides']['adam-footer-bg'] = 'rgb(255 255 255 / 85%)';
 $stored['themes']['adam-night']['tokens']['adam-section-overlay-bg'] = 'hsl(120 20% 10% / 0.8)';
 $stored['themes']['adam-night']['tokens']['adam-header-logo-bg'] = 'transparent';
-$stored['themes']['adam-night']['tokens']['adam-card-bg'] = '#FFFFFF';
+$stored['themes']['adam-night']['overrides']['adam-card-bg'] = '#FFFFFF';
+$stored['themes']['adam-night']['overrides']['adam-card-heading'] = '#172107';
+$stored['themes']['adam-night']['overrides']['adam-card-text'] = '#172107';
+$stored['themes']['adam-night']['overrides']['adam-card-link'] = '#416900';
 $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ] = $stored;
 $repository = new ADAM_UI_Theme_Repository();
 $color_engine = new ADAM_UI_Color_Engine();
 assert_contract( '#000' === $repository->token( 'adam-header-bg', 'dark' ), 'three-digit HEX colours are accepted' );
+assert_contract( '#F2F5EF' === $repository->token( 'adam-footer-heading', 'dark' ), 'components inherit the global heading colour' );
+assert_contract( '#E7EBE3' === $repository->token( 'adam-footer-text', 'dark' ), 'components inherit the global body text colour' );
+assert_contract( '#B5DB70' === $repository->token( 'adam-footer-link', 'dark' ), 'components inherit the global link colour' );
+assert_contract( '#A4C85A' === $repository->token( 'adam-btn-outline-text', 'dark' ), 'default and outline buttons inherit the global button text colour' );
+assert_contract( '#172107' === $repository->token( 'adam-card-heading', 'dark' ), 'an explicit Advanced override wins over global heading inheritance' );
+assert_contract( isset( $repository->get_theme( 'adam-night' )['overrides']['adam-card-heading'] ), 'Advanced overrides remain stored separately from global tokens' );
 foreach ( array( 'standard', 'alternate', 'feature' ) as $surface_role ) {
 	$surface_background = $repository->token( 'adam-section-' . $surface_role . '-bg', 'dark' );
 	foreach ( array( 'heading', 'text', 'link' ) as $foreground_role ) {
@@ -99,6 +112,28 @@ foreach ( array( 'standard', 'alternate', 'feature' ) as $surface_role ) {
 	}
 }
 assert_contract( 4.5 <= $color_engine->contrast_ratio( $repository->token( 'adam-header-nav-text', 'dark' ), $repository->token( 'adam-header-nav-bg', 'dark' ) ), 'generated navigation text meets WCAG contrast' );
+foreach ( array( 'primary', 'secondary', 'danger', 'success' ) as $button_variant ) {
+	assert_contract(
+		4.5 <= $color_engine->contrast_ratio( $repository->token( 'adam-btn-' . $button_variant . '-text', 'dark' ), $repository->token( 'adam-btn-' . $button_variant . '-bg', 'dark' ) ),
+		$button_variant . ' button text is calculated from its final background'
+	);
+	assert_contract(
+		4.5 <= $color_engine->contrast_ratio( $repository->token( 'adam-btn-' . $button_variant . '-hover-text', 'dark' ), $repository->token( 'adam-btn-' . $button_variant . '-hover-bg', 'dark' ) ),
+		$button_variant . ' hover text is calculated from its final hover background'
+	);
+	assert_contract(
+		3 <= $color_engine->contrast_ratio( $repository->token( 'adam-btn-' . $button_variant . '-focus', 'dark' ), $repository->token( 'adam-btn-' . $button_variant . '-bg', 'dark' ) ),
+		$button_variant . ' focus treatment meets non-text contrast'
+	);
+}
+assert_contract( 4.5 <= $color_engine->contrast_ratio( $repository->token( 'adam-btn-outline-text', 'dark' ), $repository->token( 'adam-btn-secondary-bg', 'dark' ) ), 'outline and default Night button text contrasts with the dark button surface' );
+assert_contract( 3 <= $color_engine->contrast_ratio( $repository->token( 'adam-btn-outline-border', 'dark' ), $repository->token( 'adam-btn-secondary-bg', 'dark' ) ), 'outline and default Night button borders meet non-text contrast' );
+assert_contract( 4.5 <= $color_engine->contrast_ratio( $repository->token( 'adam-btn-outline-hover-text', 'dark' ), $repository->token( 'adam-btn-outline-hover-bg', 'dark' ) ), 'outline hover text contrasts with its generated hover background' );
+assert_contract( 3 <= $color_engine->contrast_ratio( $repository->token( 'adam-btn-outline-hover-border', 'dark' ), $repository->token( 'adam-btn-outline-hover-bg', 'dark' ) ), 'outline hover borders meet non-text contrast' );
+assert_contract( 4.5 <= $color_engine->contrast_ratio( $repository->token( 'adam-button-disabled-text', 'dark' ), $repository->token( 'adam-button-disabled-bg', 'dark' ) ), 'disabled buttons remain readable' );
+foreach ( array( '--adam-night-button-bg', '--adam-night-button-text', '--adam-night-accent', '--adam-night-on-accent' ) as $night_button_alias ) {
+	assert_contract( false !== strpos( $repository->generated_css(), $night_button_alias . ':' ), 'generated Night CSS exposes ' . $night_button_alias );
+}
 assert_contract( 'rgb(255 255 255 / 85%)' === $repository->token( 'adam-footer-bg', 'dark' ), 'modern RGB colours are accepted' );
 assert_contract( 'hsl(120 20% 10% / 0.8)' === $repository->token( 'adam-section-overlay-bg', 'dark' ), 'HSL alpha colours are accepted' );
 assert_contract( 'transparent' === $repository->token( 'adam-header-logo-bg', 'dark' ), 'transparent colours are accepted' );
@@ -106,7 +141,8 @@ assert_contract( '#FFFFFF' === $repository->token( 'adam-card-bg', 'dark' ), 'pu
 assert_contract( 4.5 <= $color_engine->contrast_ratio( $repository->token( 'adam-card-text', 'dark' ), $repository->token( 'adam-card-bg', 'dark' ) ), 'light Night surfaces automatically receive readable dark text' );
 assert_contract( $repository->token( 'adam-card-border', 'dark' ) !== $repository->token( 'adam-card-bg', 'dark' ), 'cards derive a subtle border from their background' );
 assert_contract( $repository->token( 'adam-btn-primary-hover-bg', 'dark' ) !== $repository->token( 'adam-btn-primary-bg', 'dark' ), 'buttons derive their hover state from the selected background' );
-assert_contract( 3 <= $color_engine->contrast_ratio( $repository->token( 'adam-button-focus', 'dark' ), $repository->token( 'adam-btn-primary-bg', 'dark' ) ), 'button focus treatment maintains non-text contrast' );
+assert_contract( 3 <= $color_engine->contrast_ratio( $repository->token( 'adam-button-focus', 'dark' ), $repository->token( 'adam-btn-secondary-bg', 'dark' ) ), 'default Night button focus treatment maintains non-text contrast' );
+assert_contract( 3 <= $color_engine->contrast_ratio( $repository->token( 'adam-btn-outline-focus', 'dark' ), $repository->token( 'adam-btn-secondary-bg', 'dark' ) ), 'outline focus treatment maintains non-text contrast' );
 foreach ( array( '#11170e', '#ffffff', 'rgb(32 80 51)', 'hsl(95 45% 30%)', 'hwb(95 10% 55%)', 'oklch(32% 0.08 135)' ) as $surface ) {
 	assert_contract( 4.5 <= $color_engine->contrast_ratio( $color_engine->foreground( $surface ), $surface ), 'supported CSS colours always receive readable foregrounds' );
 }
@@ -216,7 +252,7 @@ assert_contract( isset( $extended_repository->schema()['adam-chat-bg'], $extende
 assert_contract( isset( $extended_repository->schema()['adam-bot-chat-window-style'] ), 'declared plugin presets automatically receive an editor control' );
 assert_contract( '.5rem' === $extended_repository->token( 'adam-chat-gap', 'dark' ), 'the plugin default preset resolves all of its style tokens' );
 assert_contract( in_array( 'adam-chat-text', $extended_repository->contrast_map()['adam-chat-bg'], true ), 'registered components participate in automatic contrast' );
-assert_contract( isset( $component_registry->grouped()['adam-bot']['components']['adam-bot--chat-window'] ), 'plugin components are grouped by category' );
+assert_contract( isset( $component_registry->grouped()['components']['components']['adam-bot--chat-window'] ), 'plugin components appear inside the simplified Components group' );
 assert_contract( false === $component_registry->register( 'adam-bot--chat-window', array( 'label' => 'Collision', 'owner' => 'another-plugin' ) ), 'plugins cannot replace components owned by another plugin' );
 assert_contract( 'adam-ui-component adam-component--adam-bot-chat-window custom-chat' === $component_registry->component_class( 'adam-bot', 'chat-window', 'custom-chat' ), 'plugin component root classes are isolated and deterministic' );
 

@@ -49,14 +49,20 @@ final class ADAM_UI_Theme_Editor {
 		}
 		$theme      = $themes[ $id ];
 		$schema     = $this->repository->schema();
-		$components = $this->components->all();
+		$components = $this->prepare_editor_components( $this->components->all(), $schema );
 		$groups     = $this->components->grouped();
+		if ( isset( $components['advanced'] ) ) {
+			$groups['advanced']['components']['advanced'] = $components['advanced'];
+		}
+		$inheritance = $this->repository->inheritance_map();
+		$base_tokens = $this->repository->base_tokens( $theme );
 		?>
 		<div
 			class="wrap adam-admin-page adam-theme-editor"
 			data-adam-theme-editor
 			data-adam-style-maps="<?php echo esc_attr( wp_json_encode( $this->components->style_maps() ) ); ?>"
 			data-adam-intelligence="<?php echo esc_attr( wp_json_encode( $this->repository->intelligence_contracts() ) ); ?>"
+			data-adam-inheritance="<?php echo esc_attr( wp_json_encode( $inheritance ) ); ?>"
 		>
 			<header class="adam-page-header">
 				<div>
@@ -115,7 +121,12 @@ final class ADAM_UI_Theme_Editor {
 												<?php foreach ( $group['fields'] as $field ) :
 													$key = sanitize_key( $field['token'] );
 													if ( isset( $schema[ $key ], $theme['tokens'][ $key ] ) ) {
-														$this->render_field( $key, $schema[ $key ], $theme['tokens'][ $key ], $field['label'], $slug );
+														$is_override = 'advanced' === $slug || ( 'global-theme' !== $slug && isset( $inheritance[ $key ] ) && 'color' === $schema[ $key ]['type'] );
+														if ( $is_override ) {
+															$this->render_override_field( $key, $schema[ $key ], $theme, $base_tokens, $field['label'], $slug );
+														} else {
+															$this->render_field( $key, $schema[ $key ], $theme['tokens'][ $key ], $field['label'], $slug );
+														}
 													}
 												endforeach; ?>
 											</div>
@@ -151,25 +162,100 @@ final class ADAM_UI_Theme_Editor {
 		<?php
 	}
 
-	private function render_field( $key, $field, $value, $label, $component ) {
+	private function render_field( $key, $field, $value, $label, $component, $name_prefix = 'tokens', $disabled = false ) {
+		$name = $name_prefix . '[' . $key . ']';
 		?>
 		<label class="adam-theme-editor__field">
 			<span><?php echo esc_html( $label ); ?></span>
 			<?php if ( 'color' === $field['type'] ) : ?>
 				<span class="adam-css-color-control">
-					<input class="adam-css-color-value adam-input" type="text" name="tokens[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $value ); ?>" data-adam-token="--<?php echo esc_attr( $key ); ?>" data-invalid-message="<?php echo esc_attr__( 'Enter a valid CSS colour.', 'adam-ui' ); ?>" spellcheck="false">
-					<input class="adam-css-color-picker" type="color" value="<?php echo esc_attr( preg_match( '/^#[0-9a-f]{6}$/i', $value ) ? $value : '#000000' ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Pick %s', 'adam-ui' ), $label ) ); ?>">
+					<input class="adam-css-color-value adam-input" type="text" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $value ); ?>" data-adam-token="--<?php echo esc_attr( $key ); ?>" data-invalid-message="<?php echo esc_attr__( 'Enter a valid CSS colour.', 'adam-ui' ); ?>" spellcheck="false" <?php disabled( $disabled ); ?>>
+					<input class="adam-css-color-picker" type="color" value="<?php echo esc_attr( preg_match( '/^#[0-9a-f]{6}$/i', $value ) ? $value : '#000000' ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Pick %s', 'adam-ui' ), $label ) ); ?>" <?php disabled( $disabled ); ?>>
 					<span class="adam-css-color-swatch" aria-hidden="true"></span>
 				</span>
 			<?php elseif ( 'select' === $field['type'] ) : ?>
-				<select class="adam-select" name="tokens[<?php echo esc_attr( $key ); ?>]" data-adam-token="--<?php echo esc_attr( $key ); ?>" data-adam-style-component="<?php echo esc_attr( $component ); ?>">
+				<select class="adam-select" name="<?php echo esc_attr( $name ); ?>" data-adam-token="--<?php echo esc_attr( $key ); ?>" data-adam-style-component="<?php echo esc_attr( $component ); ?>" <?php disabled( $disabled ); ?>>
 					<?php foreach ( $field['options'] as $option => $option_label ) : ?>
 						<option value="<?php echo esc_attr( $option ); ?>" <?php selected( $value, $option ); ?>><?php echo esc_html( $option_label ); ?></option>
 					<?php endforeach; ?>
 				</select>
+			<?php elseif ( 'number' === $field['type'] ) :
+				$unit = isset( $field['unit'] ) ? $field['unit'] : '';
+				$number_value = '' !== $unit ? str_replace( $unit, '', (string) $value ) : $value;
+				?>
+				<input class="adam-input" type="range" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $number_value ); ?>" min="<?php echo esc_attr( $field['min'] ); ?>" max="<?php echo esc_attr( $field['max'] ); ?>" step="<?php echo esc_attr( $field['step'] ); ?>" data-adam-token="--<?php echo esc_attr( $key ); ?>" data-unit="<?php echo esc_attr( $unit ); ?>" <?php disabled( $disabled ); ?>>
+				<output><?php echo esc_html( $value ); ?></output>
+			<?php else : ?>
+				<input class="adam-input" type="text" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $value ); ?>" data-adam-token="--<?php echo esc_attr( $key ); ?>" <?php disabled( $disabled ); ?>>
 			<?php endif; ?>
 		</label>
 		<?php
+	}
+
+	private function render_override_field( $key, $field, $theme, $base_tokens, $label, $component ) {
+		$overrides = isset( $theme['overrides'] ) && is_array( $theme['overrides'] ) ? $theme['overrides'] : array();
+		$enabled   = array_key_exists( $key, $overrides );
+		$value     = $enabled ? $overrides[ $key ] : $theme['tokens'][ $key ];
+		?>
+		<div class="adam-theme-editor__override" data-adam-override="<?php echo esc_attr( $key ); ?>" data-adam-base-value="<?php echo esc_attr( isset( $base_tokens[ $key ] ) ? $base_tokens[ $key ] : $theme['tokens'][ $key ] ); ?>">
+			<label class="adam-theme-editor__override-toggle">
+				<input type="checkbox" data-adam-override-toggle="<?php echo esc_attr( $key ); ?>" <?php checked( $enabled ); ?>>
+				<span><?php esc_html_e( 'Override global value', 'adam-ui' ); ?></span>
+			</label>
+			<div data-adam-override-control>
+				<?php $this->render_field( $key, $field, $value, $label, $component, 'overrides', ! $enabled ); ?>
+			</div>
+		</div>
+		<?php
+	}
+
+	private function prepare_editor_components( $components, $schema ) {
+		if ( ! isset( $components['advanced'] ) ) {
+			return $components;
+		}
+
+		$groups = array();
+		$visible_tokens = array();
+		foreach ( $components as $slug => $component ) {
+			if ( 'advanced' === $slug ) {
+				continue;
+			}
+			foreach ( $component['controls'] as $control_group ) {
+				foreach ( isset( $control_group['fields'] ) ? $control_group['fields'] : array() as $control_field ) {
+					if ( ! empty( $control_field['token'] ) ) {
+						$visible_tokens[] = sanitize_key( $control_field['token'] );
+					}
+				}
+			}
+		}
+		$global_tokens = array(
+			'adam-section-standard-bg',
+			'adam-section-alternate-bg',
+			'adam-section-feature-bg',
+			'adam-btn-primary-bg',
+			'adam-global-heading',
+			'adam-global-text',
+			'adam-global-link',
+			'adam-global-button-text',
+			'adam-global-border',
+			'adam-global-shadow-strength',
+			'adam-global-radius',
+		);
+		foreach ( $schema as $key => $field ) {
+			if ( in_array( $key, $global_tokens, true ) || in_array( $key, $visible_tokens, true ) || 'select' === $field['type'] ) {
+				continue;
+			}
+			$section = isset( $field['section'] ) ? $field['section'] : __( 'Other', 'adam-ui' );
+			if ( ! isset( $groups[ $section ] ) ) {
+				$groups[ $section ] = array( 'label' => $section, 'fields' => array() );
+			}
+			$groups[ $section ]['fields'][] = array(
+				'token' => $key,
+				'label' => isset( $field['label'] ) ? $field['label'] : $key,
+			);
+		}
+		$components['advanced']['controls'] = array_values( $groups );
+		return $components;
 	}
 
 	private function render_component_preview( $slug, $component ) {

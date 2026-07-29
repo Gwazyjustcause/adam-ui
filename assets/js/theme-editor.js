@@ -9,6 +9,7 @@
 
 	let styleMaps = {};
 	let intelligenceContracts = [];
+	let inheritanceMap = {};
 	let intelligenceFrame = 0;
 	try {
 		styleMaps = JSON.parse( root.dataset.adamStyleMaps || '{}' );
@@ -19,6 +20,11 @@
 		intelligenceContracts = JSON.parse( root.dataset.adamIntelligence || '[]' );
 	} catch ( error ) {
 		intelligenceContracts = [];
+	}
+	try {
+		inheritanceMap = JSON.parse( root.dataset.adamInheritance || '{}' );
+	} catch ( error ) {
+		inheritanceMap = {};
 	}
 
 	function isValidColor( value ) {
@@ -119,7 +125,7 @@
 			const surface = mixColor( background, heading, 0.075 );
 			const surfaceText = resolvedRgb( readableText( colorHex( surface ) ) );
 			const disabledBackground = mixColor( background, heading, 0.08 );
-			const disabledText = ensureContrast( mixColor( disabledBackground, heading, 0.48 ), disabledBackground, 3, heading );
+			const disabledText = ensureContrast( mixColor( disabledBackground, heading, 0.48 ), disabledBackground, 4.5, heading );
 
 			setRoleTokens( contract, 'heading', heading );
 			setRoleTokens( contract, 'text', body );
@@ -138,6 +144,20 @@
 			( contract.shadow || [] ).forEach( ( token ) => {
 				root.style.setProperty( '--' + token, luminance( background ) < 0.25 ? 'rgb(0 0 0 / 0.42)' : 'rgb(0 0 0 / 0.2)' );
 			} );
+		} );
+		applyInheritance();
+	}
+
+	function applyInheritance() {
+		Object.keys( inheritanceMap ).forEach( ( target ) => {
+			const toggle = root.querySelector( '[data-adam-override-toggle="' + target + '"]' );
+			if ( toggle && toggle.checked ) {
+				return;
+			}
+			const value = window.getComputedStyle( root ).getPropertyValue( '--' + inheritanceMap[ target ] ).trim();
+			if ( value ) {
+				root.style.setProperty( '--' + target, value );
+			}
 		} );
 	}
 
@@ -235,6 +255,26 @@
 		applyToken( input );
 	} );
 
+	root.querySelectorAll( '[data-adam-override-toggle]' ).forEach( ( toggle ) => {
+		toggle.addEventListener( 'change', () => {
+			const wrapper = toggle.closest( '[data-adam-override]' );
+			const controls = wrapper.querySelectorAll( '[data-adam-override-control] input, [data-adam-override-control] select' );
+			controls.forEach( ( control ) => {
+				control.disabled = ! toggle.checked;
+			} );
+			if ( toggle.checked ) {
+				const control = wrapper.querySelector( '[data-adam-token]' );
+				if ( control ) {
+					applyToken( control );
+				}
+			} else {
+				root.style.setProperty( '--' + toggle.dataset.adamOverrideToggle, wrapper.dataset.adamBaseValue );
+				applyInheritance();
+				scheduleIntelligence();
+			}
+		} );
+	} );
+
 	const tabs = Array.from( root.querySelectorAll( '[data-adam-editor-tab]' ) );
 	const panels = Array.from( root.querySelectorAll( '[data-adam-editor-panel]' ) );
 
@@ -286,5 +326,9 @@
 		}, true );
 	}
 
-	root.querySelectorAll( '[data-adam-token]' ).forEach( ( input ) => applyToken( input ) );
+	root.querySelectorAll( '[data-adam-token]' ).forEach( ( input ) => {
+		if ( ! input.disabled ) {
+			applyToken( input );
+		}
+	} );
 }( document, window ) );

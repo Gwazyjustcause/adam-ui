@@ -114,6 +114,7 @@ final class ADAM_UI_Theme_Component_Registry {
 				'owner'       => $owner,
 				'owner_name'  => 'adam-ui' === $owner ? $this->translate_when_ready( 'ADAM UI' ) : $owner,
 				'category'    => 'adam-ui' === $owner ? $this->translate_when_ready( 'Core Components' ) : $owner,
+				'editor_group' => 'components',
 				'controls'    => array(),
 				'styles'      => array(),
 				'default_styles' => array(),
@@ -132,6 +133,7 @@ final class ADAM_UI_Theme_Component_Registry {
 		$args['owner']      = $owner;
 		$args['owner_name'] = sanitize_text_field( $args['owner_name'] );
 		$args['category']   = sanitize_text_field( $args['category'] );
+		$args['editor_group'] = sanitize_key( $args['editor_group'] );
 		$args['css_class']  = 'adam-component--' . str_replace( '--', '-', $slug );
 		$args['controls'] = is_array( $args['controls'] ) ? $args['controls'] : array();
 		$args['styles']   = is_array( $args['styles'] ) ? $args['styles'] : array();
@@ -225,6 +227,7 @@ final class ADAM_UI_Theme_Component_Registry {
 					'owner'       => 'adam-ui',
 					'owner_name'  => $this->translate_when_ready( 'ADAM UI' ),
 					'category'    => $this->translate_when_ready( 'Core Components' ),
+					'editor_group' => 'components',
 					'controls'    => array(),
 					'styles'      => array(),
 					'default_styles' => array(),
@@ -242,14 +245,15 @@ final class ADAM_UI_Theme_Component_Registry {
 		return $components;
 	}
 
-	/** Groups components by category while preserving registration order. */
+	/** Groups the editor into Global Theme, Components, and Advanced. */
 	public function grouped() {
 		$groups = array();
 		foreach ( $this->all() as $slug => $component ) {
-			$key      = 'adam-ui' === $component['owner'] ? 'core-components' : sanitize_key( $component['owner'] );
+			$key = isset( $component['editor_group'] ) ? sanitize_key( $component['editor_group'] ) : 'components';
+			$key = in_array( $key, array( 'global-theme', 'components', 'advanced' ), true ) ? $key : 'components';
 			if ( ! isset( $groups[ $key ] ) ) {
 				$groups[ $key ] = array(
-					'label'      => 'adam-ui' === $component['owner'] ? $this->translate_when_ready( 'Core Components' ) : $component['owner_name'],
+					'label'      => 'global-theme' === $key ? $this->translate_when_ready( 'Global Theme' ) : ( 'advanced' === $key ? $this->translate_when_ready( 'Advanced' ) : $this->translate_when_ready( 'Components' ) ),
 					'components' => array(),
 				);
 			}
@@ -321,10 +325,10 @@ final class ADAM_UI_Theme_Component_Registry {
 						'contrast' => $default,
 						'options'  => isset( $field['options'] ) ? $field['options'] : array(),
 						'editable' => true,
-						'unit'     => '',
-						'min'      => 0,
-						'max'      => 100,
-						'step'     => 1,
+						'unit'     => isset( $field['unit'] ) ? $field['unit'] : '',
+						'min'      => isset( $field['min'] ) ? $field['min'] : 0,
+						'max'      => isset( $field['max'] ) ? $field['max'] : 100,
+						'step'     => isset( $field['step'] ) ? $field['step'] : 1,
 					);
 				}
 			}
@@ -464,13 +468,45 @@ final class ADAM_UI_Theme_Component_Registry {
 	/** Registers the eight Night Theme component families. */
 	private function register_builtins() {
 		$this->register(
+			'global-theme',
+			array(
+				'label'        => __( 'Global Theme', 'adam-ui' ),
+				'description'  => __( 'Define the shared Night surfaces, typography, borders, shadows, and radius inherited throughout the website.', 'adam-ui' ),
+				'editor_group' => 'global-theme',
+				'controls'     => array(
+					$this->group(
+						__( 'Colours', 'adam-ui' ),
+						array(
+							$this->color( 'adam-section-standard-bg', __( 'Primary Surface', 'adam-ui' ), '#141914' ),
+							$this->color( 'adam-section-alternate-bg', __( 'Secondary Surface', 'adam-ui' ), '#222b23' ),
+							$this->color( 'adam-section-feature-bg', __( 'Accent Surface', 'adam-ui' ), '#205033' ),
+							$this->color( 'adam-btn-primary-bg', __( 'Accent Colour', 'adam-ui' ), '#9bc85a' ),
+						)
+					),
+					$this->group(
+						__( 'Typography', 'adam-ui' ),
+						array(
+							$this->color( 'adam-global-heading', __( 'Headings', 'adam-ui' ), '#f2f5ef' ),
+							$this->color( 'adam-global-text', __( 'Body Text', 'adam-ui' ), '#e7ebe3' ),
+							$this->color( 'adam-global-link', __( 'Links', 'adam-ui' ), '#b5db70' ),
+							$this->color( 'adam-global-button-text', __( 'Buttons Text', 'adam-ui' ), '#b5db70' ),
+						)
+					),
+					$this->group( __( 'Borders', 'adam-ui' ), array( $this->color( 'adam-global-border', __( 'Default Border Colour', 'adam-ui' ), '#41493e' ) ) ),
+					$this->group( __( 'Shadows', 'adam-ui' ), array( $this->number( 'adam-global-shadow-strength', __( 'Default Shadow Strength', 'adam-ui' ), 0.35, '', 0, 0.8, 0.01 ) ) ),
+					$this->group( __( 'Radius', 'adam-ui' ), array( $this->number( 'adam-global-radius', __( 'Global Border Radius', 'adam-ui' ), 8, 'px', 0, 40, 1 ) ) ),
+				),
+				'preview'      => '<section class="adam-mini-global"><h3>Night Theme</h3><p>Global typography flows through every component.</p><a href="#">Shared link</a><button>Shared button</button></section>',
+			)
+		);
+
+		$this->register(
 			'header',
 			array(
 				'label'       => __( 'Header', 'adam-ui' ),
 				'description' => __( 'Control the site identity, navigation emphasis, and header depth.', 'adam-ui' ),
 				'controls'    => array(
 					$this->group( __( 'Background', 'adam-ui' ), array( $this->color( 'adam-header-bg', __( 'Header background', 'adam-ui' ), '#161d16' ) ) ),
-					$this->group( __( 'Navigation Accent', 'adam-ui' ), array( $this->color( 'adam-header-active-bg', __( 'Active menu accent', 'adam-ui' ), '#9bc85a' ) ) ),
 					$this->style_group( 'adam-header-style', 'solid', array( 'solid' => __( 'Solid', 'adam-ui' ), 'transparent' => __( 'Transparent', 'adam-ui' ), 'elevated' => __( 'Floating', 'adam-ui' ) ) ),
 				),
 				'styles'      => array(
@@ -489,7 +525,6 @@ final class ADAM_UI_Theme_Component_Registry {
 				'label'       => __( 'Sections', 'adam-ui' ),
 				'description' => __( 'Set the reusable content surface used by most pages.', 'adam-ui' ),
 				'controls'    => array(
-					$this->group( __( 'Background', 'adam-ui' ), array( $this->color( 'adam-section-standard-bg', __( 'Section background', 'adam-ui' ), '#141914' ) ) ),
 					$this->style_group( 'adam-section-style', 'standard', array( 'standard' => __( 'Standard', 'adam-ui' ), 'alternate' => __( 'Alternate', 'adam-ui' ), 'highlight' => __( 'Highlight', 'adam-ui' ) ) ),
 				),
 				'styles'      => array(
@@ -508,7 +543,6 @@ final class ADAM_UI_Theme_Component_Registry {
 				'label'       => __( 'Feature Sections', 'adam-ui' ),
 				'description' => __( 'Style highlighted areas for community, events, and partnerships.', 'adam-ui' ),
 				'controls'    => array(
-					$this->group( __( 'Background', 'adam-ui' ), array( $this->color( 'adam-section-feature-bg', __( 'Feature background', 'adam-ui' ), '#205033' ) ) ),
 					$this->style_group( 'adam-feature-style', 'highlight', array( 'highlight' => __( 'Highlight', 'adam-ui' ), 'solid' => __( 'Solid', 'adam-ui' ), 'minimal' => __( 'Minimal', 'adam-ui' ) ) ),
 				),
 				'styles'      => array(
@@ -529,7 +563,6 @@ final class ADAM_UI_Theme_Component_Registry {
 				'controls'    => array(
 					$this->group( __( 'Background', 'adam-ui' ), array( $this->color( 'adam-hero-bg', __( 'Hero background', 'adam-ui' ), '#172016' ) ) ),
 					$this->style_group( 'adam-hero-style', 'split', array( 'solid' => __( 'Solid', 'adam-ui' ), 'split' => __( 'Split', 'adam-ui' ), 'minimal' => __( 'Minimal', 'adam-ui' ) ) ),
-					$this->group( __( 'Buttons', 'adam-ui' ), array( $this->color( 'adam-hero-primary', __( 'Primary action', 'adam-ui' ), '#9bc85a' ), $this->color( 'adam-hero-secondary', __( 'Secondary action', 'adam-ui' ), '#242b22' ) ) ),
 				),
 				'styles'      => array(
 					'solid'   => $this->style( __( 'Solid', 'adam-ui' ), array( 'adam-hero-padding' => '4rem', 'adam-hero-layout-columns' => '1fr', 'adam-hero-border-width' => '0px' ) ),
@@ -567,7 +600,6 @@ final class ADAM_UI_Theme_Component_Registry {
 				'label'       => __( 'Buttons', 'adam-ui' ),
 				'description' => __( 'Manage the primary, secondary, and outline actions as one family.', 'adam-ui' ),
 				'controls'    => array(
-					$this->group( __( 'Background', 'adam-ui' ), array( $this->color( 'adam-btn-primary-bg', __( 'Primary', 'adam-ui' ), '#9bc85a' ), $this->color( 'adam-btn-secondary-bg', __( 'Secondary', 'adam-ui' ), '#374238' ), $this->color( 'adam-btn-outline-border', __( 'Outline', 'adam-ui' ), '#b5db70' ) ) ),
 					$this->style_group( 'adam-button-style', 'filled', array( 'filled' => __( 'Filled', 'adam-ui' ), 'outline' => __( 'Outline', 'adam-ui' ), 'soft' => __( 'Soft', 'adam-ui' ) ) ),
 				),
 				'styles'      => array(
@@ -585,6 +617,7 @@ final class ADAM_UI_Theme_Component_Registry {
 				'label'       => __( 'Forms', 'adam-ui' ),
 				'description' => __( 'Choose one field treatment for every input workflow.', 'adam-ui' ),
 				'controls'    => array(
+					$this->group( __( 'Background', 'adam-ui' ), array( $this->color( 'adam-form-input-bg', __( 'Form background', 'adam-ui' ), '#171d16' ) ) ),
 					$this->style_group( 'adam-form-style', 'outlined', array( 'outlined' => __( 'Outlined', 'adam-ui' ), 'filled' => __( 'Filled', 'adam-ui' ), 'minimal' => __( 'Minimal', 'adam-ui' ) ) ),
 				),
 				'styles'      => array(
@@ -613,6 +646,16 @@ final class ADAM_UI_Theme_Component_Registry {
 				),
 				'preview'     => '<footer class="adam-mini-footer"><strong>ADAM</strong><nav><a href="#">About</a> <a href="#">Contact</a></nav><span class="adam-mini-socials" aria-label="Social icons">&#9679; &#9679; &#9679;</span><div class="adam-mini-footer__switcher">Theme: System</div><small>&copy; ADAM</small></footer>',
 				'contrast'    => array( 'adam-footer-bg' => array( 'adam-footer-heading', 'adam-footer-text', 'adam-footer-link', 'adam-footer-link-hover', 'adam-footer-social', 'adam-footer-copyright' ) ),
+			)
+		);
+
+		$this->register(
+			'advanced',
+			array(
+				'label'        => __( 'Advanced', 'adam-ui' ),
+				'description'  => __( 'Override inherited values only when a component genuinely needs to differ from the Global Theme.', 'adam-ui' ),
+				'editor_group' => 'advanced',
+				'preview'      => '<div class="adam-mini-advanced"><strong>Optional overrides</strong><p>Most themes should leave these controls disabled.</p></div>',
 			)
 		);
 
@@ -694,16 +737,34 @@ final class ADAM_UI_Theme_Component_Registry {
 			$this->components['buttons']['tokens'],
 			array(
 				'adam-button-focus'       => array( 'type' => 'color', 'default' => '#b5db70' ),
+				'adam-btn-primary-focus'  => array( 'type' => 'color', 'default' => '#172107' ),
+				'adam-btn-secondary-focus' => array( 'type' => 'color', 'default' => '#b5db70' ),
+				'adam-btn-outline-focus'  => array( 'type' => 'color', 'default' => '#b5db70' ),
+				'adam-btn-danger-focus'   => array( 'type' => 'color', 'default' => '#2b0e0b' ),
+				'adam-btn-success-focus'  => array( 'type' => 'color', 'default' => '#102116' ),
 				'adam-button-disabled-bg' => array( 'type' => 'color', 'default' => '#293028' ),
 				'adam-button-disabled-text' => array( 'type' => 'color', 'default' => '#aab6a3' ),
 			)
 		);
 		$this->components['buttons']['intelligence'] = array(
-			$this->button_contract( 'adam-btn-primary-bg', 'adam-btn-primary-text', 'adam-btn-primary-hover-bg', 'adam-btn-primary-hover-text', 'adam-btn-primary-border', 'adam-button-focus', true ),
-			$this->button_contract( 'adam-btn-secondary-bg', 'adam-btn-secondary-text', 'adam-btn-secondary-hover-bg', 'adam-btn-secondary-hover-text', 'adam-btn-secondary-border' ),
-			$this->button_contract( 'adam-btn-outline-border', 'adam-btn-outline-text', 'adam-btn-outline-hover-bg', 'adam-btn-outline-hover-text', 'adam-btn-outline-hover-border' ),
-			$this->button_contract( 'adam-btn-danger-bg', 'adam-btn-danger-text', 'adam-btn-danger-hover-bg', 'adam-btn-danger-hover-text', 'adam-btn-danger-border' ),
-			$this->button_contract( 'adam-btn-success-bg', 'adam-btn-success-text', 'adam-btn-success-hover-bg', 'adam-btn-success-hover-text', 'adam-btn-success-border' ),
+			$this->button_contract( 'adam-btn-primary-bg', 'adam-btn-primary-text', 'adam-btn-primary-hover-bg', 'adam-btn-primary-hover-text', 'adam-btn-primary-border', 'adam-btn-primary-focus', true ),
+			$this->button_contract( 'adam-btn-secondary-bg', 'adam-btn-secondary-text', 'adam-btn-secondary-hover-bg', 'adam-btn-secondary-hover-text', 'adam-btn-secondary-border', 'adam-btn-secondary-focus' ),
+			array(
+				'background'       => 'adam-btn-secondary-bg',
+				'accent'           => 'adam-btn-outline-border',
+				'link'             => array( 'adam-btn-outline-text' ),
+				'hover_background' => array( 'adam-btn-outline-hover-bg' ),
+				'hover_text'       => array( 'adam-btn-outline-hover-text' ),
+				'icon'             => array( 'adam-btn-outline-border' ),
+				'focus'            => array( 'adam-button-focus', 'adam-btn-outline-focus' ),
+			),
+			array(
+				'background' => 'adam-btn-outline-hover-bg',
+				'accent'     => 'adam-btn-outline-border',
+				'icon'       => array( 'adam-btn-outline-hover-border' ),
+			),
+			$this->button_contract( 'adam-btn-danger-bg', 'adam-btn-danger-text', 'adam-btn-danger-hover-bg', 'adam-btn-danger-hover-text', 'adam-btn-danger-border', 'adam-btn-danger-focus' ),
+			$this->button_contract( 'adam-btn-success-bg', 'adam-btn-success-text', 'adam-btn-success-hover-bg', 'adam-btn-success-hover-text', 'adam-btn-success-border', 'adam-btn-success-focus' ),
 		);
 		$this->components['forms']['intelligence'] = array(
 			array(
@@ -775,7 +836,7 @@ final class ADAM_UI_Theme_Component_Registry {
 			'hover_text'       => array( $hover_text ),
 		);
 		if ( $border ) { $contract['border'] = array( $border ); }
-		if ( $focus ) { $contract['focus'] = array( $focus ); }
+		if ( $focus ) { $contract['focus'] = is_array( $focus ) ? $focus : array( $focus ); }
 		if ( $disabled ) {
 			$contract['disabled_background'] = array( 'adam-button-disabled-bg' );
 			$contract['disabled_text']       = array( 'adam-button-disabled-text' );
@@ -789,6 +850,10 @@ final class ADAM_UI_Theme_Component_Registry {
 
 	private function color( $token, $label, $default ) {
 		return array( 'token' => $token, 'label' => $label, 'type' => 'color', 'default' => $default );
+	}
+
+	private function number( $token, $label, $default, $unit, $min, $max, $step ) {
+		return array( 'token' => $token, 'label' => $label, 'type' => 'number', 'default' => $default . $unit, 'unit' => $unit, 'min' => $min, 'max' => $max, 'step' => $step );
 	}
 
 	private function style_group( $token, $default, $options ) {

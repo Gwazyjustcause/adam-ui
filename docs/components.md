@@ -67,7 +67,7 @@ Phase 4 double-hyphen button and notice modifiers remain supported for increment
 
 ## Design tokens
 
-The Theme Editor exposes tokens by component rather than by page. Prefer direct component tokens (`--adam-card-bg`, `--adam-card-heading`, `--adam-btn-primary-bg`, `--adam-form-border`, `--adam-table-header-bg`, and `--adam-notice-success-bg`) when styling a shared component. Semantic compatibility aliases remain available for older integrations.
+The Theme Editor exposes a global foundation followed by reusable components, never page-specific settings. Component typography, borders, shadows, and radius inherit the Global Theme unless an administrator enables an Advanced override. Plugins should continue consuming stable component tokens (`--adam-card-bg`, `--adam-card-heading`, `--adam-btn-primary-bg`, `--adam-form-border`, `--adam-table-header-bg`, and `--adam-notice-success-bg`); ADAM UI resolves their inherited values at runtime. Semantic compatibility aliases remain available for older integrations.
 
 - Colour: `--adam-bg`, `--adam-surface`, `--adam-surface-2`, `--adam-text`, semantic status tokens, borders, links, focus, overlays and shadows.
 - Section hierarchy: `--adam-section-canvas`, `--base`, `--muted`, `--soft`, `--pale`, `--feature`, `--accent`, and `--deep`, with matching `--adam-on-section-*` foregrounds. These roles preserve the Light Theme's page rhythm in the Night Theme instead of flattening every section to one dark surface.

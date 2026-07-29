@@ -2,6 +2,16 @@
 
 ADAM UI stores Night presets in the `adam_ui_themes` WordPress option. **ADAM Night** is the safe built-in default and cannot be deleted. Administrators can edit Night overrides under **ADAM UI → Theme Editor**, duplicate a preset, rename or delete custom Night presets, and import/export complete JSON packages. Legacy Light theme data remains stored for backwards compatibility but is no longer exposed or emitted.
 
+## Editor inheritance
+
+The normal editing flow is deliberately small:
+
+1. **Global Theme** defines primary, secondary, and accent surfaces; the accent colour; shared heading, body, link, and button text; the default border; shadow strength; and radius.
+2. **Components** inherit those values and expose only their background or structural appearance where relevant.
+3. **Advanced** contains opt-in overrides for individual component tokens. An override is stored separately from the global token and can be disabled to return immediately to inheritance.
+
+The stable component token names remain available to plugins. At runtime the repository resolves global inheritance first, calculates supporting interaction states, and finally applies enabled Advanced overrides.
+
 The editor is generated from eight reusable component definitions: Header, Sections, Feature Sections, Hero, Cards, Buttons, Forms, and Footer. It no longer exposes a page-oriented colour matrix. Each component offers only its meaningful background and a small visual-style choice, while foreground colours are derived automatically.
 
 Light, Night, and System remain preference modes:

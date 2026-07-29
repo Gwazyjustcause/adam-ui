@@ -17,7 +17,7 @@ function adam_ui_editor_assert( $condition, $message ) {
 	}
 }
 
-foreach ( array( 'header', 'sections', 'feature-sections', 'hero', 'cards', 'buttons', 'forms', 'footer' ) as $component ) {
+foreach ( array( 'global-theme', 'header', 'sections', 'feature-sections', 'hero', 'cards', 'buttons', 'forms', 'footer', 'advanced' ) as $component ) {
 	adam_ui_editor_assert( false !== strpos( $registry, "'{$component}'" ), "{$component} is missing from the component registry." );
 }
 
@@ -30,13 +30,19 @@ adam_ui_editor_assert( false === strpos( $editor, 'get_primary_groups' ), 'Legac
 adam_ui_editor_assert( false !== strpos( $editor, 'render_component_preview' ), 'Every registered component must receive a live preview.' );
 adam_ui_editor_assert( false !== strpos( $editor, 'data-adam-style-maps' ), 'Preset maps are not exposed to live preview.' );
 adam_ui_editor_assert( false !== strpos( $editor, 'data-adam-intelligence' ), 'Semantic colour contracts are not exposed to live preview.' );
+adam_ui_editor_assert( false !== strpos( $editor, 'data-adam-inheritance' ), 'Global-to-component inheritance is not exposed to live preview.' );
+adam_ui_editor_assert( false !== strpos( $editor, 'render_override_field' ) && false !== strpos( $editor, "name_prefix = 'tokens'" ), 'Advanced overrides are not isolated from global tokens.' );
 adam_ui_editor_assert( false !== strpos( $script, 'applyComponentStyle' ), 'Preset changes do not update the preview immediately.' );
+adam_ui_editor_assert( false !== strpos( $script, 'applyInheritance' ) && false !== strpos( $script, 'data-adam-override-toggle' ), 'Live preview does not propagate global values or toggle overrides.' );
 adam_ui_editor_assert( false !== strpos( $script, 'applyIntelligence' ) && false !== strpos( $script, 'ensureContrast' ), 'Live preview is not deriving accessible component states.' );
 adam_ui_editor_assert( false !== strpos( $repository, 'apply_styles' ), 'Saved component styles are not resolved into design tokens.' );
 adam_ui_editor_assert( false !== strpos( $components . $preview, '--adam-card-surface-opacity' ), 'Card visual presets are not bound to shared CSS.' );
 adam_ui_editor_assert( false !== strpos( $components . $preview, '--adam-button-fill-opacity' ), 'Button visual presets are not bound to shared CSS.' );
 adam_ui_editor_assert( false !== strpos( $bootstrap, 'function adam_ui_register_theme_component' ), 'Public component registration API is missing.' );
 adam_ui_editor_assert( false !== strpos( $registry, "apply_filters( 'adam_ui_theme_components'" ), 'Theme component registration filter is missing.' );
+foreach ( array( 'adam-global-heading', 'adam-global-text', 'adam-global-link', 'adam-global-button-text', 'adam-global-border', 'adam-global-shadow-strength', 'adam-global-radius' ) as $global_token ) {
+	adam_ui_editor_assert( false !== strpos( $registry, "'{$global_token}'" ), "{$global_token} is missing from Global Theme." );
+}
 adam_ui_editor_assert( false !== strpos( $script, "'ArrowDown'" ) && false !== strpos( $script, "'Home'" ), 'Component navigation is not keyboard accessible.' );
 
 echo "PASS: registry-driven component Theme Editor contract.\n";

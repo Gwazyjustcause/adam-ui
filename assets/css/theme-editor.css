@@ -267,6 +267,49 @@
 	padding-bottom: var(--adam-space-4);
 }
 
+.adam-theme-editor__override {
+	display: grid;
+	gap: var(--adam-space-2);
+	padding: var(--adam-space-3);
+	border: 1px solid var(--adam-border);
+	border-radius: var(--adam-radius);
+}
+
+.adam-theme-editor__override-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--adam-space-2);
+	color: var(--adam-text-muted);
+	font-size: 0.875rem;
+}
+
+.adam-theme-editor__override:has([data-adam-override-toggle]:checked) {
+	border-color: var(--adam-primary);
+}
+
+.adam-theme-editor__override [data-adam-override-control] :disabled {
+	opacity: 0.55;
+}
+
+.adam-mini-global,
+.adam-mini-advanced {
+	display: grid;
+	gap: var(--adam-space-3);
+	padding: var(--adam-space-4);
+	color: var(--adam-global-text);
+	background: var(--adam-section-standard-bg);
+	border: 1px solid var(--adam-global-border);
+	border-radius: var(--adam-global-radius);
+}
+
+.adam-mini-global h3 {
+	color: var(--adam-global-heading);
+}
+
+.adam-mini-global a {
+	color: var(--adam-global-link);
+}
+
 @media (max-width: 1250px) {
 	.adam-theme-editor__split {
 		grid-template-columns: 1fr;

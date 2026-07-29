@@ -30,9 +30,9 @@ foreach ( array( '--adam-night-surface', '--adam-night-surface-alt', '--adam-nig
 }
 adam_ui_night_assert( false !== strpos( $repository, 'apply_automatic_contrast' ) && false !== strpos( $repository, 'contrast_map' ), 'Automatic Night foreground derivation is missing.' );
 adam_ui_night_assert( false !== strpos( $repository, '--adam-night-bg:var(--adam-section-standard-bg)' ), 'The Night canvas must resolve from the main page surface.' );
-adam_ui_night_assert( false !== strpos( $repository, '--adam-header-bg:var(--adam-night-bg);--adam-header-nav-bg:var(--adam-night-bg);--adam-footer-bg:var(--adam-night-bg)' ), 'Header and footer tokens must resolve to one continuous Night canvas.' );
-adam_ui_night_assert( 3 <= substr_count( $ui_css, 'background: var(--adam-night-bg)' ), 'Night header, footer, and Blocksy rows must use the shared canvas.' );
-adam_ui_night_assert( false !== strpos( $ui_css, ':is(.ct-header, .ct-footer) [data-row]' ), 'Blocksy header and footer row backgrounds are not reset.' );
+adam_ui_night_assert( false !== strpos( $repository, "'adam-header-bg' => 'adam-section-standard-bg'" ) && false !== strpos( $repository, "'adam-footer-bg' => 'adam-section-standard-bg'" ), 'Header and footer must inherit the global primary surface by default.' );
+adam_ui_night_assert( false !== strpos( $ui_css, 'background: var(--adam-header-bg)' ) && false !== strpos( $ui_css, 'background: var(--adam-footer-bg)' ), 'Night header and footer must consume their inheriting component tokens.' );
+adam_ui_night_assert( false !== strpos( $ui_css, '.ct-header [data-row]' ) && false !== strpos( $ui_css, '.ct-footer [data-row]' ), 'Blocksy header and footer row backgrounds are not reset.' );
 adam_ui_night_assert( false === strpos( $ui_css, 'linear-gradient(' ) && false === strpos( $ui_css, 'radial-gradient(' ) && false === strpos( $ui_css, 'conic-gradient(' ), 'Night site chrome must not contain gradients.' );
 adam_ui_night_assert( false !== strpos( $engine, 'contrast_ratio' ) && false !== strpos( $engine, 'ensure_contrast' ), 'The intelligent WCAG colour engine is missing.' );
 adam_ui_night_assert( false !== strpos( $engine, "'hover_background'" ) && false !== strpos( $engine, "'disabled_background'" ), 'Supporting component states are not generated automatically.' );
@@ -53,6 +53,16 @@ foreach ( array( 'header', 'footer', 'card', 'form', 'table', 'notice' ) as $com
 	adam_ui_night_assert( false !== strpos( $ui_css, '--adam-' . $component ), 'Generic Night overrides are missing for ' . $component . '.' );
 }
 
+foreach ( array( '--adam-night-button-bg', '--adam-night-button-text', '--adam-night-accent', '--adam-night-on-accent' ) as $button_token ) {
+	adam_ui_night_assert( false !== strpos( $variables . $repository . $ui_css, $button_token ), 'Night button token is missing: ' . $button_token );
+}
+foreach ( array( '.ct-button', '.wp-element-button', '.wp-block-button__link', '[role="button"]', 'a[class*="button"]' ) as $button_family ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, $button_family ), 'Shared Night button coverage is missing for ' . $button_family . '.' );
+}
+foreach ( array( ':hover, :focus-visible, :active', '[aria-disabled="true"]', '.adam-button--outline', '.adam-button--ghost', '.adam-button--accent', 'svg:not([fill="none"])', 'svg[stroke]:not([stroke="none"])' ) as $button_state ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, $button_state ), 'Night button state or icon coverage is missing for ' . $button_state . '.' );
+}
+
 foreach ( array( 'feature', 'cta', 'overlay', 'alternate', 'standard' ) as $role ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, '--adam-section-' . $role . '-text' ), 'Background-aware content contrast is missing for ' . $role . '.' );
 }
@@ -60,7 +70,7 @@ foreach ( array( 'feature', 'cta', 'overlay', 'alternate', 'standard' ) as $role
 foreach ( array( '--adam-night-surface-heading', '--adam-night-surface-text', '--adam-night-surface-link', '--theme-heading-color', '--theme-text-color', '--theme-link-initial-color' ) as $foreground_token ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, $foreground_token ), 'Classified surfaces do not own typography token ' . $foreground_token . '.' );
 }
-foreach ( array( 'h1, h2, h3, h4, h5, h6', 'p, li, dt, dd, figcaption, caption, .wp-element-caption, label, legend, blockquote', 'a:not(.adam-button):not(.wp-element-button)', 'button, input[type="button"], input[type="submit"]' ) as $content_selector ) {
+foreach ( array( 'h1, h2, h3, h4, h5, h6', 'p, li, dt, dd, figcaption, caption, .wp-element-caption, label, legend, blockquote', 'a:not(.adam-button):not(.wp-element-button)' ) as $content_selector ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, $content_selector ), 'Classified-surface typography coverage is missing for ' . $content_selector . '.' );
 }
 foreach ( array( '.adam-badge *', '.adam-status *', '.adam-notice *', '[role="status"] *', '[role="alert"] *' ) as $semantic_exception ) {

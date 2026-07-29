@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || exit;
 
 final class ADAM_UI_Theme_Repository {
 	const OPTION_KEY = 'adam_ui_themes';
-	const SCHEMA_VERSION = 5;
+	const SCHEMA_VERSION = 6;
 
 	private $schema;
 	private $component_registry;
@@ -50,7 +50,10 @@ final class ADAM_UI_Theme_Repository {
 			$tokens[ $key ] = $field[ $column ];
 		}
 		$tokens = $this->component_registry->apply_styles( $tokens );
-		return array( 'name' => $name, 'mode' => $mode, 'builtin' => $builtin, 'tokens' => $this->apply_automatic_contrast( $tokens ) );
+		$tokens = $this->resolve_inheritance( $tokens, array() );
+		$tokens = $this->apply_automatic_contrast( $tokens );
+		$tokens = $this->resolve_inheritance( $tokens, array() );
+		return array( 'name' => $name, 'mode' => $mode, 'builtin' => $builtin, 'tokens' => $tokens, 'overrides' => array() );
 	}
 
 	public function all() {
@@ -79,6 +82,7 @@ final class ADAM_UI_Theme_Repository {
 			'mode' => isset( $theme['mode'] ) && 'dark' === $theme['mode'] ? 'dark' : 'light',
 			'builtin' => ! empty( $fallback['builtin'] ),
 			'tokens' => array(),
+			'overrides' => array(),
 		);
 		$tokens = isset( $theme['tokens'] ) && is_array( $theme['tokens'] ) ? $theme['tokens'] : array();
 		$tokens = $this->migrate_legacy_tokens( $tokens );
@@ -86,9 +90,18 @@ final class ADAM_UI_Theme_Repository {
 			$value = isset( $tokens[ $key ] ) ? wp_unslash( $tokens[ $key ] ) : $fallback['tokens'][ $key ];
 			$out['tokens'][ $key ] = $this->sanitize_token( $value, $field );
 		}
+		$overrides = isset( $theme['overrides'] ) && is_array( $theme['overrides'] ) ? $theme['overrides'] : array();
+		foreach ( $overrides as $key => $value ) {
+			$key = sanitize_key( $key );
+			if ( isset( $this->schema()[ $key ] ) ) {
+				$out['overrides'][ $key ] = $this->sanitize_token( wp_unslash( $value ), $this->schema()[ $key ] );
+			}
+		}
 		if ( 'dark' === $out['mode'] ) {
 			$out['tokens'] = $this->component_registry->apply_styles( $out['tokens'] );
+			$out['tokens'] = $this->resolve_inheritance( $out['tokens'], $out['overrides'] );
 			$out['tokens'] = $this->apply_automatic_contrast( $out['tokens'] );
+			$out['tokens'] = $this->resolve_inheritance( $out['tokens'], $out['overrides'] );
 		}
 		return $out;
 	}
@@ -156,6 +169,81 @@ final class ADAM_UI_Theme_Repository {
 		return $this->color_engine->derive( $tokens, $this->intelligence_contracts() );
 	}
 
+	/** Returns the global source token for every inheriting component value. */
+	public function inheritance_map() {
+		return array(
+			'adam-header-bg' => 'adam-section-standard-bg',
+			'adam-header-nav-bg' => 'adam-section-standard-bg',
+			'adam-footer-bg' => 'adam-section-standard-bg',
+			'adam-hero-bg' => 'adam-section-feature-bg',
+			'adam-card-bg' => 'adam-section-alternate-bg',
+			'adam-form-input-bg' => 'adam-section-alternate-bg',
+			'adam-btn-secondary-bg' => 'adam-section-alternate-bg',
+			'adam-header-active-bg' => 'adam-btn-primary-bg',
+			'adam-hero-primary' => 'adam-btn-primary-bg',
+			'adam-form-button' => 'adam-btn-primary-bg',
+			'adam-section-standard-heading' => 'adam-global-heading',
+			'adam-section-alternate-heading' => 'adam-global-heading',
+			'adam-section-feature-heading' => 'adam-global-heading',
+			'adam-section-cta-heading' => 'adam-global-heading',
+			'adam-section-overlay-heading' => 'adam-global-heading',
+			'adam-hero-heading' => 'adam-global-heading',
+			'adam-card-heading' => 'adam-global-heading',
+			'adam-footer-heading' => 'adam-global-heading',
+			'adam-section-standard-text' => 'adam-global-text',
+			'adam-section-alternate-text' => 'adam-global-text',
+			'adam-section-feature-text' => 'adam-global-text',
+			'adam-section-cta-text' => 'adam-global-text',
+			'adam-section-overlay-text' => 'adam-global-text',
+			'adam-header-nav-text' => 'adam-global-text',
+			'adam-hero-text' => 'adam-global-text',
+			'adam-card-text' => 'adam-global-text',
+			'adam-form-label' => 'adam-global-text',
+			'adam-form-input-text' => 'adam-global-text',
+			'adam-footer-text' => 'adam-global-text',
+			'adam-footer-copyright' => 'adam-global-text',
+			'adam-section-standard-link' => 'adam-global-link',
+			'adam-section-alternate-link' => 'adam-global-link',
+			'adam-section-feature-link' => 'adam-global-link',
+			'adam-section-cta-link' => 'adam-global-link',
+			'adam-section-overlay-link' => 'adam-global-link',
+			'adam-card-link' => 'adam-global-link',
+			'adam-footer-link' => 'adam-global-link',
+			'adam-footer-link-hover' => 'adam-global-link',
+			'adam-footer-social' => 'adam-global-link',
+			'adam-header-search-icon' => 'adam-global-link',
+			'adam-btn-outline-text' => 'adam-global-button-text',
+			'adam-btn-outline-border' => 'adam-global-button-text',
+			'adam-btn-outline-hover-border' => 'adam-global-button-text',
+			'adam-button-focus' => 'adam-global-button-text',
+			'adam-form-focus' => 'adam-global-button-text',
+			'adam-header-border' => 'adam-global-border',
+			'adam-card-border' => 'adam-global-border',
+			'adam-form-border' => 'adam-global-border',
+			'adam-table-border' => 'adam-global-border',
+			'adam-footer-divider' => 'adam-global-border',
+			'adam-card-shadow-strength' => 'adam-global-shadow-strength',
+			'adam-card-radius' => 'adam-global-radius',
+			'adam-button-radius' => 'adam-global-radius',
+			'adam-input-radius' => 'adam-global-radius',
+			'adam-radius' => 'adam-global-radius',
+		);
+	}
+
+	private function resolve_inheritance( $tokens, $overrides ) {
+		foreach ( $this->inheritance_map() as $target => $source ) {
+			if ( isset( $tokens[ $source ], $tokens[ $target ] ) ) {
+				$tokens[ $target ] = $tokens[ $source ];
+			}
+		}
+		foreach ( $overrides as $target => $value ) {
+			if ( isset( $tokens[ $target ] ) ) {
+				$tokens[ $target ] = $value;
+			}
+		}
+		return $tokens;
+	}
+
 	/** Returns semantic generation contracts for server and live preview. */
 	public function intelligence_contracts() {
 		return $this->component_registry->intelligence_contracts();
@@ -208,6 +296,22 @@ final class ADAM_UI_Theme_Repository {
 		return isset( $tokens[ $name ] ) ? $tokens[ $name ] : $fallback;
 	}
 
+	/** Resolves a theme as if every optional component override were disabled. */
+	public function base_tokens( $theme ) {
+		$tokens = isset( $theme['tokens'] ) && is_array( $theme['tokens'] ) ? $theme['tokens'] : array();
+		$overrides = isset( $theme['overrides'] ) && is_array( $theme['overrides'] ) ? $theme['overrides'] : array();
+		$schema = $this->schema();
+		foreach ( $overrides as $key => $value ) {
+			if ( isset( $schema[ $key ] ) ) {
+				$tokens[ $key ] = $schema[ $key ]['dark'];
+			}
+		}
+		$tokens = $this->component_registry->apply_styles( $tokens );
+		$tokens = $this->resolve_inheritance( $tokens, array() );
+		$tokens = $this->apply_automatic_contrast( $tokens );
+		return $this->resolve_inheritance( $tokens, array() );
+	}
+
 	public function generated_css() {
 		$css = 'body.adam-theme-dark,.adam-theme-dark{';
 		foreach ( $this->tokens( 'dark' ) as $key => $value ) { $css .= '--' . $key . ':' . $value . ';'; }
@@ -223,9 +327,10 @@ final class ADAM_UI_Theme_Repository {
 			array(
 				'--adam-bg:var(--adam-section-standard-bg);--adam-night-bg:var(--adam-section-standard-bg);--adam-night-surface:var(--adam-section-standard-bg);--adam-night-surface-alt:var(--adam-section-alternate-bg);--adam-night-accent-surface:var(--adam-section-feature-bg);--adam-night-overlay:color-mix(in srgb,var(--adam-section-overlay-bg) 82%,transparent);--adam-section-bg:var(--adam-section-standard-bg);--adam-feature-bg:var(--adam-section-feature-bg);--adam-section-canvas:var(--adam-section-standard-bg);--adam-section-base:var(--adam-section-standard-bg);--adam-section-muted:var(--adam-section-alternate-bg);--adam-section-soft:var(--adam-section-alternate-bg);--adam-section-pale:var(--adam-section-feature-bg);--adam-section-feature:var(--adam-section-feature-bg);--adam-section-accent:var(--adam-section-cta-bg);--adam-section-deep:var(--adam-section-overlay-bg);--adam-section-gradient-feature:var(--adam-section-feature-bg);--adam-section-gradient-soft:var(--adam-section-alternate-bg);--adam-section-gradient-neutral:var(--adam-section-standard-bg);',
 				'--adam-on-section-base:var(--adam-section-standard-text);--adam-on-section-soft:var(--adam-section-alternate-text);--adam-on-section-feature:var(--adam-section-feature-text);--adam-on-section-accent:var(--adam-section-cta-text);--adam-on-section-deep:var(--adam-section-overlay-text);',
-				'--adam-surface:var(--adam-card-bg);--adam-surface-2:var(--adam-card-elevated-bg);--adam-surface-hover:var(--adam-card-elevated-bg);--adam-surface-elevated:var(--adam-card-elevated-bg);--adam-surface-card:var(--adam-card-bg);--adam-heading:var(--adam-section-standard-heading);--adam-text:var(--adam-section-standard-text);--adam-text-primary:var(--adam-section-standard-text);--adam-text-secondary:var(--adam-card-text);--adam-text-muted:var(--adam-form-placeholder);--adam-text-disabled:var(--adam-form-placeholder);--adam-link:var(--adam-section-standard-link);--adam-link-hover:var(--adam-section-standard-link);--adam-border:var(--adam-card-border);--adam-border-strong:var(--adam-card-border);--adam-divider:var(--adam-footer-divider);',
-				'--adam-header-bg:var(--adam-night-bg);--adam-header-nav-bg:var(--adam-night-bg);--adam-footer-bg:var(--adam-night-bg);--adam-header-text:var(--adam-header-nav-text);--adam-nav-bg:var(--adam-header-nav-bg);--adam-nav-hover:var(--adam-header-hover-bg);',
+				'--adam-surface:var(--adam-card-bg);--adam-surface-2:var(--adam-card-elevated-bg);--adam-surface-hover:var(--adam-card-elevated-bg);--adam-surface-elevated:var(--adam-card-elevated-bg);--adam-surface-card:var(--adam-card-bg);--adam-heading:var(--adam-global-heading);--adam-text:var(--adam-global-text);--adam-text-primary:var(--adam-global-text);--adam-text-secondary:var(--adam-global-text);--adam-text-muted:var(--adam-form-placeholder);--adam-text-disabled:var(--adam-form-placeholder);--adam-link:var(--adam-global-link);--adam-link-hover:var(--adam-global-link);--adam-border:var(--adam-global-border);--adam-border-strong:var(--adam-global-border);--adam-divider:var(--adam-global-border);--adam-radius:var(--adam-global-radius);',
+				'--adam-header-text:var(--adam-header-nav-text);--adam-nav-bg:var(--adam-header-nav-bg);--adam-nav-hover:var(--adam-header-hover-bg);',
 				'--adam-primary:var(--adam-btn-primary-bg);--adam-primary-hover:var(--adam-btn-primary-hover-bg);--adam-on-primary:var(--adam-btn-primary-text);--adam-secondary:var(--adam-btn-secondary-bg);--adam-secondary-hover:var(--adam-btn-secondary-hover-bg);--adam-on-secondary:var(--adam-btn-secondary-text);--adam-danger:var(--adam-btn-danger-bg);--adam-danger-hover:var(--adam-btn-danger-hover-bg);--adam-on-danger:var(--adam-btn-danger-text);--adam-success:var(--adam-btn-success-bg);--adam-on-success:var(--adam-btn-success-text);',
+				'--adam-night-button-bg:var(--adam-btn-secondary-bg);--adam-night-button-text:var(--adam-global-button-text);--adam-night-button-border:var(--adam-btn-outline-border);--adam-night-button-hover-bg:var(--adam-btn-outline-hover-bg);--adam-night-button-hover-text:var(--adam-btn-outline-hover-text);--adam-night-button-hover-border:var(--adam-btn-outline-hover-border);--adam-night-accent:var(--adam-global-button-text);--adam-night-on-accent:var(--adam-btn-primary-text);',
 				'--adam-input-bg:var(--adam-form-input-bg);--adam-input-disabled-bg:var(--adam-card-elevated-bg);--adam-input-border:var(--adam-form-border);--adam-placeholder:var(--adam-form-placeholder);--adam-focus-ring:var(--adam-form-focus);--adam-table-stripe:var(--adam-table-alt-row-bg);--adam-code-bg:var(--adam-card-elevated-bg);--adam-info:var(--adam-notice-info-border);--adam-info-bg:var(--adam-notice-info-bg);--adam-success-bg:var(--adam-notice-success-bg);--adam-warning:var(--adam-notice-warning-border);--adam-warning-bg:var(--adam-notice-warning-bg);--adam-danger-bg:var(--adam-notice-error-bg);--adam-selection-bg:var(--adam-btn-primary-bg);--adam-selection-text:var(--adam-btn-primary-text);--adam-overlay:var(--adam-section-overlay-bg);--adam-primary-soft:color-mix(in srgb,var(--adam-btn-primary-bg) 16%,transparent);--adam-color-scheme:dark;',
 				'--theme-palette-color-1:var(--adam-section-feature-bg);--theme-palette-color-2:var(--adam-section-cta-bg);--theme-palette-color-4:var(--adam-section-overlay-bg);--theme-palette-color-5:var(--adam-section-feature-bg);--theme-palette-color-6:var(--adam-section-alternate-bg);--theme-palette-color-7:var(--adam-section-standard-bg);--theme-palette-color-8:var(--adam-section-standard-bg);',
 			)
@@ -248,7 +353,12 @@ final class ADAM_UI_Theme_Repository {
 				$new_id = $this->unique_id( sanitize_title( $data['themes'][ $id ]['name'] . '-copy' ), $data['themes'] );
 				$data['themes'][ $new_id ] = $data['themes'][ $id ]; $data['themes'][ $new_id ]['name'] .= ' Copy'; $data['themes'][ $new_id ]['builtin'] = false; $id = $new_id;
 			} elseif ( 'save' === $operation ) {
-				$posted = array( 'name' => isset( $_POST['theme_name'] ) ? wp_unslash( $_POST['theme_name'] ) : $data['themes'][ $id ]['name'], 'mode' => 'dark', 'tokens' => isset( $_POST['tokens'] ) ? $_POST['tokens'] : array() );
+				$posted = array(
+					'name'      => isset( $_POST['theme_name'] ) ? wp_unslash( $_POST['theme_name'] ) : $data['themes'][ $id ]['name'],
+					'mode'      => 'dark',
+					'tokens'    => isset( $_POST['tokens'] ) ? $_POST['tokens'] : array(),
+					'overrides' => isset( $_POST['overrides'] ) ? $_POST['overrides'] : array(),
+				);
 				$data['themes'][ $id ] = $this->sanitize_theme( $posted, $data['themes'][ $id ] );
 				$data['active']['dark'] = $id;
 			}

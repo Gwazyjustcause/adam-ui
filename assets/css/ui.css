@@ -72,7 +72,7 @@
 /* Site chrome and navigation. */
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(body > header, .site-header, .ct-header, #masthead, header.wp-block-template-part) {
 	color: var(--adam-header-text);
-	background: var(--adam-night-bg);
+	background: var(--adam-header-bg);
 	border-bottom-width: var(--adam-header-border-width, 1px);
 	border-bottom-style: solid;
 	border-color: var(--adam-header-border);
@@ -81,13 +81,13 @@
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(body > footer, .site-footer, #colophon, footer.wp-block-template-part) {
 	color: var(--adam-footer-text);
-	background: var(--adam-night-bg);
+	background: var(--adam-footer-bg);
 	border-color: var(--adam-border);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(nav, .menu, .sub-menu) {
 	color: var(--adam-header-nav-text);
-	background: var(--adam-night-bg);
+	background: var(--adam-header-nav-bg);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(.menu-item > a, .wp-block-navigation-item__content) {
@@ -146,7 +146,7 @@
 
 body.adam-theme-dark .ct-footer {
 	color: var(--adam-footer-text);
-	background: var(--adam-night-bg);
+	background: var(--adam-footer-bg);
 	border-color: var(--adam-border);
 }
 
@@ -155,8 +155,12 @@ body.adam-theme-dark .ct-footer {
  * background shorthand so theme gradients and images cannot split the Night
  * canvas into separate colour bands.
  */
-body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .ct-footer) [data-row] {
-	background: var(--adam-night-bg);
+body.adam-theme-dark:not(.wp-admin) .ct-header [data-row] {
+	background: var(--adam-header-bg);
+}
+
+body.adam-theme-dark:not(.wp-admin) .ct-footer [data-row] {
+	background: var(--adam-footer-bg);
 }
 
 body.adam-theme-dark .ct-footer :where(h1, h2, h3, h4, h5, h6, p, li, nav, .menu) {
@@ -179,7 +183,7 @@ body.adam-theme-dark .ct-footer :where(a:hover, a:focus-visible) {
 /* ADAM-owned chrome tokens intentionally outrank the active theme's generic rules. */
 body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(nav, .menu, .sub-menu) {
 	color: var(--adam-header-nav-text);
-	background: var(--adam-night-bg);
+	background: var(--adam-header-nav-bg);
 }
 body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(.menu-item > a, .wp-block-navigation-item__content) { color: var(--adam-header-nav-text); }
 body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(.menu-item > a, .wp-block-navigation-item__content):hover {
@@ -276,61 +280,229 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 }
 
 /* Buttons. */
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
 	button,
 	input[type="button"],
 	input[type="submit"],
 	.button,
+	.ct-button,
 	.wp-element-button,
-	.wp-block-button__link
+	.wp-block-button__link,
+	[role="button"],
+	a[class*="button"]
 ) {
-	color: var(--adam-btn-primary-text);
-	background-color: var(--adam-btn-primary-bg);
-	border-color: var(--adam-btn-primary-border);
-	outline-color: var(--adam-button-focus);
+	--adam-current-button-focus: var(--adam-button-focus);
+	color: var(--adam-night-button-text) !important;
+	background-color: var(--adam-night-button-bg) !important;
+	border-color: var(--adam-night-button-border) !important;
+	outline-color: var(--adam-button-focus) !important;
+	-webkit-text-fill-color: currentColor;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
 	button,
 	input[type="button"],
 	input[type="submit"],
 	.button,
+	.ct-button,
 	.wp-element-button,
-	.wp-block-button__link
-):hover {
-	color: var(--adam-btn-primary-hover-text);
-	background-color: var(--adam-btn-primary-hover-bg);
-	border-color: var(--adam-btn-primary-hover-border);
+	.wp-block-button__link,
+	[role="button"],
+	a[class*="button"]
+):is(:hover, :focus-visible, :active) {
+	color: var(--adam-night-button-hover-text) !important;
+	background-color: var(--adam-night-button-hover-bg) !important;
+	border-color: var(--adam-night-button-hover-border) !important;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(input[type="reset"], .button-secondary, .wp-block-button.is-style-outline .wp-block-button__link) {
-	color: var(--adam-btn-secondary-text);
-	background-color: var(--adam-btn-secondary-bg);
-	border-color: var(--adam-btn-secondary-border);
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	input[type="reset"],
+	.button-secondary,
+	.adam-button-secondary,
+	.adam-button--secondary
+) {
+	--adam-current-button-focus: var(--adam-btn-secondary-focus);
+	color: var(--adam-btn-secondary-text) !important;
+	background-color: var(--adam-btn-secondary-bg) !important;
+	border-color: var(--adam-btn-secondary-border) !important;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(input[type="reset"], .button-secondary, .wp-block-button.is-style-outline .wp-block-button__link):hover {
-	color: var(--adam-btn-secondary-hover-text);
-	background-color: var(--adam-btn-secondary-hover-bg);
-	border-color: var(--adam-btn-secondary-hover-border);
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	input[type="reset"],
+	.button-secondary,
+	.adam-button-secondary,
+	.adam-button--secondary
+):is(:hover, :focus-visible, :active) {
+	color: var(--adam-btn-secondary-hover-text) !important;
+	background-color: var(--adam-btn-secondary-hover-bg) !important;
+	border-color: var(--adam-btn-secondary-hover-border) !important;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.button-danger, .is-danger) {
-	color: var(--adam-on-danger);
-	background-color: var(--adam-danger);
-	border-color: var(--adam-danger);
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	.wp-block-button.is-style-outline .wp-block-button__link,
+	.adam-button-outline,
+	.adam-button--outline,
+	.button-outline,
+	.is-outline
+) {
+	--adam-current-button-focus: var(--adam-btn-outline-focus);
+	color: var(--adam-night-accent) !important;
+	background-color: transparent !important;
+	border-color: var(--adam-night-accent) !important;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.button-danger, .is-danger):hover {
-	color: var(--adam-on-danger);
-	background-color: var(--adam-danger-hover);
-	border-color: var(--adam-danger-hover);
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	.adam-button-ghost,
+	.adam-button--ghost,
+	.button-ghost,
+	.is-ghost,
+	.wp-block-button.is-style-ghost .wp-block-button__link
+) {
+	--adam-current-button-focus: var(--adam-btn-outline-focus);
+	color: var(--adam-night-accent) !important;
+	background-color: transparent !important;
+	border-color: transparent !important;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.button-success, .is-success) {
-	color: var(--adam-on-success);
-	background-color: var(--adam-success);
-	border-color: var(--adam-success);
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	.wp-block-button.is-style-fill .wp-block-button__link,
+	.adam-button-accent,
+	.adam-button--accent,
+	.button-accent,
+	.is-accent
+) {
+	--adam-current-button-focus: var(--adam-btn-primary-focus);
+	color: var(--adam-night-on-accent) !important;
+	background-color: var(--adam-btn-primary-bg) !important;
+	border-color: var(--adam-btn-primary-border) !important;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	.wp-block-button.is-style-fill .wp-block-button__link,
+	.adam-button-accent,
+	.adam-button--accent,
+	.button-accent,
+	.is-accent
+):is(:hover, :focus-visible, :active) {
+	color: var(--adam-btn-primary-hover-text) !important;
+	background-color: var(--adam-btn-primary-hover-bg) !important;
+	border-color: var(--adam-btn-primary-hover-border) !important;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(.button-danger, .adam-button-danger, .adam-button--danger, .is-danger) {
+	--adam-current-button-focus: var(--adam-btn-danger-focus);
+	color: var(--adam-btn-danger-text) !important;
+	background-color: var(--adam-btn-danger-bg) !important;
+	border-color: var(--adam-btn-danger-border) !important;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(.button-danger, .adam-button-danger, .adam-button--danger, .is-danger):is(:hover, :focus-visible, :active) {
+	color: var(--adam-btn-danger-hover-text) !important;
+	background-color: var(--adam-btn-danger-hover-bg) !important;
+	border-color: var(--adam-btn-danger-hover-border) !important;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(.button-success, .adam-button-success, .adam-button--success, .is-success) {
+	--adam-current-button-focus: var(--adam-btn-success-focus);
+	color: var(--adam-btn-success-text) !important;
+	background-color: var(--adam-btn-success-bg) !important;
+	border-color: var(--adam-btn-success-border) !important;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(.button-success, .adam-button-success, .adam-button--success, .is-success):is(:hover, :focus-visible, :active) {
+	color: var(--adam-btn-success-hover-text) !important;
+	background-color: var(--adam-btn-success-hover-bg) !important;
+	border-color: var(--adam-btn-success-hover-border) !important;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	button,
+	.button,
+	.ct-button,
+	.wp-element-button,
+	.wp-block-button__link,
+	[role="button"],
+	a[class*="button"]
+):focus-visible {
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--adam-current-button-focus) 42%, transparent) !important;
+	outline: 2px solid var(--adam-current-button-focus) !important;
+	outline-offset: 2px;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	button,
+	input[type="button"],
+	input[type="submit"],
+	input[type="reset"],
+	.button,
+	.ct-button,
+	.wp-element-button,
+	.wp-block-button__link,
+	[role="button"],
+	a[class*="button"]
+):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
+	color: var(--adam-button-disabled-text) !important;
+	background-color: var(--adam-button-disabled-bg) !important;
+	border-color: var(--adam-button-disabled-bg) !important;
+	opacity: 1;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	button,
+	.button,
+	.ct-button,
+	.wp-element-button,
+	.wp-block-button__link,
+	[role="button"],
+	a[class*="button"]
+) :where(span, strong, em, b, i, svg, svg *) {
+	color: inherit !important;
+	-webkit-text-fill-color: currentColor;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	button,
+	.button,
+	.ct-button,
+	.wp-element-button,
+	.wp-block-button__link,
+	[role="button"],
+	a[class*="button"]
+) svg:not([fill="none"]) {
+	fill: currentColor !important;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	button,
+	.button,
+	.ct-button,
+	.wp-element-button,
+	.wp-block-button__link,
+	[role="button"],
+	a[class*="button"]
+) svg[stroke]:not([stroke="none"]) {
+	stroke: currentColor !important;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	button,
+	.button,
+	.ct-button,
+	.wp-element-button,
+	.wp-block-button__link,
+	[role="button"],
+	a[class*="button"]
+)::before,
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+	button,
+	.button,
+	.ct-button,
+	.wp-element-button,
+	.wp-block-button__link,
+	[role="button"],
+	a[class*="button"]
+)::after {
+	color: inherit !important;
 }
 
 /* Tables. */
@@ -590,7 +762,7 @@ body.adam-theme-dark:not(.wp-admin) :is(
 	.wp-block-group,
 	[data-adam-night-background="footer"]
 ) {
-	background: var(--adam-night-bg) !important;
+	background: var(--adam-footer-bg) !important;
 }
 
 body.adam-theme-dark:not(.wp-admin) :is(
@@ -714,25 +886,6 @@ body.adam-theme-dark:not(.wp-admin) :is(
 	[role="alert"] *
 )):hover {
 	color: var(--adam-link-hover) !important;
-}
-
-body.adam-theme-dark:not(.wp-admin) :is(
-	[data-adam-night-background="content"],
-	[data-adam-night-background="alternate"],
-	[data-adam-night-background="accent"]
-) :is(button, input[type="button"], input[type="submit"], .button, .wp-element-button, .wp-block-button__link):not(
-	.adam-button,
-	.button-secondary
-) {
-	color: var(--adam-btn-primary-text) !important;
-}
-
-body.adam-theme-dark:not(.wp-admin) :is(
-	[data-adam-night-background="content"],
-	[data-adam-night-background="alternate"],
-	[data-adam-night-background="accent"]
-) :is(input[type="reset"], .button-secondary, .wp-block-button.is-style-outline .wp-block-button__link) {
-	color: var(--adam-btn-secondary-text) !important;
 }
 
 body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="accent"] :where(

@@ -75,7 +75,7 @@ final class ADAM_UI_Color_Engine {
 		$focus   = $this->ensure_contrast( $accent, $background, 3, $heading );
 		$surface = $this->mix( $background, $heading, 0.075 );
 		$disabled_background = $this->mix( $background, $heading, 0.08 );
-		$disabled_text       = $this->readable_tone( $disabled_background, $heading, 3, 0.48 );
+		$disabled_text       = $this->readable_tone( $disabled_background, $heading, 4.5, 0.48 );
 
 		$roles = array(
 			'heading'             => $heading,
