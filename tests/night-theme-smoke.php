@@ -6,6 +6,7 @@ $ui_css     = file_get_contents( $root . '/assets/css/ui.css' );
 $variables  = file_get_contents( $root . '/assets/css/variables.css' );
 $repository = file_get_contents( $root . '/includes/class-theme-repository.php' );
 $engine = file_get_contents( $root . '/includes/class-color-engine.php' );
+$controller = file_get_contents( $root . '/assets/js/ui.js' );
 $assets     = file_get_contents( $root . '/includes/class-asset-registry.php' );
 $editor     = file_get_contents( $root . '/includes/class-theme-editor.php' );
 $all_css    = implode( "\n", array_map( 'file_get_contents', glob( $root . '/assets/css/*.css' ) ) );
@@ -24,6 +25,9 @@ adam_ui_night_assert( false === strpos( $ui_css, 'adam-theme-light' ), 'Global U
 adam_ui_night_assert( 0 === preg_match( '/page-id-|body\.home|single-post/', $ui_css ), 'Night architecture must not require page-specific maintenance.' );
 adam_ui_night_assert( false !== strpos( $variables, 'Light-mode interoperability bridge' ), 'Blocksy-backed Light interoperability tokens are missing.' );
 adam_ui_night_assert( false !== strpos( $variables, '--adam-night-bg: var(--adam-bg)' ), 'The canonical Night canvas token is missing.' );
+foreach ( array( '--adam-night-surface', '--adam-night-surface-alt', '--adam-night-accent-surface', '--adam-night-overlay' ) as $token ) {
+	adam_ui_night_assert( false !== strpos( $variables . $repository, $token ), 'Background classifier token is missing: ' . $token );
+}
 adam_ui_night_assert( false !== strpos( $repository, 'apply_automatic_contrast' ) && false !== strpos( $repository, 'contrast_map' ), 'Automatic Night foreground derivation is missing.' );
 adam_ui_night_assert( false !== strpos( $repository, '--adam-night-bg:var(--adam-section-standard-bg)' ), 'The Night canvas must resolve from the main page surface.' );
 adam_ui_night_assert( false !== strpos( $repository, '--adam-header-bg:var(--adam-night-bg);--adam-header-nav-bg:var(--adam-night-bg);--adam-footer-bg:var(--adam-night-bg)' ), 'Header and footer tokens must resolve to one continuous Night canvas.' );
@@ -32,6 +36,13 @@ adam_ui_night_assert( false !== strpos( $ui_css, ':is(.ct-header, .ct-footer) [d
 adam_ui_night_assert( false === strpos( $ui_css, 'linear-gradient(' ) && false === strpos( $ui_css, 'radial-gradient(' ) && false === strpos( $ui_css, 'conic-gradient(' ), 'Night site chrome must not contain gradients.' );
 adam_ui_night_assert( false !== strpos( $engine, 'contrast_ratio' ) && false !== strpos( $engine, 'ensure_contrast' ), 'The intelligent WCAG colour engine is missing.' );
 adam_ui_night_assert( false !== strpos( $engine, "'hover_background'" ) && false !== strpos( $engine, "'disabled_background'" ), 'Supporting component states are not generated automatically.' );
+foreach ( array( '.wp-block-group', '.wp-block-cover', '.wp-block-columns', '.ct-container', 'data-adam-night-background' ) as $selector ) {
+	adam_ui_night_assert( false !== strpos( $controller . $ui_css, $selector ), 'Generic background classification is missing for ' . $selector . '.' );
+}
+adam_ui_night_assert( false !== strpos( $controller, "backgroundImage.includes( 'url(' )" ), 'Background images are not protected by the classifier.' );
+adam_ui_night_assert( false !== strpos( $controller, "return 'accent'" ) && false !== strpos( $controller, 'colourLuminance' ), 'Gradient and light-surface detection are missing.' );
+adam_ui_night_assert( false !== strpos( $ui_css, ':not(.wp-block-cover):not(.has-background-image):not([style*="url(" i])' ), 'Immediate CSS classification does not exclude image-backed blocks.' );
+adam_ui_night_assert( false === strpos( $ui_css, '[data-adam-night-background="image"]' ), 'Protected images must not receive a Night background override.' );
 adam_ui_night_assert( false !== strpos( $editor, 'night_themes()' ) && false === strpos( $editor, "active_id( 'light' )" ), 'Theme Editor must expose Night presets only.' );
 
 foreach ( array( 'header', 'footer', 'card', 'form', 'table', 'notice' ) as $component ) {

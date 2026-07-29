@@ -465,6 +465,80 @@ body.adam-theme-dark:not(.wp-admin) .entry-content :where(h1, h2, h3, h4, h5, h6
 	color: var(--adam-text);
 }
 
+/*
+ * Background classifier.
+ *
+ * Standard WordPress and Blocksy classes receive an immediate semantic
+ * fallback. The controller adds data-adam-night-background for inline colours,
+ * plugin blocks, and decorative gradients discovered from computed styles.
+ */
+body.adam-theme-dark:not(.wp-admin) :is(
+	.has-white-background-color,
+	.has-base-background-color,
+	.has-palette-color-8-background-color,
+	.has-theme-palette-color-8-background-color
+):not(.wp-block-cover):not(.has-background-image):not([style*="url(" i]) {
+	color: var(--adam-section-standard-text);
+	background-color: var(--adam-night-surface) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	.has-palette-color-6-background-color,
+	.has-palette-color-7-background-color,
+	.has-theme-palette-color-6-background-color,
+	.has-theme-palette-color-7-background-color,
+	.is-style-alternate,
+	.is-style-muted
+):not(.wp-block-cover):not(.has-background-image):not([style*="url(" i]) {
+	color: var(--adam-section-alternate-text);
+	background-color: var(--adam-night-surface-alt) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	.has-palette-color-1-background-color,
+	.has-palette-color-2-background-color,
+	.has-palette-color-5-background-color,
+	.has-theme-palette-color-1-background-color,
+	.has-theme-palette-color-2-background-color,
+	.has-theme-palette-color-5-background-color
+):not(.wp-block-cover):not(.has-background-image):not([style*="url(" i]) {
+	color: var(--adam-section-feature-text);
+	background-color: var(--adam-night-accent-surface) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="content"] {
+	color: var(--adam-section-standard-text);
+	background: var(--adam-night-surface) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="alternate"] {
+	color: var(--adam-section-alternate-text);
+	background: var(--adam-night-surface-alt) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="accent"] {
+	color: var(--adam-section-feature-text);
+	background: var(--adam-night-accent-surface) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="overlay"] {
+	background: var(--adam-night-overlay) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	[data-adam-night-background="content"],
+	[data-adam-night-background="alternate"]
+) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend) {
+	color: var(--adam-text);
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="accent"] :where(
+	h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend,
+	a:not(.wp-element-button):not(.adam-button), svg
+) {
+	color: var(--adam-section-feature-text);
+}
+
 body.adam-theme-dark:not(.wp-admin) :is(.has-palette-color-1-background-color, .has-palette-color-5-background-color) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-feature-text); }
 body.adam-theme-dark:not(.wp-admin) .has-palette-color-2-background-color :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-cta-text); }
 body.adam-theme-dark:not(.wp-admin) .has-palette-color-4-background-color :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-overlay-text); }

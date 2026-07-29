@@ -11,6 +11,10 @@
 	 */
 	--adam-bg: var(--theme-palette-color-8, Canvas);
 	--adam-night-bg: var(--adam-bg);
+	--adam-night-surface: var(--adam-bg);
+	--adam-night-surface-alt: var(--adam-surface-2);
+	--adam-night-accent-surface: var(--adam-feature-bg);
+	--adam-night-overlay: rgb(0 0 0 / 0.56);
 	--adam-surface: var(--theme-palette-color-8, Canvas);
 	--adam-surface-2: var(--theme-palette-color-7, Canvas);
 	--adam-surface-hover: var(--theme-palette-color-6, Canvas);

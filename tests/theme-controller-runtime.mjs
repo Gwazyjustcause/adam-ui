@@ -22,6 +22,30 @@ const select = {
 	dataset: {},
 	addEventListener(name, callback) { listeners[name] = callback; },
 };
+function backgroundElement(type, backgroundColor, backgroundImage = 'none') {
+	return {
+		type,
+		dataset: {},
+		computedStyle: { backgroundColor, backgroundImage },
+		matches(selector) {
+			if (type === 'overlay') return selector.includes('.wp-block-cover__background');
+			if (type === 'alternate') return selector.includes('.is-style-alternate');
+			if (type === 'gradient') return selector.includes('-gradient-background');
+			if (type === 'image' || type === 'cover-gradient') return selector === '.wp-block-cover';
+			return false;
+		},
+		querySelector(selector) {
+			return type === 'image' && selector.includes('.wp-block-cover__image-background') ? {} : null;
+		},
+	};
+}
+const lightSection = backgroundElement('content', 'rgb(255, 255, 255)');
+const alternateSection = backgroundElement('alternate', 'rgb(225, 238, 215)');
+const gradientSection = backgroundElement('gradient', 'rgb(240, 248, 235)', 'linear-gradient(rgb(255, 255, 255), rgb(220, 240, 210))');
+const gradientCover = backgroundElement('cover-gradient', 'rgb(240, 248, 235)', 'linear-gradient(rgb(255, 255, 255), rgb(220, 240, 210))');
+const imageCover = backgroundElement('image', 'rgb(255, 255, 255)', 'url("field.jpg")');
+const coverOverlay = backgroundElement('overlay', 'rgba(0, 0, 0, 0.35)');
+const backgroundElements = [lightSection, alternateSection, gradientSection, gradientCover, imageCover, coverOverlay];
 const document = {
 	readyState: 'complete',
 	body: { classList: classList(), dataset: {} },
@@ -30,7 +54,11 @@ const document = {
 		return selector === '[data-adam-theme-switcher]' ? null : null;
 	},
 	querySelectorAll(selector) {
-		return selector === '[data-adam-theme-select]' ? [select] : [];
+		if (selector === '[data-adam-theme-select]') return [select];
+		if (selector === '[data-adam-night-background]') {
+			return backgroundElements.filter(element => element.dataset.adamNightBackground);
+		}
+		return selector.includes('.wp-block-group') ? backgroundElements : [];
 	},
 	addEventListener() {},
 	removeEventListener() {},
@@ -44,6 +72,7 @@ const window = {
 		removeItem: key => stored.delete(key),
 	},
 	matchMedia: () => ({ matches: false, addEventListener() {} }),
+	getComputedStyle: element => element.computedStyle,
 	CustomEvent: class { constructor(name, options) { this.type = name; this.detail = options.detail; } },
 	URLSearchParams,
 };
@@ -72,6 +101,12 @@ listeners.change();
 assert(document.body.classList.contains('adam-theme-dark'), 'Night selection must update the body class.');
 assert(document.body.dataset.adamTheme === 'dark', 'Night selection must update the body data attribute.');
 assert(stored.get('adam-theme') === 'dark', 'Night selection must persist in localStorage.');
+assert(lightSection.dataset.adamNightBackground === 'content', 'Very light sections must become Night content surfaces.');
+assert(alternateSection.dataset.adamNightBackground === 'alternate', 'Pale alternate sections must retain their semantic hierarchy.');
+assert(gradientSection.dataset.adamNightBackground === 'accent', 'Decorative gradients must become solid Night accent surfaces.');
+assert(gradientCover.dataset.adamNightBackground === 'accent', 'Image-free gradient Covers must become Night accent surfaces.');
+assert(imageCover.dataset.adamNightBackground === 'image', 'Image-backed Covers must remain classified as protected images.');
+assert(coverOverlay.dataset.adamNightBackground === 'overlay', 'Cover overlays must be recalculated independently of images.');
 
 select.value = 'light';
 listeners.change();
@@ -79,5 +114,6 @@ assert(!document.body.classList.contains('adam-theme-dark'), 'Light selection mu
 assert(!document.body.classList.contains('adam-theme-light'), 'Light selection must not add an ADAM replacement theme class.');
 assert(document.body.dataset.adamTheme === 'light', 'Light pass-through state must remain observable through data attributes.');
 assert(stored.get('adam-theme') === 'light', 'Light selection must persist in localStorage.');
+assert(!lightSection.dataset.adamNightBackground, 'Light mode must remove Night background classifications.');
 
 console.log('PASS: Theme controller runtime contract.');

@@ -177,6 +177,7 @@
 		currentMode = nextMode;
 		updateBodyClass( theme, nextMode );
 		syncThemeSwitchers();
+		refreshBackgrounds();
 
 		if ( options.persist ) {
 			const adapter = getStorageAdapter();
@@ -242,6 +243,146 @@
 		syncThemeSwitchers();
 	}
 
+	const backgroundCandidates = [
+		'#main-container',
+		'main',
+		'.site-main',
+		'.content-area',
+		'.entry-content',
+		'.entry-content > *',
+		'.ct-container',
+		'.ct-container-full',
+		'.wp-block-group',
+		'.wp-block-columns',
+		'.wp-block-column',
+		'.wp-block-cover',
+		'.wp-block-cover__background',
+		'.has-background',
+		'[class*="-background-color"]',
+		'[class*="-gradient-background"]',
+	].join( ',' );
+
+	function colourLuminance( colour ) {
+		const values = String( colour ).match( /[\d.]+/g );
+
+		if ( ! values || values.length < 3 || ( values.length > 3 && Number( values[ 3 ] ) === 0 ) ) {
+			return null;
+		}
+
+		const channels = values.slice( 0, 3 ).map( ( value ) => {
+			const channel = Number( value ) / 255;
+			return channel <= 0.04045 ? channel / 12.92 : ( ( channel + 0.055 ) / 1.055 ) ** 2.4;
+		} );
+
+		return ( 0.2126 * channels[ 0 ] ) + ( 0.7152 * channels[ 1 ] ) + ( 0.0722 * channels[ 2 ] );
+	}
+
+	function isPaleGreen( colour ) {
+		const values = String( colour ).match( /[\d.]+/g );
+
+		if ( ! values || values.length < 3 ) {
+			return false;
+		}
+
+		const red = Number( values[ 0 ] );
+		const green = Number( values[ 1 ] );
+		const blue = Number( values[ 2 ] );
+
+		return green >= red + 5 && green >= blue + 5;
+	}
+
+	function hasContentImage( element, backgroundImage ) {
+		if ( backgroundImage.includes( 'url(' ) ) {
+			return true;
+		}
+
+		return element.matches( '.wp-block-cover' )
+			&& Boolean( element.querySelector( ':scope > .wp-block-cover__image-background, :scope > .wp-block-cover__video-background' ) );
+	}
+
+	function classifyBackground( element ) {
+		const style = window.getComputedStyle( element );
+		const backgroundImage = style.backgroundImage || 'none';
+
+		if ( hasContentImage( element, backgroundImage ) ) {
+			return 'image';
+		}
+
+		if ( element.matches( '.wp-block-cover__background, .has-background-dim, [class*="overlay"]' ) ) {
+			return 'overlay';
+		}
+
+		if ( backgroundImage !== 'none' ) {
+			return 'accent';
+		}
+
+		if ( element.matches( '.has-palette-color-1-background-color, .has-palette-color-2-background-color, .has-palette-color-5-background-color, [class*="-gradient-background"]' ) ) {
+			return 'accent';
+		}
+
+		if ( element.matches( '.has-palette-color-6-background-color, .has-palette-color-7-background-color, .is-style-alternate, .is-style-muted' ) ) {
+			return 'alternate';
+		}
+
+		const luminance = colourLuminance( style.backgroundColor );
+
+		if ( null === luminance ) {
+			return '';
+		}
+
+		if ( luminance >= 0.82 ) {
+			return isPaleGreen( style.backgroundColor ) ? 'alternate' : 'content';
+		}
+
+		if ( luminance >= 0.55 ) {
+			return 'alternate';
+		}
+
+		return '';
+	}
+
+	function refreshBackgrounds() {
+		const nightClass = classMap[ config.systemDark ];
+		const isNight = document.body && nightClass && document.body.classList.contains( nightClass );
+
+		document.querySelectorAll( '[data-adam-night-background]' ).forEach( ( element ) => {
+			delete element.dataset.adamNightBackground;
+		} );
+
+		if ( ! isNight ) {
+			return;
+		}
+
+		document.querySelectorAll( backgroundCandidates ).forEach( ( element ) => {
+			const classification = classifyBackground( element );
+
+			if ( classification ) {
+				element.dataset.adamNightBackground = classification;
+			}
+		} );
+	}
+
+	function watchBackgrounds() {
+		if ( ! window.MutationObserver || ! document.body ) {
+			return;
+		}
+
+		let scheduled = false;
+		const observer = new window.MutationObserver( () => {
+			if ( scheduled ) {
+				return;
+			}
+
+			scheduled = true;
+			window.requestAnimationFrame( () => {
+				scheduled = false;
+				refreshBackgrounds();
+			} );
+		} );
+
+		observer.observe( document.body, { childList: true, subtree: true } );
+	}
+
 	const api = {
 		applyTheme,
 		emit,
@@ -255,6 +396,7 @@
 		},
 		getTokens: ( theme ) => Object.assign( {}, ( config.tokens || {} )[ theme || resolveTheme( currentMode ) ] || {} ),
 		off,
+		refreshBackgrounds,
 		on,
 		registerStorageAdapter( name, adapter ) {
 			if ( name && adapter ) {
@@ -277,6 +419,8 @@
 		applyTheme( currentMode );
 		bindThemeSwitchers();
 		watchSystemTheme();
+		refreshBackgrounds();
+		watchBackgrounds();
 		( Array.isArray( assetConfig.components ) ? assetConfig.components : [] ).forEach( ( component ) => {
 			emit( 'adam:componentLoaded', { component } );
 		} );
