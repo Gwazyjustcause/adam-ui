@@ -48,6 +48,9 @@ final class ADAM_UI_Theme_Manager {
 	/** @var ADAM_UI_Theme_Repository */
 	private $repository;
 
+	/** @var ADAM_UI_Theme_Switcher */
+	private $switcher;
+
 	/**
 	 * Whether the public script configuration has been attached.
 	 *
@@ -80,6 +83,7 @@ final class ADAM_UI_Theme_Manager {
 		$this->settings = $settings;
 		$this->assets   = $assets;
 		$this->repository = $repository ? $repository : new ADAM_UI_Theme_Repository();
+		$this->switcher = new ADAM_UI_Theme_Switcher( $this->settings, $this->assets, $this );
 	}
 
 	/**
@@ -90,19 +94,32 @@ final class ADAM_UI_Theme_Manager {
 	 * @return void
 	 */
 	public function init() {
+		$this->switcher->register_hooks();
+
 		if ( is_admin() ) {
 			return;
 		}
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_core_assets' ), 100 );
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
-		add_filter( 'blocksy:footer:copyright:value', array( $this, 'add_switcher_to_blocksy_copyright' ), 20 );
-		add_action( 'wp_footer', array( $this, 'render_theme_switcher' ) );
 
 		// The WordPress login screen does not run the normal frontend hooks.
 		add_action( 'login_enqueue_scripts', array( $this, 'enqueue_core_assets' ) );
 		add_filter( 'login_body_class', array( $this, 'add_body_class' ) );
-		add_action( 'login_footer', array( $this, 'render_theme_switcher' ) );
+
+		if ( ! $this->settings->is_theme_switcher_enabled() ) {
+			return;
+		}
+
+		$placement = $this->settings->get_theme_switcher_placement();
+		if ( 'legacy-footer' === $placement ) {
+			add_filter( 'blocksy:footer:copyright:value', array( $this, 'add_switcher_to_blocksy_copyright' ), 20 );
+			add_action( 'wp_footer', array( $this, 'render_theme_switcher' ) );
+			add_action( 'login_footer', array( $this, 'render_theme_switcher' ) );
+		} elseif ( 'floating' === $placement ) {
+			add_action( 'wp_footer', array( $this, 'render_floating_theme_switcher' ) );
+			add_action( 'login_footer', array( $this, 'render_floating_theme_switcher' ) );
+		}
 	}
 
 	/**
@@ -279,7 +296,7 @@ final class ADAM_UI_Theme_Manager {
 		$this->assets->enqueue_core();
 		wp_add_inline_style( 'adam-ui', $this->repository->generated_css() );
 
-		if ( $this->settings->can_change_theme() ) {
+		if ( $this->settings->is_theme_switcher_enabled() ) {
 			$this->assets->enqueue_switcher();
 		}
 		if ( $this->settings->is_enabled( 'enable_inspector' ) && is_user_logged_in() && current_user_can( 'manage_options' ) ) {
@@ -302,12 +319,26 @@ final class ADAM_UI_Theme_Manager {
 	 * @return void
 	 */
 	public function render_theme_switcher() {
-		if ( $this->switcher_rendered || ! $this->settings->can_change_theme() ) {
+		if ( $this->switcher_rendered || ! $this->settings->is_theme_switcher_enabled() || 'legacy-footer' !== $this->settings->get_theme_switcher_placement() ) {
 			return;
 		}
 
 		$this->switcher_rendered = true;
-		echo $this->get_theme_switcher_markup(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->get_theme_switcher_markup( array( 'context' => 'legacy-footer' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/** Renders the configured floating instance in the selected screen corner. */
+	public function render_floating_theme_switcher() {
+		if ( ! $this->settings->is_theme_switcher_enabled() || 'floating' !== $this->settings->get_theme_switcher_placement() ) {
+			return;
+		}
+
+		echo $this->get_theme_switcher_markup( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			array(
+				'context'  => 'floating',
+				'position' => $this->settings->get_theme_switcher_position(),
+			)
+		);
 	}
 
 	/**
@@ -320,48 +351,31 @@ final class ADAM_UI_Theme_Manager {
 	 * @return string
 	 */
 	public function add_switcher_to_blocksy_copyright( $copyright ) {
-		if ( $this->switcher_rendered || ! $this->settings->can_change_theme() ) {
+		if ( $this->switcher_rendered || ! $this->settings->is_theme_switcher_enabled() || 'legacy-footer' !== $this->settings->get_theme_switcher_placement() ) {
 			return $copyright;
 		}
 
 		$this->switcher_rendered = true;
 
 		return '<div class="adam-ui adam-footer-theme-layout">'
-			. $this->get_theme_switcher_markup( true )
+			. $this->get_theme_switcher_markup( array( 'context' => 'legacy-footer' ) )
 			. '<div class="adam-footer-copyright-text">' . $copyright . '</div>'
 			. '</div>';
 	}
 
-	/** Returns accessible selector markup for theme and fallback integrations. */
-	private function get_theme_switcher_markup( $footer_integrated = false ) {
-		$current_mode = $this->get_theme_mode();
-		ob_start();
-		?>
-		<div class="adam-ui adam-ui-theme-switcher adam-theme-switcher" data-adam-theme-switcher<?php echo $footer_integrated ? ' data-adam-footer-integrated="true"' : ''; ?>>
-			<label class="adam-theme-switcher__label" for="adam-theme-select">
-				<?php echo esc_html__( 'Tema', 'adam-ui' ); ?>
-			</label>
-			<select
-				class="adam-theme-switcher__select"
-				id="adam-theme-select"
-				data-adam-theme-select
-			>
-				<option value="<?php echo esc_attr( self::MODE_LIGHT ); ?>" <?php selected( $current_mode, self::MODE_LIGHT ); ?>>
-					<?php echo esc_html__( 'Claro', 'adam-ui' ); ?>
-				</option>
-				<option value="<?php echo esc_attr( self::MODE_DARK ); ?>" <?php selected( $current_mode, self::MODE_DARK ); ?>>
-					<?php echo esc_html__( 'Noite', 'adam-ui' ); ?>
-				</option>
-				<option value="<?php echo esc_attr( self::MODE_SYSTEM ); ?>" <?php selected( $current_mode, self::MODE_SYSTEM ); ?>><?php echo esc_html__( 'Sistema', 'adam-ui' ); ?></option>
-			</select>
-			<noscript>
-				<span class="adam-theme-switcher__notice">
-					<?php echo esc_html__( 'Ative o JavaScript para alterar o tema.', 'adam-ui' ); ?>
-				</span>
-			</noscript>
-		</div>
-		<?php
-		return (string) ob_get_clean();
+	/**
+	 * Returns a reusable Theme Switcher instance for plugins and templates.
+	 *
+	 * @param array $args Component rendering arguments.
+	 * @return string
+	 */
+	public function get_theme_switcher_markup( $args = array() ) {
+		return $this->switcher->render( $args );
+	}
+
+	/** Returns the reusable Theme Switcher service. */
+	public function get_theme_switcher() {
+		return $this->switcher;
 	}
 
 	/**

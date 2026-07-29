@@ -1,0 +1,60 @@
+( function ( blocks, element, i18n, blockEditor, components ) {
+	'use strict';
+
+	const el = element.createElement;
+	const __ = i18n.__;
+	const InspectorControls = blockEditor.InspectorControls;
+	const PanelBody = components.PanelBody;
+	const SelectControl = components.SelectControl;
+
+	blocks.registerBlockType( 'adam-ui/theme-switcher', {
+		apiVersion: 2,
+		title: __( 'Theme Switcher', 'adam-ui' ),
+		description: __( 'Place the ADAM UI Light, Night, and System selector.', 'adam-ui' ),
+		icon: 'admin-appearance',
+		category: 'adam-ui',
+		attributes: {
+			style: {
+				type: 'string',
+				default: '',
+			},
+		},
+		edit( props ) {
+			const style = props.attributes.style || 'dropdown';
+			const label = 'icon-only' === style ? '☀  ☾  ◐' : 'icon-label' === style ? '☀ Claro   ☾ Noite   ◐ Sistema' : 'Tema: Sistema';
+
+			return el(
+				element.Fragment,
+				null,
+				el(
+					InspectorControls,
+					null,
+					el(
+						PanelBody,
+						{ title: __( 'Theme Switcher', 'adam-ui' ), initialOpen: true },
+						el( SelectControl, {
+							label: __( 'Display style', 'adam-ui' ),
+							value: props.attributes.style,
+							options: [
+								{ label: __( 'Use global setting', 'adam-ui' ), value: '' },
+								{ label: __( 'Icon only', 'adam-ui' ), value: 'icon-only' },
+								{ label: __( 'Icon + label', 'adam-ui' ), value: 'icon-label' },
+								{ label: __( 'Dropdown', 'adam-ui' ), value: 'dropdown' },
+							],
+							onChange: ( value ) => props.setAttributes( { style: value } ),
+						} )
+					)
+				),
+				el(
+					'div',
+					{ className: 'adam-ui-theme-switcher-block-preview' },
+					el( 'strong', null, __( 'ADAM UI Theme Switcher', 'adam-ui' ) ),
+					el( 'span', null, label )
+				)
+			);
+		},
+		save() {
+			return null;
+		},
+	} );
+} )( window.wp.blocks, window.wp.element, window.wp.i18n, window.wp.blockEditor, window.wp.components );

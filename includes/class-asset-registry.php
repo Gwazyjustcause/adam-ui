@@ -49,6 +49,15 @@ final class ADAM_UI_Asset_Registry {
 				)
 			);
 		}
+
+		$this->register_component(
+			'theme-switcher',
+			array(
+				'style_handle'  => 'adam-ui-theme-switcher',
+				'script_handle' => 'adam-ui',
+				'owner'         => 'adam-ui',
+			)
+		);
 	}
 
 	/**
@@ -137,8 +146,7 @@ final class ADAM_UI_Asset_Registry {
 
 	/** Enqueues the compact public switcher stylesheet. */
 	public function enqueue_switcher() {
-		$this->enqueue_core();
-		wp_enqueue_style( 'adam-ui-theme-switcher' );
+		$this->enqueue_component( 'theme-switcher' );
 	}
 
 	/**

@@ -26,6 +26,11 @@
 	gap: var(--adam-space-2);
 }
 
+.adam-ui-settings__choices {
+	display: grid;
+	gap: var(--adam-space-2);
+}
+
 .adam-diagnostics-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
@@ -55,4 +60,3 @@
 		grid-template-columns: 1fr;
 	}
 }
-

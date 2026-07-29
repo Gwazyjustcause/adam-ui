@@ -16,11 +16,18 @@ function classList() {
 }
 
 const listeners = {};
+const buttonListeners = {};
 const stored = new Map();
 const select = {
 	value: 'light',
 	dataset: {},
 	addEventListener(name, callback) { listeners[name] = callback; },
+};
+const modeButton = {
+	dataset: { adamThemeValue: 'dark' },
+	attributes: {},
+	addEventListener(name, callback) { buttonListeners[name] = callback; },
+	setAttribute(name, value) { this.attributes[name] = value; },
 };
 function backgroundElement(type, backgroundColor, backgroundImage = 'none') {
 	return {
@@ -64,6 +71,7 @@ const document = {
 	},
 	querySelectorAll(selector) {
 		if (selector === '[data-adam-theme-select]') return [select];
+		if (selector === '[data-adam-theme-value]') return [modeButton];
 		if (selector === '[data-adam-night-background]') {
 			return backgroundElements.filter(element => element.dataset.adamNightBackground);
 		}
@@ -107,12 +115,14 @@ vm.runInNewContext(source, { window, document, URLSearchParams });
 
 assert(window.ADAMUI, 'Controller must initialize with WordPress localized globals.');
 assert(typeof listeners.change === 'function', 'Theme selector change event must be bound.');
+assert(typeof buttonListeners.click === 'function', 'Icon Theme Switcher controls must be bound.');
 
 select.value = 'dark';
 listeners.change();
 assert(document.body.classList.contains('adam-theme-dark'), 'Night selection must update the body class.');
 assert(document.body.dataset.adamTheme === 'dark', 'Night selection must update the body data attribute.');
 assert(stored.get('adam-theme') === 'dark', 'Night selection must persist in localStorage.');
+assert(modeButton.attributes['aria-pressed'] === 'true', 'All Theme Switcher instances must synchronize their active mode.');
 assert(lightSection.dataset.adamNightBackground === 'content', 'Very light sections must become Night content surfaces.');
 assert(alternateSection.dataset.adamNightBackground === 'alternate', 'Pale alternate sections must retain their semantic hierarchy.');
 assert(gradientSection.dataset.adamNightBackground === 'accent', 'Decorative gradients must become solid Night accent surfaces.');

@@ -168,6 +168,9 @@
 		document.querySelectorAll( '[data-adam-theme-select]' ).forEach( ( select ) => {
 			select.value = currentMode;
 		} );
+		document.querySelectorAll( '[data-adam-theme-value]' ).forEach( ( button ) => {
+			button.setAttribute( 'aria-pressed', String( button.dataset.adamThemeValue === currentMode ) );
+		} );
 	}
 
 	function applyTheme( mode, options = {} ) {
@@ -237,6 +240,16 @@
 			select.dataset.adamThemeBound = 'true';
 			select.addEventListener( 'change', () => {
 				api.setTheme( select.value );
+			} );
+		} );
+		document.querySelectorAll( '[data-adam-theme-value]' ).forEach( ( button ) => {
+			if ( button.dataset.adamThemeBound ) {
+				return;
+			}
+
+			button.dataset.adamThemeBound = 'true';
+			button.addEventListener( 'click', () => {
+				api.setTheme( button.dataset.adamThemeValue );
 			} );
 		} );
 
@@ -455,6 +468,7 @@
 			scheduled = true;
 			window.requestAnimationFrame( () => {
 				scheduled = false;
+				bindThemeSwitchers();
 				refreshBackgrounds();
 			} );
 		} );

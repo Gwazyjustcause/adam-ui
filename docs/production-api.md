@@ -35,6 +35,33 @@ Administrators configure the framework at **ADAM UI â†’ Settings**:
 
 Theme choices use the browser's `localStorage` for visitors and logged-in members alike. The `adam-theme` value is authoritative after a person makes a selection; WordPress supplies only the initial website default for a browser with no saved choice. Light, Night, and System are always available, and System follows `prefers-color-scheme` live.
 
+### Portable Theme Switcher
+
+The Theme Switcher is independent from the footer and has one shared renderer. Under **ADAM UI → Settings → Theme Switcher**, an administrator can enable it, select Widget, Gutenberg Block, Shortcode, or Floating placement, choose a floating corner, and choose Icon Only, Icon + Label, or Dropdown presentation.
+
+- Widget: add **ADAM UI — Theme Switcher** to any registered widget area.
+- Block: insert **ADAM UI / Theme Switcher** in the Block Editor.
+- Shortcode: insert `[adam_theme_switcher]`.
+- Floating: ADAM UI renders the control in the configured screen corner.
+
+Only the selected placement adapter renders on the public site. Sites upgraded from an older release retain automatic footer placement until an administrator saves one of the new placement choices. The footer is otherwise not modified by ADAM UI.
+
+ADAM-owned templates and plugins can reuse the renderer directly:
+
+```php
+if ( function_exists( 'adam_ui_theme_switcher' ) ) {
+	echo adam_ui_theme_switcher(
+		array(
+			'style'   => 'dropdown', // icon-only, icon-label, or dropdown.
+			'context' => 'adam-community',
+			'class'   => 'my-layout-control',
+		)
+	);
+}
+```
+
+The helper returns markup by default. Pass `true` as its second argument to print it. Every instance uses the same client-side Theme Manager, `adam-theme` localStorage key, public JavaScript API, and `adam:themeChanged` event.
+
 The extension filters are:
 
 - `adam_ui_default_theme_mode`
@@ -54,6 +81,7 @@ adam_asset( 'components' );        // Registered public asset URL.
 adam_notice( 'Saved', 'success' ); // Escaped component markup.
 adam_button( 'Create', $url );
 adam_card( 'Content', array( 'title' => 'Summary' ) );
+adam_ui_theme_switcher();          // Portable Theme Switcher markup.
 ```
 
 The longer Phase 1â€“5 helpers remain supported, including `adam_ui_notice()`, `adam_ui_button()`, `adam_ui_stat_card()`, `adam_ui_empty_state()`, and `adam_ui_loading_indicator()`.
@@ -74,7 +102,7 @@ Request components during the appropriate `wp_enqueue_scripts`, `login_enqueue_s
 
 Built-in component identifiers:
 
-`admin-layout`, `badge`, `status-badge`, `breadcrumbs`, `button`, `card`, `confirmation`, `dropdown`, `empty-state`, `forms`, `loading`, `modal`, `side-panel`, `notice`, `pagination`, `search`, `search-bar`, `section-header`, `stat-card`, `table`, `tabs`, and `toolbar`.
+`admin-layout`, `badge`, `status-badge`, `breadcrumbs`, `button`, `card`, `confirmation`, `dropdown`, `empty-state`, `forms`, `loading`, `modal`, `side-panel`, `notice`, `pagination`, `search`, `search-bar`, `section-header`, `stat-card`, `table`, `tabs`, `theme-switcher`, and `toolbar`.
 
 Future visual extensions may register a central component:
 

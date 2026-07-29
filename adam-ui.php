@@ -27,6 +27,7 @@ require_once ADAM_UI_PATH . 'includes/class-theme-component-registry.php';
 require_once ADAM_UI_PATH . 'includes/class-theme-repository.php';
 require_once ADAM_UI_PATH . 'includes/class-asset-registry.php';
 require_once ADAM_UI_PATH . 'includes/class-plugin-registry.php';
+require_once ADAM_UI_PATH . 'includes/class-theme-switcher.php';
 require_once ADAM_UI_PATH . 'includes/class-theme-manager.php';
 require_once ADAM_UI_PATH . 'includes/class-components.php';
 require_once ADAM_UI_PATH . 'includes/class-admin.php';
@@ -69,6 +70,21 @@ function adam_ui_get_theme_mode() {
  */
 function adam_ui_get_resolved_theme() {
 	return adam_ui_get_theme_manager()->get_resolved_theme();
+}
+
+/**
+ * Returns or prints the reusable Theme Switcher component.
+ *
+ * @param array $args Component style, context, position, and extra class.
+ * @param bool  $echo Whether to print instead of return the markup.
+ * @return string
+ */
+function adam_ui_theme_switcher( $args = array(), $echo = false ) {
+	$markup = adam_ui_get_theme_manager()->get_theme_switcher_markup( $args );
+	if ( $echo ) {
+		echo $markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+	return $markup;
 }
 
 /**
