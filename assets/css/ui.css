@@ -72,7 +72,7 @@
 /* Site chrome and navigation. */
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(body > header, .site-header, .ct-header, #masthead, header.wp-block-template-part) {
 	color: var(--adam-header-text);
-	background-color: color-mix(in srgb, var(--adam-header-bg) var(--adam-header-surface-opacity, 100%), transparent);
+	background: var(--adam-night-bg);
 	border-bottom-width: var(--adam-header-border-width, 1px);
 	border-bottom-style: solid;
 	border-color: var(--adam-header-border);
@@ -81,13 +81,13 @@
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(body > footer, .site-footer, #colophon, footer.wp-block-template-part) {
 	color: var(--adam-footer-text);
-	background-color: var(--adam-footer-bg);
+	background: var(--adam-night-bg);
 	border-color: var(--adam-border);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(nav, .menu, .sub-menu) {
 	color: var(--adam-header-nav-text);
-	background-color: var(--adam-header-nav-bg);
+	background: var(--adam-night-bg);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(.menu-item > a, .wp-block-navigation-item__content) {
@@ -146,12 +146,25 @@
 
 body.adam-theme-dark .ct-footer {
 	color: var(--adam-footer-text);
-	background-color: var(--adam-footer-bg);
+	background: var(--adam-night-bg);
 	border-color: var(--adam-border);
 }
 
-body.adam-theme-dark .ct-footer :where(h1, h2, h3, h4, h5, h6, p, li, nav, .menu, a) {
+/*
+ * Blocksy paints header/footer rows independently. Reset the complete
+ * background shorthand so theme gradients and images cannot split the Night
+ * canvas into separate colour bands.
+ */
+body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .ct-footer) [data-row] {
+	background: var(--adam-night-bg);
+}
+
+body.adam-theme-dark .ct-footer :where(h1, h2, h3, h4, h5, h6, p, li, nav, .menu) {
 	color: var(--adam-footer-text);
+}
+
+body.adam-theme-dark .ct-footer :where(a) {
+	color: var(--adam-footer-link);
 }
 
 body.adam-theme-dark .ct-footer :where(a:hover, a:focus-visible) {
@@ -166,7 +179,7 @@ body.adam-theme-dark .ct-footer :where(a:hover, a:focus-visible) {
 /* ADAM-owned chrome tokens intentionally outrank the active theme's generic rules. */
 body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(nav, .menu, .sub-menu) {
 	color: var(--adam-header-nav-text);
-	background-color: var(--adam-header-nav-bg);
+	background: var(--adam-night-bg);
 }
 body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(.menu-item > a, .wp-block-navigation-item__content) { color: var(--adam-header-nav-text); }
 body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(.menu-item > a, .wp-block-navigation-item__content):hover {

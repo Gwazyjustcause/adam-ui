@@ -623,7 +623,7 @@ final class ADAM_UI_Theme_Component_Registry {
 	private function register_intelligence() {
 		$this->components['header']['intelligence'] = array(
 			array(
-				'background'       => 'adam-header-bg',
+				'background'       => 'adam-section-standard-bg',
 				'accent'           => 'adam-header-active-bg',
 				'icon'             => array( 'adam-header-search-icon' ),
 				'border'           => array( 'adam-header-border' ),
@@ -728,7 +728,7 @@ final class ADAM_UI_Theme_Component_Registry {
 		);
 		$this->components['footer']['intelligence'] = array(
 			array(
-				'background'   => 'adam-footer-bg',
+				'background'   => 'adam-section-standard-bg',
 				'heading'      => array( 'adam-footer-heading' ),
 				'text'         => array( 'adam-footer-text' ),
 				'muted'        => array( 'adam-footer-copyright' ),

@@ -10,6 +10,7 @@
 	 * ADAM Light palette. Night mode replaces them with saved Night overrides.
 	 */
 	--adam-bg: var(--theme-palette-color-8, Canvas);
+	--adam-night-bg: var(--adam-bg);
 	--adam-surface: var(--theme-palette-color-8, Canvas);
 	--adam-surface-2: var(--theme-palette-color-7, Canvas);
 	--adam-surface-hover: var(--theme-palette-color-6, Canvas);

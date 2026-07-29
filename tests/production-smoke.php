@@ -71,6 +71,8 @@ assert_contract( isset( $repository->schema()['adam-card-style'], $repository->s
 assert_contract( '.35' === $repository->token( 'adam-card-shadow-strength', 'dark' ), 'the Elevated card preset applies its shared structural tokens' );
 assert_contract( false !== strpos( $repository->generated_css(), 'body.adam-theme-dark' ), 'saved tokens generate scoped runtime CSS' );
 assert_contract( false === strpos( $repository->generated_css(), 'adam-theme-light' ), 'runtime CSS must contain Night overrides only' );
+assert_contract( false !== strpos( $repository->generated_css(), '--adam-night-bg:var(--adam-section-standard-bg)' ), 'Night canvas follows the main page surface' );
+assert_contract( false !== strpos( $repository->generated_css(), '--adam-header-bg:var(--adam-night-bg);--adam-header-nav-bg:var(--adam-night-bg);--adam-footer-bg:var(--adam-night-bg)' ), 'header and footer share the canonical Night canvas' );
 assert_contract( array() === $repository->tokens( 'light' ), 'Light mode must not expose an ADAM palette' );
 assert_contract( '#9bc85a' === $repository->token( 'adam-btn-primary-bg', 'dark' ), 'component token API returns the active Night value' );
 assert_contract( isset( $repository->schema()['adam-header-bg'], $repository->schema()['adam-footer-bg'], $repository->schema()['adam-section-overlay-bg'], $repository->schema()['adam-btn-outline-hover-border'] ), 'component-oriented editor schema is complete' );

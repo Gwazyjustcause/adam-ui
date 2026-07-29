@@ -23,7 +23,13 @@ adam_ui_night_assert( false === strpos( $assets, 'adam-ui-light' ) && false === 
 adam_ui_night_assert( false === strpos( $ui_css, 'adam-theme-light' ), 'Global UI overrides must never target Light mode.' );
 adam_ui_night_assert( 0 === preg_match( '/page-id-|body\.home|single-post/', $ui_css ), 'Night architecture must not require page-specific maintenance.' );
 adam_ui_night_assert( false !== strpos( $variables, 'Light-mode interoperability bridge' ), 'Blocksy-backed Light interoperability tokens are missing.' );
+adam_ui_night_assert( false !== strpos( $variables, '--adam-night-bg: var(--adam-bg)' ), 'The canonical Night canvas token is missing.' );
 adam_ui_night_assert( false !== strpos( $repository, 'apply_automatic_contrast' ) && false !== strpos( $repository, 'contrast_map' ), 'Automatic Night foreground derivation is missing.' );
+adam_ui_night_assert( false !== strpos( $repository, '--adam-night-bg:var(--adam-section-standard-bg)' ), 'The Night canvas must resolve from the main page surface.' );
+adam_ui_night_assert( false !== strpos( $repository, '--adam-header-bg:var(--adam-night-bg);--adam-header-nav-bg:var(--adam-night-bg);--adam-footer-bg:var(--adam-night-bg)' ), 'Header and footer tokens must resolve to one continuous Night canvas.' );
+adam_ui_night_assert( 3 <= substr_count( $ui_css, 'background: var(--adam-night-bg)' ), 'Night header, footer, and Blocksy rows must use the shared canvas.' );
+adam_ui_night_assert( false !== strpos( $ui_css, ':is(.ct-header, .ct-footer) [data-row]' ), 'Blocksy header and footer row backgrounds are not reset.' );
+adam_ui_night_assert( false === strpos( $ui_css, 'linear-gradient(' ) && false === strpos( $ui_css, 'radial-gradient(' ) && false === strpos( $ui_css, 'conic-gradient(' ), 'Night site chrome must not contain gradients.' );
 adam_ui_night_assert( false !== strpos( $engine, 'contrast_ratio' ) && false !== strpos( $engine, 'ensure_contrast' ), 'The intelligent WCAG colour engine is missing.' );
 adam_ui_night_assert( false !== strpos( $engine, "'hover_background'" ) && false !== strpos( $engine, "'disabled_background'" ), 'Supporting component states are not generated automatically.' );
 adam_ui_night_assert( false !== strpos( $editor, 'night_themes()' ) && false === strpos( $editor, "active_id( 'light' )" ), 'Theme Editor must expose Night presets only.' );
