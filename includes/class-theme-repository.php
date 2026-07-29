@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || exit;
 
 final class ADAM_UI_Theme_Repository {
 	const OPTION_KEY = 'adam_ui_themes';
-	const SCHEMA_VERSION = 4;
+	const SCHEMA_VERSION = 5;
 
 	private $schema;
 	private $component_registry;

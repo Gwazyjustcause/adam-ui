@@ -3,7 +3,7 @@
  * Plugin Name:       ADAM UI
  * Plugin URI:        https://github.com/Gwazyjustcause/adam-ui
  * Description:       Shared UI framework, theme manager and design system for the ADAM ecosystem.
- * Version:           4.0.0
+ * Version:           5.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            ADAM
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ADAM_UI_VERSION', '4.0.0' );
+define( 'ADAM_UI_VERSION', '5.0.0' );
 define( 'ADAM_UI_FILE', __FILE__ );
 define( 'ADAM_UI_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ADAM_UI_URL', plugin_dir_url( __FILE__ ) );
@@ -255,6 +255,28 @@ function adam_ui_register_plugin( $slug, $name, $args = array() ) {
  */
 function adam_ui_register_theme_component( $slug, $args ) {
 	return ADAM_UI::register_theme_component( $slug, $args );
+}
+
+/**
+ * Registers a component owned by an ADAM ecosystem plugin.
+ *
+ * @param string $plugin_slug Plugin identifier.
+ * @param string $component_id Identifier unique inside that plugin.
+ * @param array  $definition Component name, category, preview, defaults, presets, tokens, and assets.
+ * @return bool
+ */
+function adam_ui_register_component( $plugin_slug, $component_id, $definition ) {
+	return ADAM_UI::register_component( $plugin_slug, $component_id, $definition );
+}
+
+/** Requests several shared or plugin-owned components. */
+function adam_ui_enqueue_components( $components ) {
+	return adam_ui()->enqueue_components( $components );
+}
+
+/** Returns isolated CSS classes for plugin component root markup. */
+function adam_ui_component_class( $plugin_slug, $component_id, $extra = '' ) {
+	return adam_ui()->get_theme_component_registry()->component_class( $plugin_slug, $component_id, $extra );
 }
 
 add_action( 'plugins_loaded', 'adam_ui' );

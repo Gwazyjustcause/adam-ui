@@ -2,7 +2,7 @@
 /** Phase 6 service contract smoke test. */
 
 define( 'ABSPATH', __DIR__ . '/' );
-define( 'ADAM_UI_VERSION', '4.0.0' );
+define( 'ADAM_UI_VERSION', '5.0.0' );
 define( 'ADAM_UI_URL', 'https://example.test/adam-ui/' );
 
 $test_options = array();
@@ -172,10 +172,20 @@ assert_contract( in_array( 'adam-ui-components', $test_scripts['enqueued'], true
 assert_contract( array( 'table', 'modal' ) === $assets->get_loaded_components(), 'loaded component diagnostics are deterministic' );
 
 $component_registry = new ADAM_UI_Theme_Component_Registry();
-$component_registry->register(
+$component_registry->register_plugin_component(
+	'adam-bot',
 	'chat-window',
 	array(
-		'label'    => 'Chat Window',
+		'name'     => 'Chat Window',
+		'category' => 'ADAM BOT',
+		'preview_template' => '<div>Chat preview</div>',
+		'default_styles' => array( 'adam-chat-gap' => '1rem' ),
+		'default_preset' => 'compact',
+		'presets'  => array(
+			'standard' => array( 'label' => 'Standard', 'tokens' => array( 'adam-chat-gap' => '1rem' ) ),
+			'compact'  => array( 'label' => 'Compact', 'tokens' => array( 'adam-chat-gap' => '.5rem' ) ),
+		),
+		'uses'     => array( 'card', 'forms' ),
 		'controls' => array(
 			array(
 				'label'  => 'Background',
@@ -186,13 +196,27 @@ $component_registry->register(
 		),
 		'tokens'   => array( 'adam-chat-text' => array( 'type' => 'color', 'default' => '#f2f4ee' ) ),
 		'contrast' => array( 'adam-chat-bg' => array( 'adam-chat-text' ) ),
-		'preview'  => '<div>Chat preview</div>',
 	)
 );
 $extended_repository = new ADAM_UI_Theme_Repository( $component_registry );
-assert_contract( null !== $component_registry->get( 'chat-window' ), 'future plugins can register component types' );
+assert_contract( null !== $component_registry->get( 'adam-bot--chat-window' ), 'future plugins can register isolated component types' );
 assert_contract( isset( $extended_repository->schema()['adam-chat-bg'], $extended_repository->schema()['adam-chat-text'] ), 'registered component tokens join persistence without editor changes' );
+assert_contract( isset( $extended_repository->schema()['adam-bot-chat-window-style'] ), 'declared plugin presets automatically receive an editor control' );
+assert_contract( '.5rem' === $extended_repository->token( 'adam-chat-gap', 'dark' ), 'the plugin default preset resolves all of its style tokens' );
 assert_contract( in_array( 'adam-chat-text', $extended_repository->contrast_map()['adam-chat-bg'], true ), 'registered components participate in automatic contrast' );
+assert_contract( isset( $component_registry->grouped()['adam-bot']['components']['adam-bot--chat-window'] ), 'plugin components are grouped by category' );
+assert_contract( false === $component_registry->register( 'adam-bot--chat-window', array( 'label' => 'Collision', 'owner' => 'another-plugin' ) ), 'plugins cannot replace components owned by another plugin' );
+assert_contract( 'adam-ui-component adam-component--adam-bot-chat-window custom-chat' === $component_registry->component_class( 'adam-bot', 'chat-window', 'custom-chat' ), 'plugin component root classes are isolated and deterministic' );
+
+$assets->register_component( 'adam-bot--chat-window', array( 'owner' => 'adam-bot', 'requires' => array( 'card', 'forms' ) ) );
+$assets->enqueue_component( 'adam-bot--chat-window' );
+assert_contract( in_array( 'adam-bot--chat-window', $assets->get_loaded_components(), true ), 'plugin component assets are request-driven' );
+assert_contract( array( 'card', 'forms' ) === $assets->get_component_definition( 'adam-bot--chat-window' )['requires'], 'plugin component dependencies reuse shared families' );
+assert_contract( false === $assets->register_component( 'card', array( 'owner' => 'adam-bot' ) ), 'plugins cannot replace core asset components' );
+
+$plugins->record_theme_component( array( 'owner' => 'adam-bot', 'owner_name' => 'ADAM BOT', 'slug' => 'adam-bot--chat-window' ) );
+$plugins->register( 'adam-bot', 'ADAM BOT', array( 'version' => '2.0.0' ) );
+assert_contract( array( 'adam-bot--chat-window' ) === $plugins->all()['adam-bot']['components'], 'later plugin metadata does not discard automatically discovered components' );
 
 $plugins->register( 'future-plugin', 'ADAM Future', array( 'version' => '1.0.0', 'requires_ui' => '9.0.0' ) );
 assert_contract( 1 === count( $plugins->get_warnings() ), 'incompatible versions produce warnings' );

@@ -29,6 +29,11 @@ final class ADAM_UI_Theme_Editor {
 		}
 		wp_enqueue_style( 'adam-ui-theme-editor', ADAM_UI_URL . 'assets/css/theme-editor.css', array( 'adam-ui-admin' ), ADAM_UI_VERSION );
 		wp_enqueue_script( 'adam-ui-theme-editor', ADAM_UI_URL . 'assets/js/theme-editor.js', array(), ADAM_UI_VERSION, true );
+		foreach ( $this->components->all() as $component ) {
+			if ( 'adam-ui' !== $component['owner'] ) {
+				$this->assets->enqueue_component_styles( $component['slug'] );
+			}
+		}
 	}
 
 	public function render() {
@@ -44,6 +49,7 @@ final class ADAM_UI_Theme_Editor {
 		$theme      = $themes[ $id ];
 		$schema     = $this->repository->schema();
 		$components = $this->components->all();
+		$groups     = $this->components->grouped();
 		?>
 		<div
 			class="wrap adam-admin-page adam-theme-editor"
@@ -82,8 +88,13 @@ final class ADAM_UI_Theme_Editor {
 
 					<div class="adam-theme-editor__workspace">
 						<nav class="adam-theme-editor__nav" aria-label="<?php echo esc_attr__( 'Theme components', 'adam-ui' ); ?>" role="tablist" aria-orientation="vertical">
-							<?php $nav_index = 0; foreach ( $components as $slug => $component ) : $active = 0 === $nav_index++; ?>
-								<button type="button" role="tab" id="adam-editor-tab-<?php echo esc_attr( $slug ); ?>" aria-controls="adam-editor-panel-<?php echo esc_attr( $slug ); ?>" aria-selected="<?php echo $active ? 'true' : 'false'; ?>" tabindex="<?php echo $active ? '0' : '-1'; ?>" data-adam-editor-tab="<?php echo esc_attr( $slug ); ?>"><?php echo esc_html( $component['label'] ); ?></button>
+							<?php $nav_index = 0; foreach ( $groups as $group_id => $group ) : ?>
+								<div class="adam-theme-editor__nav-group" role="group" aria-labelledby="adam-editor-group-<?php echo esc_attr( $group_id ); ?>">
+									<h3 id="adam-editor-group-<?php echo esc_attr( $group_id ); ?>"><?php echo esc_html( $group['label'] ); ?></h3>
+									<?php foreach ( $group['components'] as $slug => $component ) : $active = 0 === $nav_index++; ?>
+										<button type="button" role="tab" id="adam-editor-tab-<?php echo esc_attr( $slug ); ?>" aria-controls="adam-editor-panel-<?php echo esc_attr( $slug ); ?>" aria-selected="<?php echo $active ? 'true' : 'false'; ?>" tabindex="<?php echo $active ? '0' : '-1'; ?>" data-adam-editor-tab="<?php echo esc_attr( $slug ); ?>"><?php echo esc_html( $component['label'] ); ?></button>
+									<?php endforeach; ?>
+								</div>
 							<?php endforeach; ?>
 						</nav>
 
@@ -91,6 +102,7 @@ final class ADAM_UI_Theme_Editor {
 							<?php $panel_index = 0; foreach ( $components as $slug => $component ) : $active = 0 === $panel_index++; ?>
 								<section class="adam-card adam-theme-editor__panel" role="tabpanel" id="adam-editor-panel-<?php echo esc_attr( $slug ); ?>" aria-labelledby="adam-editor-tab-<?php echo esc_attr( $slug ); ?>" data-adam-editor-panel="<?php echo esc_attr( $slug ); ?>"<?php echo $active ? '' : ' hidden'; ?>>
 									<header class="adam-theme-editor__panel-header">
+										<span class="adam-theme-editor__component-owner"><?php echo esc_html( $component['category'] ); ?></span>
 										<h2><?php echo esc_html( $component['label'] ); ?></h2>
 										<p><?php echo esc_html( $component['description'] ); ?></p>
 									</header>

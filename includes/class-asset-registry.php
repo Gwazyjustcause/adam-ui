@@ -31,11 +31,13 @@ final class ADAM_UI_Asset_Registry {
 	 * @var bool
 	 */
 	private $registered = false;
+	/** @var string[] */
+	private $resolving_components = array();
 
 	/** Creates the built-in component registry. */
 	public function __construct() {
-		$interactive = array( 'dropdown', 'loading', 'modal', 'confirmation' );
-		$names       = array( 'card', 'button', 'forms', 'table', 'tabs', 'modal', 'notice', 'badge', 'breadcrumbs', 'empty-state', 'loading', 'pagination', 'toolbar', 'search', 'dropdown', 'confirmation', 'stat-card', 'section-header', 'admin-layout' );
+		$interactive = array( 'dropdown', 'loading', 'modal', 'side-panel', 'confirmation' );
+		$names       = array( 'card', 'button', 'forms', 'table', 'tabs', 'modal', 'notice', 'badge', 'status-badge', 'breadcrumbs', 'empty-state', 'loading', 'pagination', 'toolbar', 'search', 'search-bar', 'dropdown', 'side-panel', 'confirmation', 'stat-card', 'section-header', 'admin-layout' );
 
 		foreach ( $names as $name ) {
 			$this->register_component(
@@ -43,6 +45,7 @@ final class ADAM_UI_Asset_Registry {
 				array(
 					'style_handle'  => 'adam-ui-utilities',
 					'script_handle' => in_array( $name, $interactive, true ) ? 'adam-ui-components' : '',
+					'owner'         => 'adam-ui',
 				)
 			);
 		}
@@ -69,11 +72,19 @@ final class ADAM_UI_Asset_Registry {
 			array(
 				'style_handle'  => 'adam-ui-utilities',
 				'script_handle' => '',
+				'requires'      => array(),
+				'owner'         => 'adam-ui',
 			)
 		);
+		$owner = sanitize_key( $args['owner'] );
+		if ( isset( $this->components[ $name ] ) && $this->components[ $name ]['owner'] !== $owner ) {
+			return false;
+		}
 		$this->components[ $name ] = array(
 			'style_handle'  => sanitize_key( $args['style_handle'] ),
 			'script_handle' => sanitize_key( $args['script_handle'] ),
+			'requires'      => array_values( array_unique( array_filter( array_map( 'sanitize_key', (array) $args['requires'] ) ) ) ),
+			'owner'         => $owner ? $owner : 'adam-ui',
 		);
 
 		return true;
@@ -145,6 +156,14 @@ final class ADAM_UI_Asset_Registry {
 		if ( ! isset( $this->components[ $name ] ) ) {
 			return false;
 		}
+		if ( in_array( $name, $this->resolving_components, true ) ) {
+			return false;
+		}
+		$this->resolving_components[] = $name;
+		foreach ( $this->components[ $name ]['requires'] as $required ) {
+			$this->enqueue_component( $required );
+		}
+		$this->resolving_components = array_values( array_diff( $this->resolving_components, array( $name ) ) );
 
 		$this->enqueue_core();
 		if ( '' !== $this->components[ $name ]['style_handle'] ) {
@@ -165,6 +184,36 @@ final class ADAM_UI_Asset_Registry {
 			array( 'components' => $this->loaded_components )
 		);
 
+		return true;
+	}
+
+	/** Requests several component families through one deduplicated call. */
+	public function enqueue_components( $components ) {
+		$success = true;
+		foreach ( array_values( array_unique( array_map( 'sanitize_key', (array) $components ) ) ) as $component ) {
+			$success = $this->enqueue_component( $component ) && $success;
+		}
+		return $success;
+	}
+
+	/** Loads only component styles, primarily for safe Theme Editor previews. */
+	public function enqueue_component_styles( $name ) {
+		$name = sanitize_key( $name );
+		if ( ! isset( $this->components[ $name ] ) ) {
+			return false;
+		}
+		if ( in_array( $name, $this->resolving_components, true ) ) {
+			return false;
+		}
+		$this->resolving_components[] = $name;
+		$this->register_assets();
+		foreach ( $this->components[ $name ]['requires'] as $required ) {
+			$this->enqueue_component_styles( $required );
+		}
+		$this->resolving_components = array_values( array_diff( $this->resolving_components, array( $name ) ) );
+		if ( '' !== $this->components[ $name ]['style_handle'] ) {
+			wp_enqueue_style( $this->components[ $name ]['style_handle'] );
+		}
 		return true;
 	}
 
@@ -197,6 +246,12 @@ final class ADAM_UI_Asset_Registry {
 	 */
 	public function get_registered_components() {
 		return array_keys( $this->components );
+	}
+
+	/** Returns central loader metadata for diagnostics and integrations. */
+	public function get_component_definition( $name ) {
+		$name = sanitize_key( $name );
+		return isset( $this->components[ $name ] ) ? $this->components[ $name ] : null;
 	}
 
 	/**

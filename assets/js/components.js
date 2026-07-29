@@ -136,15 +136,68 @@
 		} );
 	}
 
-	api.components = Object.assign( api.components || {}, { bindDropdowns, confirm, setLoading } );
+	function openSidePanel( panel, trigger = document.activeElement ) {
+		if ( ! panel ) {
+			return false;
+		}
+		panel.hidden = false;
+		panel.dataset.adamReturnFocus = trigger && trigger.id ? trigger.id : '';
+		const focusTarget = panel.querySelector( '[autofocus], button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])' );
+		if ( focusTarget ) {
+			focusTarget.focus();
+		}
+		if ( typeof api.emit === 'function' ) {
+			api.emit( 'adam:componentLoaded', { component: 'side-panel', element: panel } );
+		}
+		return true;
+	}
+
+	function closeSidePanel( panel ) {
+		if ( ! panel ) {
+			return false;
+		}
+		panel.hidden = true;
+		const returnFocus = panel.dataset.adamReturnFocus ? document.getElementById( panel.dataset.adamReturnFocus ) : null;
+		if ( returnFocus ) {
+			returnFocus.focus();
+		}
+		delete panel.dataset.adamReturnFocus;
+		return true;
+	}
+
+	function bindSidePanels( root = document ) {
+		root.querySelectorAll( '[data-adam-side-panel-toggle]' ).forEach( ( toggle ) => {
+			if ( toggle.dataset.adamSidePanelBound ) {
+				return;
+			}
+			const panel = document.getElementById( toggle.getAttribute( 'aria-controls' ) || '' );
+			if ( ! panel ) {
+				return;
+			}
+			toggle.dataset.adamSidePanelBound = 'true';
+			toggle.addEventListener( 'click', () => openSidePanel( panel, toggle ) );
+			panel.querySelectorAll( '[data-adam-side-panel-close]' ).forEach( ( close ) => close.addEventListener( 'click', () => closeSidePanel( panel ) ) );
+			panel.addEventListener( 'keydown', ( event ) => {
+				if ( event.key === 'Escape' ) {
+					event.preventDefault();
+					closeSidePanel( panel );
+				}
+			} );
+		} );
+	}
+
+	api.components = Object.assign( api.components || {}, { bindDropdowns, bindSidePanels, closeSidePanel, confirm, openSidePanel, setLoading } );
 	api.confirm = confirm;
 	api.setLoading = setLoading;
 	window.ADAMUI = api;
 
 	if ( document.readyState === 'loading' ) {
-		document.addEventListener( 'DOMContentLoaded', () => bindDropdowns(), { once: true } );
+		document.addEventListener( 'DOMContentLoaded', () => {
+			bindDropdowns();
+			bindSidePanels();
+		}, { once: true } );
 	} else {
 		bindDropdowns();
+		bindSidePanels();
 	}
 } )( window, document );
-

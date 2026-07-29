@@ -1,6 +1,6 @@
 # ADAM UI component library
 
-ADAM UI is the visual source of truth for ADAM-owned frontend and WordPress administration screens. It does not style native WordPress, WooCommerce, Forminator, or other third-party admin pages. An ADAM plugin opts its own admin hook suffix into the theme with `adam_ui_enable_admin_theme()`. Production registration, assets, settings, persistence, events, and diagnostics are documented in [production-api.md](production-api.md).
+ADAM UI is the visual source of truth for ADAM-owned frontend and WordPress administration screens. It does not style native WordPress, WooCommerce, Forminator, or other third-party admin pages. An ADAM plugin opts its own admin hook suffix into the theme with `adam_ui_enable_admin_theme()`. Component ownership and discovery are documented in [plugin-integration.md](plugin-integration.md); production services are documented in [production-api.md](production-api.md).
 
 Components inherit the website's normal Blocksy appearance in Light mode. Night mode adds the `adam-theme-dark` body class and supplies ADAM override tokens; System resolves to either state. The stable API value for Night remains `dark`. Component CSS must use `--adam-*` tokens and must not contain its own Night palette.
 
@@ -53,7 +53,10 @@ Use `adam-admin-layout--single` when no sidebar is present. The layout collapses
 | Pagination | `<nav class="adam-pagination" aria-label="Pagination">`; mark the current item with `aria-current="page"` |
 | Toolbar | `adam-toolbar`, `adam-toolbar__group` |
 | Search | `<label class="adam-search">` containing an accessible label and `adam-input` |
+| Search bar | `adam-search-bar` containing a shared input and optional action |
 | Dropdown | `adam-dropdown`, an `aria-controls` trigger with `data-adam-dropdown-toggle`, and a hidden `adam-dropdown__menu` |
+| Side panel | `adam-side-panel`, an `aria-controls` trigger with `data-adam-side-panel-toggle`, and a close control with `data-adam-side-panel-close` |
+| Status badge | `adam-status-badge` with `--success`, `--warning`, `--danger`, or `--error` |
 | Confirmation | `adam-confirmation adam-modal`, preferably through the PHP or JavaScript helper |
 | Statistic | `adam-stat-grid`, `adam-stat-card`, and the documented `adam-stat-card__*` parts |
 | Section header | `adam-section-header`, `__content`, `__title`, `__description`, and `__actions` |

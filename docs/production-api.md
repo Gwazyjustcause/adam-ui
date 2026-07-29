@@ -1,6 +1,6 @@
 # ADAM UI production API
 
-ADAM UI 1.0 is the permanent visual service layer for ADAM-owned plugins. It supplies theme state, tokens, shared components, asset coordination, compatibility reporting, events, and diagnostics. It never opts native WordPress or third-party screens into ADAM styling.
+ADAM UI 5.0 is the permanent visual service layer for ADAM-owned plugins. It supplies theme state, intelligent tokens, automatic component discovery, shared components, asset coordination, compatibility reporting, events, and diagnostics. It never opts native WordPress or third-party screens into ADAM styling.
 
 ## Runtime requirements and compatibility
 
@@ -60,7 +60,7 @@ The longer Phase 1â€“5 helpers remain supported, including `adam_ui_notice(
 
 ## Request-driven asset loading
 
-Core variables, the two token-only themes, base integration CSS, and the theme controller form the minimal global foundation. Component CSS and interaction JavaScript are loaded only after a component request:
+Core variables, the Night-only override layer, and the theme controller form the minimal global foundation. Component CSS and interaction JavaScript are loaded only after a component request:
 
 ```php
 if ( function_exists( 'adam_ui' ) ) {
@@ -74,7 +74,7 @@ Request components during the appropriate `wp_enqueue_scripts`, `login_enqueue_s
 
 Built-in component identifiers:
 
-`admin-layout`, `badge`, `breadcrumbs`, `button`, `card`, `confirmation`, `dropdown`, `empty-state`, `forms`, `loading`, `modal`, `notice`, `pagination`, `search`, `section-header`, `stat-card`, `table`, `tabs`, and `toolbar`.
+`admin-layout`, `badge`, `status-badge`, `breadcrumbs`, `button`, `card`, `confirmation`, `dropdown`, `empty-state`, `forms`, `loading`, `modal`, `side-panel`, `notice`, `pagination`, `search`, `search-bar`, `section-header`, `stat-card`, `table`, `tabs`, and `toolbar`.
 
 Future visual extensions may register a central component:
 
@@ -110,7 +110,7 @@ The base stylesheet is scoped to `#wpbody-content` in WordPress admin. The toolb
 
 An intelligence contract names a `background` token and maps semantic roles such as `heading`, `text`, `muted`, `link`, `icon`, `border`, `hover_background`, `hover_text`, `focus`, `surface`, `disabled_background`, and `disabled_text` to output tokens. Plugins declare meaning; the central colour engine owns the calculations.
 
-Register components after ADAM UI is available (normally on `plugins_loaded`). See [Theme engine](theme-engine.md#registering-components) for a complete definition.
+The preferred discovery contract is the `adam_ui_register_components` action. Register with `$registry->register_plugin_component( $plugin_slug, $component_id, $definition )`; ADAM UI automatically groups the result under its owner, records it in diagnostics, and registers its `uses` and optional asset handles. The procedural `adam_ui_register_component()` API is equivalent. See [Plugin integration](plugin-integration.md) and [Theme engine](theme-engine.md#registering-components).
 
 ## JavaScript namespace and events
 

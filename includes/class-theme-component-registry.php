@@ -17,8 +17,31 @@ final class ADAM_UI_Theme_Component_Registry {
 	/** @var int */
 	private $revision = 0;
 
+	/** @var bool */
+	private $discovered = false;
+
 	public function __construct() {
 		$this->register_builtins();
+	}
+
+	/** Invites every active ADAM plugin to declare its components after loading. */
+	public function register_hooks() {
+		add_action( 'init', array( $this, 'discover_components' ), 1 );
+	}
+
+	/** Runs the standard discovery action once per request. */
+	public function discover_components() {
+		if ( $this->discovered ) {
+			return;
+		}
+		$this->discovered = true;
+
+		/**
+		 * Plugins register component definitions here without changing ADAM UI.
+		 *
+		 * @param ADAM_UI_Theme_Component_Registry $registry Registry service.
+		 */
+		do_action( 'adam_ui_register_components', $this );
 	}
 
 	/**
@@ -33,8 +56,26 @@ final class ADAM_UI_Theme_Component_Registry {
 	 */
 	public function register( $slug, $args ) {
 		$slug = sanitize_key( $slug );
-		if ( ! $slug || ! is_array( $args ) || empty( $args['label'] ) ) {
+		if ( ! is_array( $args ) ) {
 			return false;
+		}
+		if ( isset( $args['name'] ) && empty( $args['label'] ) ) {
+			$args['label'] = $args['name'];
+		}
+		if ( isset( $args['preview_template'] ) && empty( $args['preview'] ) ) {
+			$args['preview'] = $args['preview_template'];
+		}
+		if ( ! $slug || empty( $args['label'] ) ) {
+			return false;
+		}
+
+		$owner = isset( $args['owner'] ) ? sanitize_key( $args['owner'] ) : 'adam-ui';
+		$owner = $owner ? $owner : 'adam-ui';
+		if ( isset( $this->components[ $slug ] ) && $this->components[ $slug ]['owner'] !== $owner ) {
+			return false;
+		}
+		if ( ! empty( $args['presets'] ) && empty( $args['styles'] ) ) {
+			$args['styles'] = $args['presets'];
 		}
 
 		$args = wp_parse_args(
@@ -42,23 +83,97 @@ final class ADAM_UI_Theme_Component_Registry {
 			array(
 				'label'       => $slug,
 				'description' => '',
+				'identifier'  => $slug,
+				'owner'       => $owner,
+				'owner_name'  => 'adam-ui' === $owner ? __( 'ADAM UI', 'adam-ui' ) : $owner,
+				'category'    => 'adam-ui' === $owner ? __( 'Core Components', 'adam-ui' ) : $owner,
 				'controls'    => array(),
 				'styles'      => array(),
+				'default_styles' => array(),
+				'default_preset' => '',
 				'preview'     => '',
 				'contrast'    => array(),
 				'tokens'      => array(),
 				'intelligence' => array(),
+				'uses'        => array(),
+				'assets'      => array(),
 			)
 		);
 
-		$args['slug']     = $slug;
+		$args['slug']       = $slug;
+		$args['identifier'] = sanitize_key( $args['identifier'] );
+		$args['owner']      = $owner;
+		$args['owner_name'] = sanitize_text_field( $args['owner_name'] );
+		$args['category']   = sanitize_text_field( $args['category'] );
+		$args['css_class']  = 'adam-component--' . str_replace( '--', '-', $slug );
 		$args['controls'] = is_array( $args['controls'] ) ? $args['controls'] : array();
 		$args['styles']   = is_array( $args['styles'] ) ? $args['styles'] : array();
+		$normalized_styles = array();
+		foreach ( $args['styles'] as $style => $definition ) {
+			$style = sanitize_key( $style );
+			if ( $style && is_array( $definition ) ) {
+				$normalized_styles[ $style ] = wp_parse_args( $definition, array( 'label' => ucwords( str_replace( array( '-', '_' ), ' ', $style ) ), 'tokens' => array() ) );
+			}
+		}
+		$args['styles'] = $normalized_styles;
+		$args['default_styles'] = is_array( $args['default_styles'] ) ? $args['default_styles'] : array();
+		$args['default_preset'] = sanitize_key( $args['default_preset'] );
 		$args['contrast'] = is_array( $args['contrast'] ) ? $args['contrast'] : array();
 		$args['tokens']   = is_array( $args['tokens'] ) ? $args['tokens'] : array();
 		$args['intelligence'] = is_array( $args['intelligence'] ) ? $args['intelligence'] : array();
+		$args['uses']      = array_values( array_unique( array_filter( array_map( 'sanitize_key', (array) $args['uses'] ) ) ) );
+		$args['assets']    = is_array( $args['assets'] ) ? $args['assets'] : array();
+		if ( 'adam-ui' !== $owner && $args['styles'] ) {
+			$args = $this->ensure_plugin_style_control( $args );
+		}
 
 		$this->components[ $slug ] = $args;
+		$this->revision++;
+
+		/**
+		 * Fires after an owned Theme Editor component is registered.
+		 *
+		 * @param array $component Normalized definition.
+		 */
+		do_action( 'adam_ui_theme_component_registered', $args );
+		return true;
+	}
+
+	/**
+	 * Registers a component in an isolated plugin namespace.
+	 *
+	 * @param string $plugin_slug Plugin owner.
+	 * @param string $identifier  Component identifier within the plugin.
+	 * @param array  $args        Standard component definition.
+	 * @return bool
+	 */
+	public function register_plugin_component( $plugin_slug, $identifier, $args ) {
+		$plugin_slug = sanitize_key( $plugin_slug );
+		$identifier  = sanitize_key( $identifier );
+		if ( ! $plugin_slug || ! $identifier || 'adam-ui' === $plugin_slug || ! is_array( $args ) ) {
+			return false;
+		}
+
+		$args['owner']      = $plugin_slug;
+		$args['identifier'] = $identifier;
+		if ( empty( $args['owner_name'] ) ) {
+			$args['owner_name'] = ucwords( str_replace( array( '-', '_' ), ' ', $plugin_slug ) );
+		}
+		if ( empty( $args['category'] ) ) {
+			$args['category'] = $args['owner_name'];
+		}
+
+		return $this->register( $plugin_slug . '--' . $identifier, $args );
+	}
+
+	/** Removes only a component owned by the requesting plugin. */
+	public function unregister_plugin_component( $plugin_slug, $identifier ) {
+		$plugin_slug = sanitize_key( $plugin_slug );
+		$slug        = $plugin_slug . '--' . sanitize_key( $identifier );
+		if ( empty( $this->components[ $slug ] ) || $this->components[ $slug ]['owner'] !== $plugin_slug ) {
+			return false;
+		}
+		unset( $this->components[ $slug ] );
 		$this->revision++;
 		return true;
 	}
@@ -79,16 +194,62 @@ final class ADAM_UI_Theme_Component_Registry {
 				array(
 					'slug'        => sanitize_key( $slug ),
 					'description' => '',
+					'identifier'  => sanitize_key( $slug ),
+					'owner'       => 'adam-ui',
+					'owner_name'  => __( 'ADAM UI', 'adam-ui' ),
+					'category'    => __( 'Core Components', 'adam-ui' ),
 					'controls'    => array(),
 					'styles'      => array(),
+					'default_styles' => array(),
+					'default_preset' => '',
 					'preview'     => '',
 					'contrast'    => array(),
 					'tokens'      => array(),
 					'intelligence' => array(),
+					'uses'        => array(),
+					'assets'      => array(),
+					'css_class'   => 'adam-component--' . str_replace( '--', '-', sanitize_key( $slug ) ),
 				)
 			);
 		}
 		return $components;
+	}
+
+	/** Groups components by category while preserving registration order. */
+	public function grouped() {
+		$groups = array();
+		foreach ( $this->all() as $slug => $component ) {
+			$key      = 'adam-ui' === $component['owner'] ? 'core-components' : sanitize_key( $component['owner'] );
+			if ( ! isset( $groups[ $key ] ) ) {
+				$groups[ $key ] = array(
+					'label'      => 'adam-ui' === $component['owner'] ? __( 'Core Components', 'adam-ui' ) : $component['owner_name'],
+					'components' => array(),
+				);
+			}
+			$groups[ $key ]['components'][ $slug ] = $component;
+		}
+		return $groups;
+	}
+
+	/** Returns only components owned by one plugin. */
+	public function for_plugin( $plugin_slug ) {
+		$plugin_slug = sanitize_key( $plugin_slug );
+		return array_filter(
+			$this->all(),
+			static function ( $component ) use ( $plugin_slug ) {
+				return isset( $component['owner'] ) && $component['owner'] === $plugin_slug;
+			}
+		);
+	}
+
+	/** Returns the isolated root classes for plugin-owned component markup. */
+	public function component_class( $plugin_slug, $identifier, $extra = '' ) {
+		$component = $this->get( sanitize_key( $plugin_slug ) . '--' . sanitize_key( $identifier ) );
+		if ( ! $component || $component['owner'] !== sanitize_key( $plugin_slug ) ) {
+			return '';
+		}
+		$classes = array_merge( array( 'adam-ui-component', $component['css_class'] ), preg_split( '/\s+/', trim( (string) $extra ) ) );
+		return implode( ' ', array_values( array_unique( array_filter( array_map( 'sanitize_html_class', $classes ) ) ) ) );
 	}
 
 	/** @return array|null */
@@ -163,6 +324,25 @@ final class ADAM_UI_Theme_Component_Registry {
 						'step'     => 1,
 					);
 				}
+			}
+			foreach ( $component['default_styles'] as $token => $value ) {
+				$token = sanitize_key( $token );
+				if ( ! $token || isset( $fields[ $token ] ) ) {
+					continue;
+				}
+				$fields[ $token ] = array(
+					'section'  => $component['label'],
+					'label'    => $token,
+					'type'     => 'text',
+					'light'    => $value,
+					'dark'     => $value,
+					'contrast' => $value,
+					'editable' => false,
+					'unit'     => '',
+					'min'      => 0,
+					'max'      => 100,
+					'step'     => 1,
+				);
 			}
 			foreach ( $component['tokens'] as $token => $definition ) {
 				$token      = sanitize_key( $token );
@@ -602,5 +782,36 @@ final class ADAM_UI_Theme_Component_Registry {
 
 	private function style( $label, $tokens ) {
 		return array( 'label' => $label, 'tokens' => $tokens );
+	}
+
+	/** Adds a standard preset selector when a plugin only declares presets. */
+	private function ensure_plugin_style_control( $args ) {
+		foreach ( $args['controls'] as $group ) {
+			foreach ( isset( $group['fields'] ) && is_array( $group['fields'] ) ? $group['fields'] : array() as $field ) {
+				if ( ! empty( $field['style_control'] ) ) {
+					return $args;
+				}
+			}
+		}
+
+		$options = array();
+		foreach ( $args['styles'] as $style => $definition ) {
+			$options[ sanitize_key( $style ) ] = isset( $definition['label'] ) ? $definition['label'] : ucwords( str_replace( array( '-', '_' ), ' ', $style ) );
+		}
+		$default = $args['default_preset'] && isset( $options[ $args['default_preset'] ] ) ? $args['default_preset'] : key( $options );
+		$args['controls'][] = array(
+			'label'  => __( 'Appearance', 'adam-ui' ),
+			'fields' => array(
+				array(
+					'token'         => 'adam-' . preg_replace( '/^adam-/', '', $args['owner'] ) . '-' . $args['identifier'] . '-style',
+					'label'         => __( 'Visual style', 'adam-ui' ),
+					'type'          => 'select',
+					'default'       => $default,
+					'options'       => $options,
+					'style_control' => true,
+				),
+			),
+		);
+		return $args;
 	}
 }

@@ -78,7 +78,17 @@ final class ADAM_UI {
 
 	/** Registers a Theme Editor component through the stable ecosystem API. */
 	public static function register_theme_component( $slug, $args ) {
+		if ( is_array( $args ) && empty( $args['owner'] ) ) {
+			$args['owner']      = 'legacy-integrations';
+			$args['owner_name'] = __( 'Legacy Integrations', 'adam-ui' );
+			$args['category']   = __( 'Legacy Integrations', 'adam-ui' );
+		}
 		return self::instance()->get_theme_component_registry()->register( $slug, $args );
+	}
+
+	/** Registers an isolated component owned by an ADAM plugin. */
+	public static function register_component( $plugin_slug, $identifier, $args ) {
+		return self::instance()->get_theme_component_registry()->register_plugin_component( $plugin_slug, $identifier, $args );
 	}
 
 	/**
@@ -87,15 +97,17 @@ final class ADAM_UI {
 	private function __construct() {
 		$this->settings      = new ADAM_UI_Settings();
 		$this->assets        = new ADAM_UI_Asset_Registry();
+		$this->plugins       = new ADAM_UI_Plugin_Registry();
 		$this->theme_components = new ADAM_UI_Theme_Component_Registry();
 		$this->theme_repository = new ADAM_UI_Theme_Repository( $this->theme_components );
-		$this->plugins       = new ADAM_UI_Plugin_Registry();
 		$this->theme_manager = new ADAM_UI_Theme_Manager( $this->settings, $this->assets, $this->theme_repository );
 		$this->components    = new ADAM_UI_Components();
 		$this->admin         = new ADAM_UI_Admin( $this->settings, $this->theme_manager, $this->assets, $this->plugins );
 		$this->theme_editor  = new ADAM_UI_Theme_Editor( $this->theme_repository, $this->assets, $this->theme_components );
 
+		add_action( 'adam_ui_theme_component_registered', array( $this, 'register_theme_component_assets' ), 5 );
 		$this->settings->register_hooks();
+		$this->theme_components->register_hooks();
 		$this->theme_repository->register_hooks();
 		$this->plugins->register_hooks();
 		$this->theme_manager->init();
@@ -154,5 +166,27 @@ final class ADAM_UI {
 	/** Requests one shared component family. */
 	public function enqueue_component( $component ) {
 		return $this->assets->enqueue_component( $component );
+	}
+
+	/** Requests several shared or plugin-owned component families. */
+	public function enqueue_components( $components ) {
+		return $this->assets->enqueue_components( $components );
+	}
+
+	/** Adds a registered theme component to the central request-driven loader. */
+	public function register_theme_component_assets( $component ) {
+		if ( empty( $component['slug'] ) || 'adam-ui' === $component['owner'] ) {
+			return;
+		}
+		$assets = isset( $component['assets'] ) && is_array( $component['assets'] ) ? $component['assets'] : array();
+		$this->assets->register_component(
+			$component['slug'],
+			array(
+				'style_handle'  => isset( $assets['style_handle'] ) ? $assets['style_handle'] : 'adam-ui-utilities',
+				'script_handle' => isset( $assets['script_handle'] ) ? $assets['script_handle'] : '',
+				'requires'      => isset( $component['uses'] ) ? $component['uses'] : array(),
+				'owner'         => $component['owner'],
+			)
+		);
 	}
 }

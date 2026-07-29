@@ -21,6 +21,27 @@ final class ADAM_UI_Plugin_Registry {
 	/** Registers automatic discovery after all plugins have loaded. */
 	public function register_hooks() {
 		add_action( 'admin_init', array( $this, 'discover_active_plugins' ), 1 );
+		add_action( 'adam_ui_theme_component_registered', array( $this, 'record_theme_component' ) );
+	}
+
+	/** Associates a namespaced Theme Editor component with its owning plugin. */
+	public function record_theme_component( $component ) {
+		if ( ! is_array( $component ) || empty( $component['owner'] ) || 'adam-ui' === $component['owner'] || empty( $component['slug'] ) ) {
+			return;
+		}
+		$owner = sanitize_key( $component['owner'] );
+		$slug  = sanitize_key( $component['slug'] );
+		if ( ! isset( $this->plugins[ $owner ] ) ) {
+			$this->register(
+				$owner,
+				isset( $component['owner_name'] ) ? $component['owner_name'] : $owner,
+				array( 'components' => array( $slug ) )
+			);
+			return;
+		}
+		if ( ! in_array( $slug, $this->plugins[ $owner ]['components'], true ) ) {
+			$this->plugins[ $owner ]['components'][] = $slug;
+		}
 	}
 
 	/**
@@ -82,6 +103,7 @@ final class ADAM_UI_Plugin_Registry {
 			return false;
 		}
 
+		$components_provided = is_array( $args ) && array_key_exists( 'components', $args );
 		$args = wp_parse_args(
 			$args,
 			array(
@@ -97,7 +119,14 @@ final class ADAM_UI_Plugin_Registry {
 			'name'               => sanitize_text_field( (string) $name ),
 			'version'            => sanitize_text_field( (string) $args['version'] ),
 			'requires_ui' => sanitize_text_field( (string) $args['requires_ui'] ),
-			'components'         => array_values( array_unique( array_map( 'sanitize_key', (array) $args['components'] ) ) ),
+			'components'         => array_values(
+				array_unique(
+					array_map(
+						'sanitize_key',
+						$components_provided ? (array) $args['components'] : ( isset( $this->plugins[ $slug ]['components'] ) ? $this->plugins[ $slug ]['components'] : array() )
+					)
+				)
+			),
 			'plugin_file'        => sanitize_text_field( (string) $args['plugin_file'] ),
 		);
 
