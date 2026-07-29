@@ -22,7 +22,14 @@ final class ADAM_UI_Theme_Switcher_Widget extends WP_Widget {
 
 	/** Renders the widget. */
 	public function widget( $args, $instance ) {
-		if ( 'widget' !== adam_ui()->get_settings()->get_theme_switcher_placement() ) {
+		$style  = isset( $instance['style'] ) ? sanitize_key( $instance['style'] ) : 'dropdown';
+		$markup = adam_ui_get_theme_manager()->get_theme_switcher_markup(
+			array(
+				'context' => 'widget',
+				'style'   => $style,
+			)
+		);
+		if ( '' === $markup ) {
 			return;
 		}
 
@@ -32,25 +39,40 @@ final class ADAM_UI_Theme_Switcher_Widget extends WP_Widget {
 			echo esc_html( $instance['title'] );
 			echo isset( $args['after_title'] ) ? $args['after_title'] : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
-		echo adam_ui_get_theme_manager()->get_theme_switcher_markup( array( 'context' => 'widget' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo isset( $args['after_widget'] ) ? $args['after_widget'] : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/** Renders the widget title field. */
 	public function form( $instance ) {
 		$title = isset( $instance['title'] ) ? (string) $instance['title'] : '';
+		$style = isset( $instance['style'] ) ? sanitize_key( $instance['style'] ) : 'dropdown';
+		$styles = adam_ui_get_theme_manager()->get_theme_switcher()->get_style_choices();
 		?>
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'adam-ui' ); ?></label>
 			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
+		</p>
+		<p>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'style' ) ); ?>"><?php esc_html_e( 'Display style', 'adam-ui' ); ?></label>
+			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'style' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'style' ) ); ?>">
+				<?php foreach ( $styles as $value => $label ) : ?>
+					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $style, $value ); ?>><?php echo esc_html( $label ); ?></option>
+				<?php endforeach; ?>
+			</select>
 		</p>
 		<?php
 	}
 
 	/** Sanitizes widget settings. */
 	public function update( $new_instance, $old_instance ) {
+		$style  = isset( $new_instance['style'] ) ? sanitize_key( $new_instance['style'] ) : 'dropdown';
+		$styles = adam_ui_get_theme_manager()->get_theme_switcher()->get_style_choices();
+		$style  = array_key_exists( $style, $styles ) ? $style : 'dropdown';
+
 		return array(
 			'title' => isset( $new_instance['title'] ) ? sanitize_text_field( $new_instance['title'] ) : '',
+			'style' => $style,
 		);
 	}
 }

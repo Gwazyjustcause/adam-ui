@@ -37,11 +37,13 @@ Theme choices use the browser's `localStorage` for visitors and logged-in member
 
 ### Portable Theme Switcher
 
-The Theme Switcher is independent from the footer and has one shared renderer. Under **ADAM UI → Settings → Theme Switcher**, an administrator can enable it, select Widget, Gutenberg Block, Shortcode, or Floating placement, choose a floating corner, and choose Icon Only, Icon + Label, or Dropdown presentation.
+The Theme Switcher is independent from page layouts and has one shared renderer. Under **ADAM UI → Settings → Theme Switcher**, an administrator only enables or disables the component. WordPress controls placement through its native editors.
 
 - Widget: add **ADAM UI — Theme Switcher** to any registered widget area.
 - Block: insert **ADAM UI / Theme Switcher** in the Block Editor.
 - Shortcode: insert `[adam_theme_switcher]`.
+
+Widget and block instances can independently use Icon Only, Icon + Label, or Dropdown presentation. The shortcode accepts the same instance-level style, for example `[adam_theme_switcher style="icon-label"]`.
 - Floating: ADAM UI renders the control in the configured screen corner.
 
 Only the selected placement adapter renders on the public site. Sites upgraded from an older release retain automatic footer placement until an administrator saves one of the new placement choices. The footer is otherwise not modified by ADAM UI.

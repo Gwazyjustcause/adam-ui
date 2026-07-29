@@ -125,10 +125,6 @@ final class ADAM_UI_Theme_Switcher {
 	 * @return string
 	 */
 	public function render_shortcode( $attributes = array() ) {
-		if ( 'shortcode' !== $this->settings->get_theme_switcher_placement() ) {
-			return '';
-		}
-
 		$attributes = shortcode_atts(
 			array(
 				'style' => '',
@@ -154,10 +150,6 @@ final class ADAM_UI_Theme_Switcher {
 	 * @return string
 	 */
 	public function render_block( $attributes = array() ) {
-		if ( 'block' !== $this->settings->get_theme_switcher_placement() ) {
-			return '';
-		}
-
 		return $this->render(
 			array(
 				'style'   => isset( $attributes['style'] ) ? $attributes['style'] : '',
@@ -182,22 +174,14 @@ final class ADAM_UI_Theme_Switcher {
 			array(
 				'style'    => '',
 				'context'  => 'component',
-				'position' => '',
 				'class'    => '',
 			)
 		);
 
-		$style = sanitize_key( $args['style'] );
-		if ( ! in_array( $style, $this->settings->get_theme_switcher_styles(), true ) ) {
-			$style = $this->settings->get_theme_switcher_style();
-		}
+		$style = $this->normalize_style( $args['style'] );
 
 		$context = sanitize_key( $args['context'] );
 		$context = '' !== $context ? $context : 'component';
-		$position = sanitize_key( $args['position'] );
-		if ( ! in_array( $position, $this->settings->get_theme_switcher_positions(), true ) ) {
-			$position = $this->settings->get_theme_switcher_position();
-		}
 
 		$this->assets->enqueue_switcher();
 		++self::$instance_count;
@@ -215,17 +199,12 @@ final class ADAM_UI_Theme_Switcher {
 			$classes[] = sanitize_html_class( $args['class'] );
 		}
 
-		$footer_integrated = 'legacy-footer' === $context;
-		$floating          = 'floating' === $context;
-
 		ob_start();
 		?>
 		<div
 			class="<?php echo esc_attr( implode( ' ', array_filter( $classes ) ) ); ?>"
 			data-adam-theme-switcher
 			data-adam-display-style="<?php echo esc_attr( $style ); ?>"
-			<?php echo $footer_integrated ? 'data-adam-footer-integrated="true"' : ''; ?>
-			<?php echo $floating ? 'data-adam-floating-position="' . esc_attr( $position ) . '"' : ''; ?>
 		>
 			<?php if ( 'dropdown' === $style ) : ?>
 				<label class="adam-theme-switcher__label" for="<?php echo esc_attr( $control_id ); ?>">
@@ -252,6 +231,22 @@ final class ADAM_UI_Theme_Switcher {
 		</div>
 		<?php
 		return (string) ob_get_clean();
+	}
+
+	/** Returns the presentation choices shared by placement adapters. */
+	public function get_style_choices() {
+		return array(
+			'icon-only'  => __( 'Icon Only', 'adam-ui' ),
+			'icon-label' => __( 'Icon + Label', 'adam-ui' ),
+			'dropdown'   => __( 'Dropdown', 'adam-ui' ),
+		);
+	}
+
+	/** Normalizes an instance-level display style. */
+	private function normalize_style( $style ) {
+		$style = sanitize_key( (string) $style );
+
+		return array_key_exists( $style, $this->get_style_choices() ) ? $style : 'dropdown';
 	}
 
 	/** Renders the native select options. */

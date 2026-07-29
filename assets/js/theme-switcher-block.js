@@ -16,7 +16,7 @@
 		attributes: {
 			style: {
 				type: 'string',
-				default: '',
+				default: 'dropdown',
 			},
 		},
 		edit( props ) {
@@ -34,9 +34,8 @@
 						{ title: __( 'Theme Switcher', 'adam-ui' ), initialOpen: true },
 						el( SelectControl, {
 							label: __( 'Display style', 'adam-ui' ),
-							value: props.attributes.style,
+							value: style,
 							options: [
-								{ label: __( 'Use global setting', 'adam-ui' ), value: '' },
 								{ label: __( 'Icon only', 'adam-ui' ), value: 'icon-only' },
 								{ label: __( 'Icon + label', 'adam-ui' ), value: 'icon-label' },
 								{ label: __( 'Dropdown', 'adam-ui' ), value: 'dropdown' },

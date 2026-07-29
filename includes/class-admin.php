@@ -127,53 +127,8 @@ final class ADAM_UI_Admin {
 					<?php $this->checkbox_field( $name, 'enable_inspector', __( 'Enable Theme Inspector', 'adam-ui' ), __( 'Shows token information on hover for administrators on ADAM-themed pages.', 'adam-ui' ), $values ); ?>
 				</div></section>
 				<section class="adam-card"><div class="adam-card-header"><h2><?php esc_html_e( 'Theme Switcher', 'adam-ui' ); ?></h2></div><div class="adam-card-body">
-					<?php $this->checkbox_field( $name, 'theme_switcher_enabled', __( 'Enable Theme Switcher', 'adam-ui' ), __( 'Allows the shared selector to render through configured or manual placements.', 'adam-ui' ), $values ); ?>
-					<?php
-					$this->radio_field(
-						$name,
-						'theme_switcher_placement',
-						__( 'Placement', 'adam-ui' ),
-						__( 'Widget, block, and shortcode are manual placements. Selecting any option disables the legacy footer injection.', 'adam-ui' ),
-						array(
-							'widget'    => __( 'Widget', 'adam-ui' ),
-							'block'     => __( 'Gutenberg Block', 'adam-ui' ),
-							'shortcode' => __( 'Shortcode', 'adam-ui' ),
-							'floating'  => __( 'Floating', 'adam-ui' ),
-						),
-						$values
-					);
-					?>
-					<?php if ( 'legacy-footer' === $values['theme_switcher_placement'] ) : ?>
-						<div class="adam-alert adam-alert-info" role="status"><?php esc_html_e( 'Legacy footer placement remains active for backwards compatibility. Choose and save a new placement above to disable it.', 'adam-ui' ); ?></div>
-					<?php endif; ?>
-					<?php
-					$this->radio_field(
-						$name,
-						'theme_switcher_position',
-						__( 'Floating position', 'adam-ui' ),
-						__( 'Used only when Floating placement is selected.', 'adam-ui' ),
-						array(
-							'bottom-right' => __( 'Bottom Right', 'adam-ui' ),
-							'bottom-left'  => __( 'Bottom Left', 'adam-ui' ),
-							'top-right'    => __( 'Top Right', 'adam-ui' ),
-							'top-left'     => __( 'Top Left', 'adam-ui' ),
-						),
-						$values
-					);
-					$this->radio_field(
-						$name,
-						'theme_switcher_style',
-						__( 'Display style', 'adam-ui' ),
-						__( 'The global presentation used by automatic and manual placements unless a block or shortcode explicitly overrides it.', 'adam-ui' ),
-						array(
-							'icon-only'  => __( 'Icon Only', 'adam-ui' ),
-							'icon-label' => __( 'Icon + Label', 'adam-ui' ),
-							'dropdown'   => __( 'Dropdown', 'adam-ui' ),
-						),
-						$values
-					);
-					?>
-					<div class="adam-alert adam-alert-info"><code>[adam_theme_switcher]</code></div>
+					<?php $this->checkbox_field( $name, 'theme_switcher_enabled', __( 'Enable Theme Switcher', 'adam-ui' ), __( 'Allows the shared Theme Switcher component to be used throughout the website.', 'adam-ui' ), $values ); ?>
+					<p class="adam-field__help"><?php esc_html_e( 'When enabled, WordPress can place the component as a widget, Gutenberg block, or shortcode.', 'adam-ui' ); ?></p>
 				</div></section>
 				<?php submit_button( __( 'Save settings', 'adam-ui' ), 'primary adam-button adam-button-primary' ); ?>
 			</form>
@@ -264,30 +219,6 @@ else :
 	private function checkbox_field( $name, $key, $label, $description, $values ) {
 		?>
 		<div class="adam-ui-settings__field"><div><strong><?php echo esc_html( $label ); ?></strong><p class="adam-field__help"><?php echo esc_html( $description ); ?></p></div><div class="adam-ui-settings__control"><label><input type="checkbox" name="<?php echo esc_attr( $name ); ?>[<?php echo esc_attr( $key ); ?>]" value="1" <?php checked( ! empty( $values[ $key ] ) ); ?> /> <?php esc_html_e( 'Enabled', 'adam-ui' ); ?></label></div></div>
-		<?php
-	}
-
-	/**
-	 * Renders a reusable radio settings field.
-	 *
-	 * @param string $name        Option name.
-	 * @param string $key         Setting key.
-	 * @param string $label       Field label.
-	 * @param string $description Help text.
-	 * @param array  $options     Value/label pairs.
-	 * @param array  $values      Current settings.
-	 */
-	private function radio_field( $name, $key, $label, $description, $options, $values ) {
-		$current = isset( $values[ $key ] ) ? (string) $values[ $key ] : '';
-		?>
-		<fieldset class="adam-ui-settings__field">
-			<div><legend><strong><?php echo esc_html( $label ); ?></strong></legend><p class="adam-field__help"><?php echo esc_html( $description ); ?></p></div>
-			<div class="adam-ui-settings__control adam-ui-settings__choices">
-				<?php foreach ( $options as $value => $option_label ) : ?>
-					<label><input type="radio" name="<?php echo esc_attr( $name ); ?>[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $value ); ?>" <?php checked( $current, $value ); ?>> <?php echo esc_html( $option_label ); ?></label>
-				<?php endforeach; ?>
-			</div>
-		</fieldset>
 		<?php
 	}
 

@@ -19,39 +19,6 @@
 	font-size: var(--adam-font-size-sm);
 }
 
-.adam-ui-theme-switcher.adam-theme-switcher[data-adam-footer-integrated="true"] {
-	justify-content: center;
-	margin: 0;
-	padding: var(--adam-space-2) var(--adam-space-3);
-	color: var(--adam-footer-text);
-	background: var(--adam-footer-switcher-bg);
-	border-color: var(--adam-footer-switcher-border);
-	box-shadow: none;
-}
-
-.adam-ui.adam-footer-theme-layout {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: var(--adam-space-4);
-	width: 100%;
-	text-align: center;
-}
-
-.adam-ui.adam-footer-theme-layout .adam-footer-copyright-text {
-	display: block;
-}
-
-.adam-ui-theme-switcher.adam-theme-switcher[data-adam-footer-integrated="true"] .adam-theme-switcher__label {
-	color: var(--adam-footer-text);
-}
-
-.adam-ui-theme-switcher.adam-theme-switcher[data-adam-footer-integrated="true"] .adam-theme-switcher__select {
-	color: var(--adam-footer-switcher-text);
-	background-color: var(--adam-footer-switcher-bg);
-	border-color: var(--adam-footer-switcher-border);
-}
-
 .adam-ui-theme-switcher .adam-theme-switcher__label {
 	color: var(--adam-text-muted);
 	font-weight: var(--adam-font-weight-semibold);
@@ -125,33 +92,6 @@
 	line-height: 1;
 }
 
-.adam-ui-theme-switcher.adam-theme-switcher--floating {
-	position: fixed;
-	z-index: var(--adam-z-sticky);
-	margin: 0;
-	box-shadow: var(--adam-shadow-lg);
-}
-
-.adam-ui-theme-switcher[data-adam-floating-position="bottom-right"] {
-	right: var(--adam-space-5);
-	bottom: var(--adam-space-5);
-}
-
-.adam-ui-theme-switcher[data-adam-floating-position="bottom-left"] {
-	bottom: var(--adam-space-5);
-	left: var(--adam-space-5);
-}
-
-.adam-ui-theme-switcher[data-adam-floating-position="top-right"] {
-	top: var(--adam-space-5);
-	right: var(--adam-space-5);
-}
-
-.adam-ui-theme-switcher[data-adam-floating-position="top-left"] {
-	top: var(--adam-space-5);
-	left: var(--adam-space-5);
-}
-
 .adam-ui-theme-switcher .adam-theme-switcher__notice {
 	color: var(--adam-text-muted);
 }
@@ -159,15 +99,5 @@
 @media (max-width: 30rem) {
 	.adam-ui-theme-switcher.adam-theme-switcher {
 		flex-wrap: wrap;
-	}
-
-	.adam-ui-theme-switcher.adam-theme-switcher--floating {
-		max-width: calc(100vw - (2 * var(--adam-space-3)));
-	}
-
-	.adam-ui-theme-switcher[data-adam-floating-position] {
-		right: auto;
-		bottom: var(--adam-space-3);
-		left: var(--adam-space-3);
 	}
 }

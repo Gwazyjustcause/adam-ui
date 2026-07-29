@@ -59,13 +59,6 @@ final class ADAM_UI_Theme_Manager {
 	private $script_configured = false;
 
 	/**
-	 * Tracks whether the switcher has already been rendered.
-	 *
-	 * @var bool
-	 */
-	private $switcher_rendered = false;
-
-	/**
 	 * Whether a plugin opted the current admin screen into ADAM theming.
 	 *
 	 * @var bool
@@ -107,19 +100,6 @@ final class ADAM_UI_Theme_Manager {
 		add_action( 'login_enqueue_scripts', array( $this, 'enqueue_core_assets' ) );
 		add_filter( 'login_body_class', array( $this, 'add_body_class' ) );
 
-		if ( ! $this->settings->is_theme_switcher_enabled() ) {
-			return;
-		}
-
-		$placement = $this->settings->get_theme_switcher_placement();
-		if ( 'legacy-footer' === $placement ) {
-			add_filter( 'blocksy:footer:copyright:value', array( $this, 'add_switcher_to_blocksy_copyright' ), 20 );
-			add_action( 'wp_footer', array( $this, 'render_theme_switcher' ) );
-			add_action( 'login_footer', array( $this, 'render_theme_switcher' ) );
-		} elseif ( 'floating' === $placement ) {
-			add_action( 'wp_footer', array( $this, 'render_floating_theme_switcher' ) );
-			add_action( 'login_footer', array( $this, 'render_floating_theme_switcher' ) );
-		}
 	}
 
 	/**
@@ -308,59 +288,6 @@ final class ADAM_UI_Theme_Manager {
 			wp_localize_script( 'adam-ui', 'adamUIConfig', $this->get_script_config() );
 			$this->script_configured = true;
 		}
-	}
-
-	/**
-	 * Renders the public theme selector.
-	 *
-	 * The control is deliberately a native select for keyboard and assistive
-	 * technology support without requiring a custom interaction model.
-	 *
-	 * @return void
-	 */
-	public function render_theme_switcher() {
-		if ( $this->switcher_rendered || ! $this->settings->is_theme_switcher_enabled() || 'legacy-footer' !== $this->settings->get_theme_switcher_placement() ) {
-			return;
-		}
-
-		$this->switcher_rendered = true;
-		echo $this->get_theme_switcher_markup( array( 'context' => 'legacy-footer' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	}
-
-	/** Renders the configured floating instance in the selected screen corner. */
-	public function render_floating_theme_switcher() {
-		if ( ! $this->settings->is_theme_switcher_enabled() || 'floating' !== $this->settings->get_theme_switcher_placement() ) {
-			return;
-		}
-
-		echo $this->get_theme_switcher_markup( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			array(
-				'context'  => 'floating',
-				'position' => $this->settings->get_theme_switcher_position(),
-			)
-		);
-	}
-
-	/**
-	 * Places the selector inside Blocksy's copyright element before its text.
-	 *
-	 * The wp_footer callback remains a fallback for themes without a structural
-	 * footer hook. On Blocksy this filter runs first, so the fallback is skipped.
-	 *
-	 * @param string $copyright Existing copyright markup.
-	 * @return string
-	 */
-	public function add_switcher_to_blocksy_copyright( $copyright ) {
-		if ( $this->switcher_rendered || ! $this->settings->is_theme_switcher_enabled() || 'legacy-footer' !== $this->settings->get_theme_switcher_placement() ) {
-			return $copyright;
-		}
-
-		$this->switcher_rendered = true;
-
-		return '<div class="adam-ui adam-footer-theme-layout">'
-			. $this->get_theme_switcher_markup( array( 'context' => 'legacy-footer' ) )
-			. '<div class="adam-footer-copyright-text">' . $copyright . '</div>'
-			. '</div>';
 	}
 
 	/**

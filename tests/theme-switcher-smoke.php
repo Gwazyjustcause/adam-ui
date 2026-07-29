@@ -1,5 +1,5 @@
 <?php
-/** Reusable Theme Switcher placement and browser contract. */
+/** Reusable Theme Switcher native WordPress placement and browser contract. */
 
 $root = dirname( __DIR__ );
 $js   = file_get_contents( $root . '/assets/js/ui.js' );
@@ -32,28 +32,27 @@ adam_ui_switcher_assert( false !== strpos( $component, "'editor_style'    => 'ad
 adam_ui_switcher_assert( false !== strpos( $component, "'style'           => 'adam-ui-theme-switcher'" ), 'The block frontend stylesheet is not registered.' );
 adam_ui_switcher_assert( false !== strpos( $editor_css, '.adam-ui-theme-switcher-block-preview' ), 'The Gutenberg block preview stylesheet is missing.' );
 adam_ui_switcher_assert( false !== strpos( $component, "register_widget( 'ADAM_UI_Theme_Switcher_Widget' )" ), 'The WordPress widget adapter is missing.' );
-adam_ui_switcher_assert( false !== strpos( $component, "'shortcode' !== \$this->settings->get_theme_switcher_placement()" ), 'The shortcode must render only when its placement is selected.' );
-adam_ui_switcher_assert( false !== strpos( $component, "'block' !== \$this->settings->get_theme_switcher_placement()" ), 'The block must render only when its placement is selected.' );
-adam_ui_switcher_assert( false !== strpos( $widget, "'widget' !== adam_ui()->get_settings()->get_theme_switcher_placement()" ), 'The widget must render only when its placement is selected.' );
+adam_ui_switcher_assert( false === strpos( $component, "'shortcode' !== \$this->settings->get_theme_switcher_placement()" ), 'An explicitly inserted shortcode must not be suppressed by the automatic placement setting.' );
+adam_ui_switcher_assert( false === strpos( $component, "'block' !== \$this->settings->get_theme_switcher_placement()" ), 'An explicitly inserted block must not be suppressed by the automatic placement setting.' );
+adam_ui_switcher_assert( false === strpos( $widget, "'widget' !== adam_ui()->get_settings()->get_theme_switcher_placement()" ), 'An explicitly placed widget must not be suppressed by the automatic placement setting.' );
+adam_ui_switcher_assert( false !== strpos( $widget, '$markup = adam_ui_get_theme_manager()->get_theme_switcher_markup(' ), 'The widget must render through the shared Theme Switcher component.' );
 adam_ui_switcher_assert( false !== strpos( $block, "blocks.registerBlockType( 'adam-ui/theme-switcher'" ), 'The block editor integration is missing.' );
 adam_ui_switcher_assert( false !== strpos( $widget, 'extends WP_Widget' ), 'The Theme Switcher must be available as a standard WordPress widget.' );
+adam_ui_switcher_assert( false !== strpos( $widget, "'style'   => \$style" ), 'Widget instances must pass their own display style to the shared renderer.' );
+adam_ui_switcher_assert( false !== strpos( $widget, "get_field_id( 'style' )" ), 'Widget instances must expose a display style control.' );
+adam_ui_switcher_assert( false === strpos( $block, 'Use global setting' ), 'Blocks must not depend on a removed global display style.' );
 adam_ui_switcher_assert( false !== strpos( $bootstrap, 'function adam_ui_theme_switcher(' ), 'The public component helper is missing.' );
 adam_ui_switcher_assert( false !== strpos( $component, 'adam-theme-select-' ) && false !== strpos( $component, 'self::$instance_count' ), 'Multiple switchers must receive unique control IDs.' );
 adam_ui_switcher_assert( false !== strpos( $component, 'adam-ui-theme-switcher' ), 'The switcher must expose a dedicated ADAM-owned component root.' );
 adam_ui_switcher_assert( false !== strpos( $css, '.adam-ui-theme-switcher.adam-theme-switcher' ), 'Switcher rules must be scoped with sufficient component specificity.' );
-adam_ui_switcher_assert( false !== strpos( $css, '.adam-theme-switcher--floating' ), 'Floating presentation is missing.' );
-foreach ( array( 'bottom-right', 'bottom-left', 'top-right', 'top-left' ) as $position ) {
-	adam_ui_switcher_assert( false !== strpos( $css . $settings . $admin, $position ), 'Floating position is missing: ' . $position );
-}
 foreach ( array( 'icon-only', 'icon-label', 'dropdown' ) as $style ) {
-	adam_ui_switcher_assert( false !== strpos( $component . $settings . $admin, $style ), 'Display style is missing: ' . $style );
+	adam_ui_switcher_assert( false !== strpos( $component . $widget . $block, $style ), 'Instance display style is missing: ' . $style );
 }
-adam_ui_switcher_assert( false !== strpos( $settings, "'theme_switcher_placement' => 'legacy-footer'" ), 'Existing installations must retain the legacy footer default.' );
-adam_ui_switcher_assert( false !== strpos( $settings, "array( 'legacy-footer', 'widget', 'block', 'shortcode', 'floating' )" ), 'All supported placement settings must be validated centrally.' );
-adam_ui_switcher_assert( false !== strpos( $manager, "'legacy-footer' === \$placement" ), 'Legacy footer hooks must be conditional.' );
-adam_ui_switcher_assert( false !== strpos( $manager, "'floating' === \$placement" ), 'Floating placement must be automatic only when selected.' );
-adam_ui_switcher_assert( false !== strpos( $manager, 'adam-footer-theme-layout' ), 'The backwards-compatible footer wrapper is missing.' );
-adam_ui_switcher_assert( strpos( $manager, "get_theme_switcher_markup( array( 'context' => 'legacy-footer' ) )" ) < strpos( $manager, 'adam-footer-copyright-text' ), 'Legacy selector markup must precede copyright markup.' );
-adam_ui_switcher_assert( false !== strpos( $css, '[data-adam-footer-integrated="true"]' ), 'Integrated footer presentation is missing.' );
+adam_ui_switcher_assert( false === strpos( $settings . $admin, 'theme_switcher_placement' ), 'Global Theme Switcher placement must not be stored or displayed.' );
+adam_ui_switcher_assert( false === strpos( $settings . $admin, 'theme_switcher_position' ), 'Global floating position must not be stored or displayed.' );
+adam_ui_switcher_assert( false === strpos( $settings . $admin, 'theme_switcher_style' ), 'Global display style must not be stored or displayed.' );
+adam_ui_switcher_assert( false === strpos( $manager . $css, 'legacy-footer' ), 'Legacy automatic footer placement must be removed.' );
+adam_ui_switcher_assert( false === strpos( $manager . $css, 'floating' ), 'Global floating placement must be removed.' );
+adam_ui_switcher_assert( false === strpos( $admin, '[adam_theme_switcher]' ), 'The settings page must not display the shortcode.' );
 
-echo "PASS: reusable Theme Switcher placement contract.\n";
+echo "PASS: reusable Theme Switcher native placement contract.\n";

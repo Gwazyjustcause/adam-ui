@@ -65,7 +65,6 @@ $themes   = new ADAM_UI_Theme_Manager( $settings, $assets, $repository );
 $plugins  = new ADAM_UI_Plugin_Registry();
 
 assert_contract( true === $settings->is_theme_switcher_enabled(), 'the Theme Switcher is enabled for existing installations' );
-assert_contract( 'legacy-footer' === $settings->get_theme_switcher_placement(), 'missing placement settings retain the legacy footer default' );
 $sanitized_switcher = $settings->sanitize(
 	array(
 		'theme_switcher_enabled'   => '1',
@@ -74,9 +73,8 @@ $sanitized_switcher = $settings->sanitize(
 		'theme_switcher_style'     => 'icon-label',
 	)
 );
-assert_contract( 'floating' === $sanitized_switcher['theme_switcher_placement'], 'floating placement is accepted' );
-assert_contract( 'top-left' === $sanitized_switcher['theme_switcher_position'], 'floating corner is accepted' );
-assert_contract( 'icon-label' === $sanitized_switcher['theme_switcher_style'], 'switcher display style is accepted' );
+assert_contract( true === $sanitized_switcher['theme_switcher_enabled'], 'the global Theme Switcher toggle is accepted' );
+assert_contract( ! isset( $sanitized_switcher['theme_switcher_placement'], $sanitized_switcher['theme_switcher_position'], $sanitized_switcher['theme_switcher_style'] ), 'obsolete global placement and presentation settings are discarded' );
 assert_contract( $themes->get_theme_switcher() instanceof ADAM_UI_Theme_Switcher, 'the reusable Theme Switcher service is publicly available' );
 
 $repository->ensure_storage();

@@ -28,9 +28,6 @@ final class ADAM_UI_Settings {
 			'enable_transitions'     => true,
 			'enable_inspector'       => false,
 			'theme_switcher_enabled' => true,
-			'theme_switcher_placement' => 'legacy-footer',
-			'theme_switcher_position' => 'bottom-right',
-			'theme_switcher_style'   => 'dropdown',
 		);
 	}
 
@@ -40,8 +37,11 @@ final class ADAM_UI_Settings {
 	 * @return array<string, mixed>
 	 */
 	public function all() {
-		$stored = get_option( self::OPTION_KEY, array() );
-		return wp_parse_args( is_array( $stored ) ? $stored : array(), $this->defaults() );
+		$defaults = $this->defaults();
+		$stored   = get_option( self::OPTION_KEY, array() );
+		$stored   = is_array( $stored ) ? array_intersect_key( $stored, $defaults ) : array();
+
+		return wp_parse_args( $stored, $defaults );
 	}
 
 	/**
@@ -53,9 +53,6 @@ final class ADAM_UI_Settings {
 	public function sanitize( $input ) {
 		$input = is_array( $input ) ? $input : array();
 		$theme = isset( $input['default_theme'] ) ? sanitize_key( $input['default_theme'] ) : 'light';
-		$placement = isset( $input['theme_switcher_placement'] ) ? sanitize_key( $input['theme_switcher_placement'] ) : 'legacy-footer';
-		$position  = isset( $input['theme_switcher_position'] ) ? sanitize_key( $input['theme_switcher_position'] ) : 'bottom-right';
-		$style     = isset( $input['theme_switcher_style'] ) ? sanitize_key( $input['theme_switcher_style'] ) : 'dropdown';
 
 		return array(
 			'default_theme'          => in_array( $theme, array( 'light', 'dark' ), true ) ? $theme : 'light',
@@ -65,51 +62,12 @@ final class ADAM_UI_Settings {
 			'enable_transitions'     => ! empty( $input['enable_transitions'] ),
 			'enable_inspector'       => ! empty( $input['enable_inspector'] ),
 			'theme_switcher_enabled' => ! empty( $input['theme_switcher_enabled'] ),
-			'theme_switcher_placement' => in_array( $placement, $this->get_theme_switcher_placements(), true ) ? $placement : 'legacy-footer',
-			'theme_switcher_position' => in_array( $position, $this->get_theme_switcher_positions(), true ) ? $position : 'bottom-right',
-			'theme_switcher_style'   => in_array( $style, $this->get_theme_switcher_styles(), true ) ? $style : 'dropdown',
 		);
-	}
-
-	/** Returns valid placement settings, including the compatibility default. */
-	public function get_theme_switcher_placements() {
-		return array( 'legacy-footer', 'widget', 'block', 'shortcode', 'floating' );
-	}
-
-	/** Returns valid floating positions. */
-	public function get_theme_switcher_positions() {
-		return array( 'bottom-right', 'bottom-left', 'top-right', 'top-left' );
-	}
-
-	/** Returns valid component display styles. */
-	public function get_theme_switcher_styles() {
-		return array( 'icon-only', 'icon-label', 'dropdown' );
 	}
 
 	/** Returns whether public Theme Switcher rendering is enabled. */
 	public function is_theme_switcher_enabled() {
 		return $this->is_enabled( 'theme_switcher_enabled' );
-	}
-
-	/** Returns the configured placement method. */
-	public function get_theme_switcher_placement() {
-		$settings  = $this->all();
-		$placement = sanitize_key( (string) $settings['theme_switcher_placement'] );
-		return in_array( $placement, $this->get_theme_switcher_placements(), true ) ? $placement : 'legacy-footer';
-	}
-
-	/** Returns the configured floating corner. */
-	public function get_theme_switcher_position() {
-		$settings = $this->all();
-		$position = sanitize_key( (string) $settings['theme_switcher_position'] );
-		return in_array( $position, $this->get_theme_switcher_positions(), true ) ? $position : 'bottom-right';
-	}
-
-	/** Returns the configured component presentation. */
-	public function get_theme_switcher_style() {
-		$settings = $this->all();
-		$style    = sanitize_key( (string) $settings['theme_switcher_style'] );
-		return in_array( $style, $this->get_theme_switcher_styles(), true ) ? $style : 'dropdown';
 	}
 
 	/** Registers the global option and preference endpoint. */
@@ -121,7 +79,12 @@ final class ADAM_UI_Settings {
 
 	/** Migrates saved settings from the previous plugin identity once. */
 	public function migrate_saved_settings() {
-		if ( false !== get_option( self::OPTION_KEY, false ) ) {
+		$current = get_option( self::OPTION_KEY, false );
+		if ( false !== $current ) {
+			$normalized = $this->all();
+			if ( $current !== $normalized ) {
+				update_option( self::OPTION_KEY, $normalized, false );
+			}
 			return;
 		}
 
