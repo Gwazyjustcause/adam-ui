@@ -507,16 +507,40 @@ body.adam-theme-dark:not(.wp-admin) :is(
 }
 
 body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="content"] {
+	--adam-night-surface-heading: var(--adam-section-standard-heading);
+	--adam-night-surface-text: var(--adam-section-standard-text);
+	--adam-night-surface-link: var(--adam-section-standard-link);
+	--theme-heading-color: var(--adam-night-surface-heading);
+	--theme-headings-color: var(--adam-night-surface-heading);
+	--theme-text-color: var(--adam-night-surface-text);
+	--theme-link-initial-color: var(--adam-night-surface-link);
+	--theme-link-hover-color: var(--adam-link-hover);
 	color: var(--adam-section-standard-text);
 	background: var(--adam-night-surface) !important;
 }
 
 body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="alternate"] {
+	--adam-night-surface-heading: var(--adam-section-alternate-heading);
+	--adam-night-surface-text: var(--adam-section-alternate-text);
+	--adam-night-surface-link: var(--adam-section-alternate-link);
+	--theme-heading-color: var(--adam-night-surface-heading);
+	--theme-headings-color: var(--adam-night-surface-heading);
+	--theme-text-color: var(--adam-night-surface-text);
+	--theme-link-initial-color: var(--adam-night-surface-link);
+	--theme-link-hover-color: var(--adam-link-hover);
 	color: var(--adam-section-alternate-text);
 	background: var(--adam-night-surface-alt) !important;
 }
 
 body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="accent"] {
+	--adam-night-surface-heading: var(--adam-section-feature-heading);
+	--adam-night-surface-text: var(--adam-section-feature-text);
+	--adam-night-surface-link: var(--adam-section-feature-link);
+	--theme-heading-color: var(--adam-night-surface-heading);
+	--theme-headings-color: var(--adam-night-surface-heading);
+	--theme-text-color: var(--adam-night-surface-text);
+	--theme-link-initial-color: var(--adam-night-surface-link);
+	--theme-link-hover-color: var(--adam-link-hover);
 	color: var(--adam-section-feature-text);
 	background: var(--adam-night-accent-surface) !important;
 }
@@ -599,11 +623,116 @@ body.adam-theme-dark:not(.wp-admin) :is(
 	border-color: var(--adam-footer-divider);
 }
 
+/*
+ * A converted surface owns its foreground system as well as its background.
+ * The explicit colour declarations prevent Blocksy/Gutenberg Light values
+ * (including inline block colours) from leaking into Night mode. Semantic
+ * badges, statuses, and notices retain their component-specific contrast.
+ */
 body.adam-theme-dark:not(.wp-admin) :is(
 	[data-adam-night-background="content"],
-	[data-adam-night-background="alternate"]
-) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend) {
-	color: var(--adam-text);
+	[data-adam-night-background="alternate"],
+	[data-adam-night-background="accent"]
+) :where(h1, h2, h3, h4, h5, h6):not(:where(
+	.adam-badge,
+	.adam-badge *,
+	.adam-status,
+	.adam-status *,
+	.adam-notice,
+	.adam-notice *,
+	.adam-alert,
+	.adam-alert *,
+	[role="status"],
+	[role="status"] *,
+	[role="alert"],
+	[role="alert"] *
+)) {
+	color: var(--adam-night-surface-heading) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	[data-adam-night-background="content"],
+	[data-adam-night-background="alternate"],
+	[data-adam-night-background="accent"]
+) :where(p, li, dt, dd, figcaption, caption, .wp-element-caption, label, legend, blockquote):not(:where(
+	.adam-button *,
+	.wp-element-button *,
+	button *,
+	.adam-badge,
+	.adam-badge *,
+	.adam-status,
+	.adam-status *,
+	.adam-notice,
+	.adam-notice *,
+	.adam-alert,
+	.adam-alert *,
+	[role="status"],
+	[role="status"] *,
+	[role="alert"],
+	[role="alert"] *
+)) {
+	color: var(--adam-night-surface-text) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	[data-adam-night-background="content"],
+	[data-adam-night-background="alternate"],
+	[data-adam-night-background="accent"]
+) a:not(.adam-button):not(.wp-element-button):not(:where(
+	.adam-badge,
+	.adam-badge *,
+	.adam-status,
+	.adam-status *,
+	.adam-notice,
+	.adam-notice *,
+	.adam-alert,
+	.adam-alert *,
+	[role="status"],
+	[role="status"] *,
+	[role="alert"],
+	[role="alert"] *
+)) {
+	color: var(--adam-night-surface-link) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	[data-adam-night-background="content"],
+	[data-adam-night-background="alternate"],
+	[data-adam-night-background="accent"]
+) a:not(.adam-button):not(.wp-element-button):not(:where(
+	.adam-badge,
+	.adam-badge *,
+	.adam-status,
+	.adam-status *,
+	.adam-notice,
+	.adam-notice *,
+	.adam-alert,
+	.adam-alert *,
+	[role="status"],
+	[role="status"] *,
+	[role="alert"],
+	[role="alert"] *
+)):hover {
+	color: var(--adam-link-hover) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	[data-adam-night-background="content"],
+	[data-adam-night-background="alternate"],
+	[data-adam-night-background="accent"]
+) :is(button, input[type="button"], input[type="submit"], .button, .wp-element-button, .wp-block-button__link):not(
+	.adam-button,
+	.button-secondary
+) {
+	color: var(--adam-btn-primary-text) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	[data-adam-night-background="content"],
+	[data-adam-night-background="alternate"],
+	[data-adam-night-background="accent"]
+) :is(input[type="reset"], .button-secondary, .wp-block-button.is-style-outline .wp-block-button__link) {
+	color: var(--adam-btn-secondary-text) !important;
 }
 
 body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="accent"] :where(

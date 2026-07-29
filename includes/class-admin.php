@@ -59,11 +59,35 @@ final class ADAM_UI_Admin {
 		add_action( 'admin_notices', array( $this, 'render_compatibility_notices' ) );
 	}
 
+	/**
+	 * Guarantees that WordPress always receives a non-empty string for an
+	 * administration page or menu title.
+	 *
+	 * Translation filters are third-party extension points and may return an
+	 * invalid value. WordPress later passes the registered page title to
+	 * strip_tags(), which is deprecated for null on PHP 8.1+.
+	 *
+	 * @param mixed  $title    Translated title.
+	 * @param string $fallback Untranslated fallback.
+	 * @return string
+	 */
+	public static function normalize_title( $title, $fallback ) {
+		if ( is_string( $title ) && '' !== trim( $title ) ) {
+			return $title;
+		}
+
+		return (string) $fallback;
+	}
+
 	/** Registers the ADAM UI menu and diagnostics submenu. */
 	public function register_menu() {
-		add_menu_page( __( 'ADAM UI', 'adam-ui' ), __( 'ADAM UI', 'adam-ui' ), 'manage_options', 'adam-ui', array( $this, 'render_settings' ), 'dashicons-art', 81 );
-		add_submenu_page( 'adam-ui', __( 'Settings', 'adam-ui' ), __( 'Settings', 'adam-ui' ), 'manage_options', 'adam-ui', array( $this, 'render_settings' ) );
-		add_submenu_page( 'adam-ui', __( 'Diagnostics', 'adam-ui' ), __( 'Diagnostics', 'adam-ui' ), 'manage_options', 'adam-ui-diagnostics', array( $this, 'render_diagnostics' ) );
+		$plugin_title      = self::normalize_title( __( 'ADAM UI', 'adam-ui' ), 'ADAM UI' );
+		$settings_title    = self::normalize_title( __( 'Settings', 'adam-ui' ), 'Settings' );
+		$diagnostics_title = self::normalize_title( __( 'Diagnostics', 'adam-ui' ), 'Diagnostics' );
+
+		add_menu_page( $plugin_title, $plugin_title, 'manage_options', 'adam-ui', array( $this, 'render_settings' ), 'dashicons-art', 81 );
+		add_submenu_page( 'adam-ui', $settings_title, $settings_title, 'manage_options', 'adam-ui', array( $this, 'render_settings' ) );
+		add_submenu_page( 'adam-ui', $diagnostics_title, $diagnostics_title, 'manage_options', 'adam-ui-diagnostics', array( $this, 'render_diagnostics' ) );
 	}
 
 	/**

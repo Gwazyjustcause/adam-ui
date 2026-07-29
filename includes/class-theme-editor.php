@@ -20,7 +20,8 @@ final class ADAM_UI_Theme_Editor {
 	}
 
 	public function register_menu() {
-		add_submenu_page( 'adam-ui', __( 'Theme Editor', 'adam-ui' ), __( 'Theme Editor', 'adam-ui' ), 'manage_options', 'adam-ui-theme-editor', array( $this, 'render' ) );
+		$title = ADAM_UI_Admin::normalize_title( __( 'Theme Editor', 'adam-ui' ), 'Theme Editor' );
+		add_submenu_page( 'adam-ui', $title, $title, 'manage_options', 'adam-ui-theme-editor', array( $this, 'render' ) );
 	}
 
 	public function enqueue_assets( $hook ) {

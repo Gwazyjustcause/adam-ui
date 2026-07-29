@@ -88,6 +88,16 @@ $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ] = $stored;
 $repository = new ADAM_UI_Theme_Repository();
 $color_engine = new ADAM_UI_Color_Engine();
 assert_contract( '#000' === $repository->token( 'adam-header-bg', 'dark' ), 'three-digit HEX colours are accepted' );
+foreach ( array( 'standard', 'alternate', 'feature' ) as $surface_role ) {
+	$surface_background = $repository->token( 'adam-section-' . $surface_role . '-bg', 'dark' );
+	foreach ( array( 'heading', 'text', 'link' ) as $foreground_role ) {
+		$surface_foreground = $repository->token( 'adam-section-' . $surface_role . '-' . $foreground_role, 'dark' );
+		assert_contract(
+			4.5 <= $color_engine->contrast_ratio( $surface_foreground, $surface_background ),
+			'classified ' . $surface_role . ' surfaces generate readable ' . $foreground_role . ' colours'
+		);
+	}
+}
 assert_contract( 4.5 <= $color_engine->contrast_ratio( $repository->token( 'adam-header-nav-text', 'dark' ), $repository->token( 'adam-header-nav-bg', 'dark' ) ), 'generated navigation text meets WCAG contrast' );
 assert_contract( 'rgb(255 255 255 / 85%)' === $repository->token( 'adam-footer-bg', 'dark' ), 'modern RGB colours are accepted' );
 assert_contract( 'hsl(120 20% 10% / 0.8)' === $repository->token( 'adam-section-overlay-bg', 'dark' ), 'HSL alpha colours are accepted' );

@@ -57,6 +57,16 @@ foreach ( array( 'feature', 'cta', 'overlay', 'alternate', 'standard' ) as $role
 	adam_ui_night_assert( false !== strpos( $ui_css, '--adam-section-' . $role . '-text' ), 'Background-aware content contrast is missing for ' . $role . '.' );
 }
 
+foreach ( array( '--adam-night-surface-heading', '--adam-night-surface-text', '--adam-night-surface-link', '--theme-heading-color', '--theme-text-color', '--theme-link-initial-color' ) as $foreground_token ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, $foreground_token ), 'Classified surfaces do not own typography token ' . $foreground_token . '.' );
+}
+foreach ( array( 'h1, h2, h3, h4, h5, h6', 'p, li, dt, dd, figcaption, caption, .wp-element-caption, label, legend, blockquote', 'a:not(.adam-button):not(.wp-element-button)', 'button, input[type="button"], input[type="submit"]' ) as $content_selector ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, $content_selector ), 'Classified-surface typography coverage is missing for ' . $content_selector . '.' );
+}
+foreach ( array( '.adam-badge *', '.adam-status *', '.adam-notice *', '[role="status"] *', '[role="alert"] *' ) as $semantic_exception ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, $semantic_exception ), 'Semantic component foreground protection is missing for ' . $semantic_exception . '.' );
+}
+
 adam_ui_night_assert( 0 === preg_match( '/(?:img|picture)[^{]*\{[^}]*(?:filter|mix-blend-mode|opacity)\s*:/is', $all_css ), 'Theme CSS must not alter photographs or graphics.' );
 adam_ui_night_assert( false !== strpos( $ui_css, 'body.adam-theme-dark .adam-member-area' ), 'ADAM Socios public pages must inherit Night overrides.' );
 adam_ui_night_assert( false !== strpos( $ui_css, 'body.adam-theme-dark .adam-bot' ), 'ADAM BOT must inherit Night overrides.' );
