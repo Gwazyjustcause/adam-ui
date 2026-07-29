@@ -305,7 +305,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-) {
+):not(.adam-theme-switcher__choice) {
 	--adam-current-button-focus: var(--adam-button-focus);
 	color: var(--adam-night-button-text) !important;
 	background-color: var(--adam-night-button-bg) !important;
@@ -324,7 +324,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):is(:hover, :focus-visible, :active) {
+):not(.adam-theme-switcher__choice):is(:hover, :focus-visible, :active) {
 	color: var(--adam-night-button-hover-text) !important;
 	background-color: var(--adam-night-button-hover-bg) !important;
 	border-color: var(--adam-night-button-hover-border) !important;
@@ -438,7 +438,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):focus-visible {
+):not(.adam-theme-switcher__choice):focus-visible {
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--adam-current-button-focus) 42%, transparent) !important;
 	outline: 2px solid var(--adam-current-button-focus) !important;
 	outline-offset: 2px;
@@ -455,7 +455,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
+):not(.adam-theme-switcher__choice):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
 	color: var(--adam-button-disabled-text) !important;
 	background-color: var(--adam-button-disabled-bg) !important;
 	border-color: var(--adam-button-disabled-bg) !important;

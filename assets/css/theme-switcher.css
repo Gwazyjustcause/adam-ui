@@ -4,6 +4,7 @@
  * All visual values use the shared ADAM design tokens.
  */
 .adam-ui-theme-switcher.adam-theme-switcher {
+	box-sizing: border-box;
 	display: flex;
 	align-items: center;
 	gap: var(--adam-space-2);
@@ -19,12 +20,13 @@
 	font-size: var(--adam-font-size-sm);
 }
 
-.adam-ui-theme-switcher .adam-theme-switcher__label {
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__label {
 	color: var(--adam-text-muted);
 	font-weight: var(--adam-font-weight-semibold);
 }
 
-.adam-ui-theme-switcher .adam-theme-switcher__select {
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__select {
+	box-sizing: border-box;
 	min-height: var(--adam-control-height);
 	padding: var(--adam-space-1) var(--adam-space-6) var(--adam-space-1) var(--adam-space-2);
 	color: var(--adam-text);
@@ -35,22 +37,26 @@
 	cursor: pointer;
 }
 
-.adam-ui-theme-switcher .adam-theme-switcher__select:hover {
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__select:hover {
 	border-color: var(--adam-primary);
 }
 
-.adam-ui-theme-switcher .adam-theme-switcher__select:focus-visible {
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__select:focus-visible {
 	outline: 2px solid var(--adam-primary);
-	outline-offset: 2px;
+	outline-offset: -3px;
+	box-shadow: inset 0 0 0 1px var(--adam-primary);
 }
 
-.adam-ui-theme-switcher .adam-theme-switcher__choices {
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__choices {
+	box-sizing: border-box;
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--adam-space-1);
+	max-width: 100%;
 }
 
-.adam-ui-theme-switcher .adam-theme-switcher__choice {
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__choice {
+	box-sizing: border-box;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -69,20 +75,26 @@
 	cursor: pointer;
 }
 
-.adam-ui-theme-switcher .adam-theme-switcher__choice:hover,
-.adam-ui-theme-switcher .adam-theme-switcher__choice:focus-visible {
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__choice:hover,
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__choice:focus-visible {
 	color: var(--adam-link-hover) !important;
 	background: var(--adam-surface-hover) !important;
 	border-color: var(--adam-primary) !important;
 }
 
-.adam-ui-theme-switcher .adam-theme-switcher__choice[aria-pressed="true"] {
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__choice:focus-visible {
+	outline: 2px solid var(--adam-primary) !important;
+	outline-offset: -3px !important;
+	box-shadow: inset 0 0 0 1px var(--adam-primary) !important;
+}
+
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__choice[aria-pressed="true"] {
 	color: var(--adam-btn-primary-text) !important;
 	background: var(--adam-btn-primary-bg) !important;
 	border-color: var(--adam-btn-primary-border) !important;
 }
 
-.adam-ui-theme-switcher .adam-theme-switcher__icon {
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__icon {
 	display: inline-grid;
 	place-items: center;
 	width: var(--adam-icon-size);
@@ -92,7 +104,7 @@
 	line-height: 1;
 }
 
-.adam-ui-theme-switcher .adam-theme-switcher__notice {
+.adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__notice {
 	color: var(--adam-text-muted);
 }
 

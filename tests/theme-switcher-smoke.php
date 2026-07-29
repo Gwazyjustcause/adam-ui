@@ -4,6 +4,7 @@
 $root = dirname( __DIR__ );
 $js   = file_get_contents( $root . '/assets/js/ui.js' );
 $css  = file_get_contents( $root . '/assets/css/theme-switcher.css' );
+$base_css = file_get_contents( $root . '/assets/css/ui.css' );
 $editor_css = file_get_contents( $root . '/assets/css/theme-switcher-editor.css' );
 $manager = file_get_contents( $root . '/includes/class-theme-manager.php' );
 $component = file_get_contents( $root . '/includes/class-theme-switcher.php' );
@@ -45,6 +46,10 @@ adam_ui_switcher_assert( false !== strpos( $bootstrap, 'function adam_ui_theme_s
 adam_ui_switcher_assert( false !== strpos( $component, 'adam-theme-select-' ) && false !== strpos( $component, 'self::$instance_count' ), 'Multiple switchers must receive unique control IDs.' );
 adam_ui_switcher_assert( false !== strpos( $component, 'adam-ui-theme-switcher' ), 'The switcher must expose a dedicated ADAM-owned component root.' );
 adam_ui_switcher_assert( false !== strpos( $css, '.adam-ui-theme-switcher.adam-theme-switcher' ), 'Switcher rules must be scoped with sufficient component specificity.' );
+adam_ui_switcher_assert( false !== strpos( $css, 'box-sizing: border-box' ), 'The component boundary must include its padding and border.' );
+adam_ui_switcher_assert( false !== strpos( $css, '.adam-theme-switcher__select:focus-visible' ) && false !== strpos( $css, 'outline-offset: -3px' ), 'Dropdown focus must render inside the control boundary.' );
+adam_ui_switcher_assert( false !== strpos( $css, '.adam-theme-switcher__choice:focus-visible' ) && false !== strpos( $css, 'box-shadow: inset 0 0 0 1px var(--adam-primary)' ), 'Button focus must render inside the control boundary.' );
+adam_ui_switcher_assert( false !== strpos( $base_css, '):not(.adam-theme-switcher__choice):focus-visible' ), 'Global button focus must defer to the Theme Switcher component.' );
 foreach ( array( 'icon-only', 'icon-label', 'dropdown' ) as $style ) {
 	adam_ui_switcher_assert( false !== strpos( $component . $widget . $block, $style ), 'Instance display style is missing: ' . $style );
 }
