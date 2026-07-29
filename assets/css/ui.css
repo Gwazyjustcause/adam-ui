@@ -75,7 +75,7 @@
 	background-color: color-mix(in srgb, var(--adam-header-bg) var(--adam-header-surface-opacity, 100%), transparent);
 	border-bottom-width: var(--adam-header-border-width, 1px);
 	border-bottom-style: solid;
-	border-color: color-mix(in srgb, var(--adam-header-bg) 76%, white);
+	border-color: var(--adam-header-border);
 	box-shadow: var(--adam-header-shadow, none);
 }
 
@@ -95,8 +95,8 @@
 }
 
 :where(body.adam-theme-dark:not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(.menu-item > a, .wp-block-navigation-item__content):hover {
-	color: var(--adam-header-active-text);
-	background-color: color-mix(in srgb, var(--adam-header-active-bg) 28%, var(--adam-header-bg));
+	color: var(--adam-header-hover-text);
+	background-color: var(--adam-header-hover-bg);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(.current-menu-item > a, .current_page_item > a) {
@@ -198,10 +198,9 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 ) {
 	color: var(--adam-card-text);
 	background-color: color-mix(in srgb, var(--adam-card-bg) var(--adam-card-surface-opacity, 100%), transparent);
-	border-color: color-mix(in srgb, var(--adam-card-bg) 78%, white);
+	border-color: var(--adam-card-border);
 	border-width: var(--adam-card-border-width);
 	box-shadow: var(--adam-card-shadow);
-	backdrop-filter: var(--adam-card-backdrop, none);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.card, .widget, .panel, .entry-card, .wp-block-group.is-style-card, .wp-block-query .wp-block-post) :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-card-heading); }
@@ -241,10 +240,18 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	accent-color: var(--adam-primary);
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(input, select, textarea, button):disabled {
-	color: var(--adam-text-disabled);
-	background-color: var(--adam-input-disabled-bg);
-	border-color: var(--adam-border);
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(input, select, textarea):disabled {
+	color: var(--adam-form-disabled-text);
+	background-color: var(--adam-form-disabled-bg);
+	border-color: var(--adam-form-disabled-bg);
+	cursor: not-allowed;
+	opacity: 1;
+}
+
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) button:disabled {
+	color: var(--adam-button-disabled-text);
+	background-color: var(--adam-button-disabled-bg);
+	border-color: var(--adam-button-disabled-bg);
 	cursor: not-allowed;
 	opacity: 1;
 }
@@ -267,6 +274,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	color: var(--adam-btn-primary-text);
 	background-color: var(--adam-btn-primary-bg);
 	border-color: var(--adam-btn-primary-border);
+	outline-color: var(--adam-button-focus);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
@@ -317,6 +325,10 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	color: var(--adam-text);
 	background-color: var(--adam-table-row-bg);
 	border-color: var(--adam-table-border);
+}
+
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(table thead, table tfoot) {
+	color: var(--adam-table-header-text);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(th, td) {

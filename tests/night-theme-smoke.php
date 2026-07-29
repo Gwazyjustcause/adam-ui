@@ -5,6 +5,7 @@ $root       = dirname( __DIR__ );
 $ui_css     = file_get_contents( $root . '/assets/css/ui.css' );
 $variables  = file_get_contents( $root . '/assets/css/variables.css' );
 $repository = file_get_contents( $root . '/includes/class-theme-repository.php' );
+$engine = file_get_contents( $root . '/includes/class-color-engine.php' );
 $assets     = file_get_contents( $root . '/includes/class-asset-registry.php' );
 $editor     = file_get_contents( $root . '/includes/class-theme-editor.php' );
 $all_css    = implode( "\n", array_map( 'file_get_contents', glob( $root . '/assets/css/*.css' ) ) );
@@ -23,6 +24,8 @@ adam_ui_night_assert( false === strpos( $ui_css, 'adam-theme-light' ), 'Global U
 adam_ui_night_assert( 0 === preg_match( '/page-id-|body\.home|single-post/', $ui_css ), 'Night architecture must not require page-specific maintenance.' );
 adam_ui_night_assert( false !== strpos( $variables, 'Light-mode interoperability bridge' ), 'Blocksy-backed Light interoperability tokens are missing.' );
 adam_ui_night_assert( false !== strpos( $repository, 'apply_automatic_contrast' ) && false !== strpos( $repository, 'contrast_map' ), 'Automatic Night foreground derivation is missing.' );
+adam_ui_night_assert( false !== strpos( $engine, 'contrast_ratio' ) && false !== strpos( $engine, 'ensure_contrast' ), 'The intelligent WCAG colour engine is missing.' );
+adam_ui_night_assert( false !== strpos( $engine, "'hover_background'" ) && false !== strpos( $engine, "'disabled_background'" ), 'Supporting component states are not generated automatically.' );
 adam_ui_night_assert( false !== strpos( $editor, 'night_themes()' ) && false === strpos( $editor, "active_id( 'light' )" ), 'Theme Editor must expose Night presets only.' );
 
 foreach ( array( 'header', 'footer', 'card', 'form', 'table', 'notice' ) as $component ) {

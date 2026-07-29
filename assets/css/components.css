@@ -26,7 +26,6 @@
 	padding: var(--adam-card-padding, var(--adam-space-5));
 	border-width: var(--adam-card-border-width);
 	border-color: color-mix(in srgb, var(--adam-card-bg) 78%, white);
-	backdrop-filter: var(--adam-card-backdrop, none);
 }
 
 .adam-section,
@@ -61,6 +60,22 @@
 }
 
 .adam-hero :where(h1, h2, h3) { color: var(--adam-hero-heading); }
+.adam-hero :where(.adam-button-primary, .adam-button--primary) {
+	color: var(--adam-hero-primary-text);
+	background: var(--adam-hero-primary);
+}
+.adam-hero :where(.adam-button-primary, .adam-button--primary):hover {
+	color: var(--adam-hero-primary-hover-text);
+	background: var(--adam-hero-primary-hover);
+}
+.adam-hero :where(.adam-button-secondary, .adam-button--secondary) {
+	color: var(--adam-hero-secondary-text);
+	background: var(--adam-hero-secondary);
+}
+.adam-hero :where(.adam-button-secondary, .adam-button--secondary):hover {
+	color: var(--adam-hero-secondary-hover-text);
+	background: var(--adam-hero-secondary-hover);
+}
 .adam-footer {
 	padding: var(--adam-footer-padding, var(--adam-space-8));
 	color: var(--adam-footer-text);
@@ -612,6 +627,14 @@
 	box-shadow: 0 0 0 1px var(--adam-form-focus);
 	outline-color: var(--adam-form-focus);
 }
+
+.adam-input:disabled,
+.adam-select:disabled,
+.adam-textarea:disabled {
+	color: var(--adam-form-disabled-text);
+	background-color: var(--adam-form-disabled-bg);
+	border-color: var(--adam-form-disabled-bg);
+}
 .adam-form .adam-button,
 .adam-field .adam-button { color: var(--adam-form-button-text); background-color: var(--adam-form-button); }
 
@@ -940,10 +963,13 @@
 	color: var(--adam-text);
 	background-color: color-mix(in srgb, var(--adam-surface) var(--adam-card-surface-opacity, 100%), transparent);
 	padding: var(--adam-card-padding, var(--adam-space-5));
-	border: var(--adam-card-border-width) solid color-mix(in srgb, var(--adam-card-bg) 78%, white);
+	border: var(--adam-card-border-width) solid var(--adam-card-border);
 	border-radius: var(--adam-radius-lg);
 	box-shadow: var(--adam-card-shadow);
-	backdrop-filter: var(--adam-card-backdrop, none);
+}
+
+:where(a.adam-card, button.adam-card, .adam-card--interactive):hover {
+	background-color: var(--adam-card-hover-bg);
 }
 
 .adam-card--muted,
@@ -973,9 +999,9 @@
 
 .adam-button:hover,
 .adam-button:focus-visible {
-	color: var(--adam-on-primary);
-	background-color: color-mix(in srgb, var(--adam-primary) 82%, white);
-	border-color: color-mix(in srgb, var(--adam-primary) 82%, white);
+	color: var(--adam-btn-primary-hover-text);
+	background-color: var(--adam-btn-primary-hover-bg);
+	border-color: var(--adam-btn-primary-hover-border);
 }
 
 .adam-button--secondary {
@@ -986,9 +1012,9 @@
 
 .adam-button--secondary:hover,
 .adam-button--secondary:focus-visible {
-	color: var(--adam-on-secondary);
-	background-color: color-mix(in srgb, var(--adam-secondary) 82%, white);
-	border-color: color-mix(in srgb, var(--adam-secondary) 82%, white);
+	color: var(--adam-btn-secondary-hover-text);
+	background-color: var(--adam-btn-secondary-hover-bg);
+	border-color: var(--adam-btn-secondary-hover-border);
 }
 
 .adam-button--danger {
@@ -1008,6 +1034,17 @@
 	color: var(--adam-on-success);
 	background-color: var(--adam-success);
 	border-color: var(--adam-success);
+}
+
+.adam-button:focus-visible {
+	outline-color: var(--adam-button-focus);
+}
+
+.adam-button:disabled,
+.adam-button[aria-disabled="true"] {
+	color: var(--adam-button-disabled-text);
+	background-color: var(--adam-button-disabled-bg);
+	border-color: var(--adam-button-disabled-bg);
 }
 
 .adam-input,

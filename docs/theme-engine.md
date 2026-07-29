@@ -14,7 +14,23 @@ ADAM UI does not generate a Light palette or a Light stylesheet. `variables.css`
 
 Every component panel includes a compact live example. Changes update the preview immediately. Colour fields support short and long HEX, RGB/RGBA, HSL/HSLA, named colours, and `transparent`; values are validated again before storage.
 
-Visual styles are high-impact presets rather than collections of CSS controls. For example, Cards provides Flat, Elevated, Glass, and Minimal; Buttons provides Filled, Outline, and Soft; Header provides Solid, Transparent, and Elevated. A preset resolves into structural design tokens for borders, depth, spacing, opacity, and contrast, so all consumers change consistently.
+Visual styles are high-impact presets rather than collections of CSS controls. Cards provides Minimal, Elevated, Flat, and Soft; Buttons provides Filled, Outline, and Soft; Header provides Solid, Transparent, and Floating; Footer provides Standard, Minimal, and Compact. A preset resolves into structural design tokens for borders, depth, spacing, opacity, and contrast, so all consumers change consistently.
+
+## Intelligent colour generation
+
+The administrator selects component backgrounds and accents. `ADAM_UI_Color_Engine` then generates the remaining semantic roles:
+
+- headings target enhanced 7:1 contrast where the selected surface permits it;
+- body text and links target WCAG AA 4.5:1;
+- icons, borders, and focus indicators use the appropriate non-text contrast treatment;
+- hover, raised, disabled, and subtle-border colours are mixed from the selected surface and accessible foreground;
+- cards, buttons, headers, forms, tables, notifications, and footer controls share the same derivation pipeline.
+
+Generated values are stored and emitted as the active Night preset's CSS variables. Light mode emits no component palette and removes the Night class, leaving Blocksy and the existing site styling unchanged.
+
+The engine understands HEX, RGB/RGBA, HSL/HSLA, HWB, OKLab/OKLCH, Lab/LCH lightness, common named colours, and `color(srgb)`/`color(display-p3)` inputs. The browser performs the equivalent derivation for immediate preview while the PHP engine remains authoritative when the theme is saved.
+
+ADAM UI never applies filters, opacity, overlays, blending, brightness, or saturation changes to `img` or `picture` elements. Component surfaces may change around media, but the media itself remains untouched.
 
 ## PHP API
 
@@ -73,9 +89,30 @@ adam_ui_register_theme_component(
         'type'    => 'color',
         'default' => '#f2f4ee',
       ),
+      'adam-event-card-heading' => array(
+        'type'    => 'color',
+        'default' => '#f7faf4',
+      ),
+      'adam-event-card-border' => array(
+        'type'    => 'color',
+        'default' => '#41493e',
+      ),
+      'adam-event-card-hover' => array(
+        'type'    => 'color',
+        'default' => '#252c24',
+      ),
     ),
     'contrast' => array(
       'adam-event-card-bg' => array( 'adam-event-card-text' ),
+    ),
+    'intelligence' => array(
+      array(
+        'background'       => 'adam-event-card-bg',
+        'heading'          => array( 'adam-event-card-heading' ),
+        'text'             => array( 'adam-event-card-text' ),
+        'border'           => array( 'adam-event-card-border' ),
+        'hover_background' => array( 'adam-event-card-hover' ),
+      ),
     ),
     'preview'  => '<article class="adam-event-card-preview"><h3>Event</h3><p>Details</p></article>',
   )

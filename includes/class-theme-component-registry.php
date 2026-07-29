@@ -47,6 +47,7 @@ final class ADAM_UI_Theme_Component_Registry {
 				'preview'     => '',
 				'contrast'    => array(),
 				'tokens'      => array(),
+				'intelligence' => array(),
 			)
 		);
 
@@ -55,6 +56,7 @@ final class ADAM_UI_Theme_Component_Registry {
 		$args['styles']   = is_array( $args['styles'] ) ? $args['styles'] : array();
 		$args['contrast'] = is_array( $args['contrast'] ) ? $args['contrast'] : array();
 		$args['tokens']   = is_array( $args['tokens'] ) ? $args['tokens'] : array();
+		$args['intelligence'] = is_array( $args['intelligence'] ) ? $args['intelligence'] : array();
 
 		$this->components[ $slug ] = $args;
 		$this->revision++;
@@ -82,6 +84,7 @@ final class ADAM_UI_Theme_Component_Registry {
 					'preview'     => '',
 					'contrast'    => array(),
 					'tokens'      => array(),
+					'intelligence' => array(),
 				)
 			);
 		}
@@ -232,6 +235,25 @@ final class ADAM_UI_Theme_Component_Registry {
 		return $map;
 	}
 
+	/** Returns semantic colour-generation contracts for all components. */
+	public function intelligence_contracts() {
+		$contracts = array();
+		foreach ( $this->all() as $component ) {
+			foreach ( $component['intelligence'] as $contract ) {
+				if ( is_array( $contract ) && ! empty( $contract['background'] ) ) {
+					$contracts[] = $contract;
+				}
+			}
+			// Older extensions using only contrast still receive safe foregrounds.
+			if ( empty( $component['intelligence'] ) ) {
+				foreach ( $component['contrast'] as $background => $foregrounds ) {
+					$contracts[] = array( 'background' => $background, 'text' => $foregrounds );
+				}
+			}
+		}
+		return $contracts;
+	}
+
 	/** Registers the eight Night Theme component families. */
 	private function register_builtins() {
 		$this->register(
@@ -242,12 +264,12 @@ final class ADAM_UI_Theme_Component_Registry {
 				'controls'    => array(
 					$this->group( __( 'Background', 'adam-ui' ), array( $this->color( 'adam-header-bg', __( 'Header background', 'adam-ui' ), '#161d16' ) ) ),
 					$this->group( __( 'Navigation Accent', 'adam-ui' ), array( $this->color( 'adam-header-active-bg', __( 'Active menu accent', 'adam-ui' ), '#9bc85a' ) ) ),
-					$this->style_group( 'adam-header-style', 'solid', array( 'solid' => __( 'Solid', 'adam-ui' ), 'transparent' => __( 'Transparent', 'adam-ui' ), 'elevated' => __( 'Elevated', 'adam-ui' ) ) ),
+					$this->style_group( 'adam-header-style', 'solid', array( 'solid' => __( 'Solid', 'adam-ui' ), 'transparent' => __( 'Transparent', 'adam-ui' ), 'elevated' => __( 'Floating', 'adam-ui' ) ) ),
 				),
 				'styles'      => array(
 					'solid'       => $this->style( __( 'Solid', 'adam-ui' ), array( 'adam-header-surface-opacity' => '100%', 'adam-header-shadow' => 'none', 'adam-header-border-width' => '1px' ) ),
 					'transparent' => $this->style( __( 'Transparent', 'adam-ui' ), array( 'adam-header-surface-opacity' => '0%', 'adam-header-shadow' => 'none', 'adam-header-border-width' => '0px' ) ),
-					'elevated'    => $this->style( __( 'Elevated', 'adam-ui' ), array( 'adam-header-surface-opacity' => '100%', 'adam-header-shadow' => '0 8px 28px rgb(0 0 0 / 0.28)', 'adam-header-border-width' => '0px' ) ),
+					'elevated'    => $this->style( __( 'Floating', 'adam-ui' ), array( 'adam-header-surface-opacity' => '100%', 'adam-header-shadow' => '0 8px 28px rgb(0 0 0 / 0.28)', 'adam-header-border-width' => '0px' ) ),
 				),
 				'preview'     => '<div class="adam-mini-header"><strong>ADAM</strong><nav><span>Home</span><span class="is-active">Members</span><span>News</span></nav><span aria-hidden="true">&#128269;</span></div>',
 				'contrast'    => array( 'adam-header-bg' => array( 'adam-header-nav-text', 'adam-header-search-icon' ), 'adam-header-active-bg' => array( 'adam-header-active-text' ) ),
@@ -319,13 +341,13 @@ final class ADAM_UI_Theme_Component_Registry {
 				'description' => __( 'Choose one shared card treatment for dashboards, notices, and plugins.', 'adam-ui' ),
 				'controls'    => array(
 					$this->group( __( 'Background', 'adam-ui' ), array( $this->color( 'adam-card-bg', __( 'Card background', 'adam-ui' ), '#1a2019' ) ) ),
-					$this->style_group( 'adam-card-style', 'elevated', array( 'flat' => __( 'Flat', 'adam-ui' ), 'elevated' => __( 'Elevated', 'adam-ui' ), 'glass' => __( 'Glass', 'adam-ui' ), 'minimal' => __( 'Minimal', 'adam-ui' ) ) ),
+					$this->style_group( 'adam-card-style', 'elevated', array( 'minimal' => __( 'Minimal', 'adam-ui' ), 'elevated' => __( 'Elevated', 'adam-ui' ), 'flat' => __( 'Flat', 'adam-ui' ), 'glass' => __( 'Soft', 'adam-ui' ) ) ),
 				),
 				'styles'      => array(
-					'flat'     => $this->style( __( 'Flat', 'adam-ui' ), array( 'adam-card-border-width' => '1px', 'adam-card-shadow-strength' => '0', 'adam-card-backdrop' => 'none', 'adam-card-surface-opacity' => '100%', 'adam-card-padding' => '1.25rem' ) ),
-					'elevated' => $this->style( __( 'Elevated', 'adam-ui' ), array( 'adam-card-border-width' => '1px', 'adam-card-shadow-strength' => '.35', 'adam-card-backdrop' => 'none', 'adam-card-surface-opacity' => '100%', 'adam-card-padding' => '1.5rem' ) ),
-					'glass'    => $this->style( __( 'Glass', 'adam-ui' ), array( 'adam-card-border-width' => '1px', 'adam-card-shadow-strength' => '.2', 'adam-card-backdrop' => 'blur(14px)', 'adam-card-surface-opacity' => '78%', 'adam-card-padding' => '1.5rem' ) ),
-					'minimal'  => $this->style( __( 'Minimal', 'adam-ui' ), array( 'adam-card-border-width' => '0px', 'adam-card-shadow-strength' => '0', 'adam-card-backdrop' => 'none', 'adam-card-surface-opacity' => '0%', 'adam-card-padding' => '1rem' ) ),
+					'flat'     => $this->style( __( 'Flat', 'adam-ui' ), array( 'adam-card-border-width' => '1px', 'adam-card-shadow-strength' => '0', 'adam-card-surface-opacity' => '100%', 'adam-card-padding' => '1.25rem' ) ),
+					'elevated' => $this->style( __( 'Elevated', 'adam-ui' ), array( 'adam-card-border-width' => '1px', 'adam-card-shadow-strength' => '.35', 'adam-card-surface-opacity' => '100%', 'adam-card-padding' => '1.5rem' ) ),
+					'glass'    => $this->style( __( 'Soft', 'adam-ui' ), array( 'adam-card-border-width' => '1px', 'adam-card-shadow-strength' => '.12', 'adam-card-surface-opacity' => '86%', 'adam-card-padding' => '1.5rem' ) ),
+					'minimal'  => $this->style( __( 'Minimal', 'adam-ui' ), array( 'adam-card-border-width' => '0px', 'adam-card-shadow-strength' => '0', 'adam-card-surface-opacity' => '0%', 'adam-card-padding' => '1rem' ) ),
 				),
 				'preview'     => '<article class="adam-mini-card"><small>ADAM UI</small><h3>Shared card</h3><p>One treatment updates member areas and future plugins.</p><button>Open card</button></article>',
 				'contrast'    => array( 'adam-card-bg' => array( 'adam-card-heading', 'adam-card-text', 'adam-card-link' ) ),
@@ -375,17 +397,183 @@ final class ADAM_UI_Theme_Component_Registry {
 				'description' => __( 'Keep footer content and the theme switcher visually independent.', 'adam-ui' ),
 				'controls'    => array(
 					$this->group( __( 'Background', 'adam-ui' ), array( $this->color( 'adam-footer-bg', __( 'Footer background', 'adam-ui' ), '#11170e' ) ) ),
-					$this->style_group( 'adam-footer-style', 'solid', array( 'solid' => __( 'Solid', 'adam-ui' ), 'contrast' => __( 'Contrast', 'adam-ui' ), 'minimal' => __( 'Minimal', 'adam-ui' ) ) ),
+					$this->style_group( 'adam-footer-style', 'solid', array( 'solid' => __( 'Standard', 'adam-ui' ), 'minimal' => __( 'Minimal', 'adam-ui' ), 'contrast' => __( 'Compact', 'adam-ui' ) ) ),
 				),
 				'styles'      => array(
-					'solid'    => $this->style( __( 'Solid', 'adam-ui' ), array( 'adam-footer-padding' => '2.5rem', 'adam-footer-divider-width' => '1px' ) ),
-					'contrast' => $this->style( __( 'Contrast', 'adam-ui' ), array( 'adam-footer-padding' => '3rem', 'adam-footer-divider-width' => '2px' ) ),
+					'solid'    => $this->style( __( 'Standard', 'adam-ui' ), array( 'adam-footer-padding' => '2.5rem', 'adam-footer-divider-width' => '1px' ) ),
+					'contrast' => $this->style( __( 'Compact', 'adam-ui' ), array( 'adam-footer-padding' => '1.25rem', 'adam-footer-divider-width' => '1px' ) ),
 					'minimal'  => $this->style( __( 'Minimal', 'adam-ui' ), array( 'adam-footer-padding' => '1.75rem', 'adam-footer-divider-width' => '0px' ) ),
 				),
 				'preview'     => '<footer class="adam-mini-footer"><strong>ADAM</strong><nav><a href="#">About</a> <a href="#">Contact</a></nav><span class="adam-mini-socials" aria-label="Social icons">&#9679; &#9679; &#9679;</span><div class="adam-mini-footer__switcher">Theme: System</div><small>&copy; ADAM</small></footer>',
 				'contrast'    => array( 'adam-footer-bg' => array( 'adam-footer-heading', 'adam-footer-text', 'adam-footer-link', 'adam-footer-link-hover', 'adam-footer-social', 'adam-footer-copyright' ) ),
 			)
 		);
+
+		$this->register_intelligence();
+	}
+
+	/** Declares how each built-in component derives its supporting colours. */
+	private function register_intelligence() {
+		$this->components['header']['intelligence'] = array(
+			array(
+				'background'       => 'adam-header-bg',
+				'accent'           => 'adam-header-active-bg',
+				'icon'             => array( 'adam-header-search-icon' ),
+				'border'           => array( 'adam-header-border' ),
+				'hover_background' => array( 'adam-header-hover-bg' ),
+				'hover_text'       => array( 'adam-header-hover-text' ),
+				'surface'          => array( 'adam-header-nav-bg' ),
+				'surface_text'     => array( 'adam-header-nav-text' ),
+			),
+			array(
+				'background' => 'adam-header-active-bg',
+				'text'       => array( 'adam-header-active-text' ),
+			),
+		);
+		$this->components['sections']['intelligence'] = array(
+			$this->surface_contract( 'adam-section-standard-bg', 'adam-section-standard' ),
+			$this->surface_contract( 'adam-section-alternate-bg', 'adam-section-alternate' ),
+			$this->surface_contract( 'adam-section-cta-bg', 'adam-section-cta' ),
+			$this->surface_contract( 'adam-section-overlay-bg', 'adam-section-overlay' ),
+		);
+		$this->components['sections']['intelligence'][0]['text'][] = 'adam-form-label';
+		$this->components['feature-sections']['intelligence'] = array(
+			$this->surface_contract( 'adam-section-feature-bg', 'adam-section-feature' ),
+		);
+		$this->components['hero']['intelligence'] = array(
+			array(
+				'background' => 'adam-hero-bg',
+				'accent'     => 'adam-hero-primary',
+				'heading'    => array( 'adam-hero-heading' ),
+				'text'       => array( 'adam-hero-text' ),
+				'link'       => array( 'adam-hero-eyebrow' ),
+				'border'     => array( 'adam-hero-border-color' ),
+			),
+			$this->button_contract( 'adam-hero-primary', 'adam-hero-primary-text', 'adam-hero-primary-hover', 'adam-hero-primary-hover-text' ),
+			$this->button_contract( 'adam-hero-secondary', 'adam-hero-secondary-text', 'adam-hero-secondary-hover', 'adam-hero-secondary-hover-text' ),
+		);
+		$this->components['hero']['tokens'] = array_merge(
+			$this->components['hero']['tokens'],
+			array(
+				'adam-hero-border-color'        => array( 'type' => 'color', 'default' => '#41493e' ),
+				'adam-hero-primary-text'        => array( 'type' => 'color', 'default' => '#172107' ),
+				'adam-hero-primary-hover'       => array( 'type' => 'color', 'default' => '#afd976' ),
+				'adam-hero-primary-hover-text'  => array( 'type' => 'color', 'default' => '#172107' ),
+				'adam-hero-secondary-text'      => array( 'type' => 'color', 'default' => '#f2f4ee' ),
+				'adam-hero-secondary-hover'     => array( 'type' => 'color', 'default' => '#30372e' ),
+				'adam-hero-secondary-hover-text' => array( 'type' => 'color', 'default' => '#f2f4ee' ),
+			)
+		);
+		$this->components['cards']['tokens'] = array_merge(
+			$this->components['cards']['tokens'],
+			array(
+				'adam-card-shadow-color' => array( 'type' => 'color', 'default' => 'rgb(0 0 0 / 0.42)' ),
+				'adam-card-hover-bg'     => array( 'type' => 'color', 'default' => '#252c24' ),
+			)
+		);
+		$this->components['cards']['intelligence'] = array(
+			array(
+				'background'       => 'adam-card-bg',
+				'heading'          => array( 'adam-card-heading' ),
+				'text'             => array( 'adam-card-text' ),
+				'link'             => array( 'adam-card-link' ),
+				'border'           => array( 'adam-card-border' ),
+				'hover_background' => array( 'adam-card-hover-bg' ),
+				'surface'          => array( 'adam-card-elevated-bg' ),
+				'shadow'           => array( 'adam-card-shadow-color' ),
+			),
+		);
+		$this->components['buttons']['tokens'] = array_merge(
+			$this->components['buttons']['tokens'],
+			array(
+				'adam-button-focus'       => array( 'type' => 'color', 'default' => '#b5db70' ),
+				'adam-button-disabled-bg' => array( 'type' => 'color', 'default' => '#293028' ),
+				'adam-button-disabled-text' => array( 'type' => 'color', 'default' => '#aab6a3' ),
+			)
+		);
+		$this->components['buttons']['intelligence'] = array(
+			$this->button_contract( 'adam-btn-primary-bg', 'adam-btn-primary-text', 'adam-btn-primary-hover-bg', 'adam-btn-primary-hover-text', 'adam-btn-primary-border', 'adam-button-focus', true ),
+			$this->button_contract( 'adam-btn-secondary-bg', 'adam-btn-secondary-text', 'adam-btn-secondary-hover-bg', 'adam-btn-secondary-hover-text', 'adam-btn-secondary-border' ),
+			$this->button_contract( 'adam-btn-outline-border', 'adam-btn-outline-text', 'adam-btn-outline-hover-bg', 'adam-btn-outline-hover-text', 'adam-btn-outline-hover-border' ),
+			$this->button_contract( 'adam-btn-danger-bg', 'adam-btn-danger-text', 'adam-btn-danger-hover-bg', 'adam-btn-danger-hover-text', 'adam-btn-danger-border' ),
+			$this->button_contract( 'adam-btn-success-bg', 'adam-btn-success-text', 'adam-btn-success-hover-bg', 'adam-btn-success-hover-text', 'adam-btn-success-border' ),
+		);
+		$this->components['forms']['intelligence'] = array(
+			array(
+				'background' => 'adam-form-input-bg',
+				'text'       => array( 'adam-form-input-text' ),
+				'muted'      => array( 'adam-form-placeholder' ),
+				'border'     => array( 'adam-form-border' ),
+				'focus'      => array( 'adam-form-focus' ),
+				'disabled_background' => array( 'adam-form-disabled-bg' ),
+				'disabled_text'       => array( 'adam-form-disabled-text' ),
+			),
+			$this->button_contract( 'adam-form-button', 'adam-form-button-text', 'adam-form-button-hover', 'adam-form-button-hover-text' ),
+		);
+		$this->components['forms']['tokens'] = array_merge(
+			$this->components['forms']['tokens'],
+			array(
+				'adam-form-button-hover'      => array( 'type' => 'color', 'default' => '#afd976' ),
+				'adam-form-button-hover-text' => array( 'type' => 'color', 'default' => '#172107' ),
+				'adam-form-disabled-bg'       => array( 'type' => 'color', 'default' => '#262c25' ),
+				'adam-form-disabled-text'     => array( 'type' => 'color', 'default' => '#aab6a3' ),
+			)
+		);
+		$this->components['footer']['intelligence'] = array(
+			array(
+				'background'   => 'adam-footer-bg',
+				'heading'      => array( 'adam-footer-heading' ),
+				'text'         => array( 'adam-footer-text' ),
+				'muted'        => array( 'adam-footer-copyright' ),
+				'link'         => array( 'adam-footer-link', 'adam-footer-link-hover' ),
+				'icon'         => array( 'adam-footer-social' ),
+				'border'       => array( 'adam-footer-divider', 'adam-footer-switcher-border' ),
+				'surface'      => array( 'adam-footer-switcher-bg' ),
+				'surface_text' => array( 'adam-footer-switcher-text' ),
+			),
+		);
+		$this->components['sections']['intelligence'][] = array(
+			'background' => 'adam-table-row-bg',
+			'border'     => array( 'adam-table-border' ),
+			'surface'    => array( 'adam-table-alt-row-bg' ),
+		);
+		$this->components['sections']['intelligence'][] = array(
+			'background' => 'adam-table-header-bg',
+			'text'       => array( 'adam-table-header-text' ),
+		);
+		$this->components['sections']['tokens']['adam-table-header-text'] = array( 'type' => 'color', 'default' => '#f2f4ee' );
+		foreach ( array( 'success', 'info', 'warning', 'error' ) as $notice ) {
+			$this->components['sections']['intelligence'][] = array(
+				'background' => 'adam-notice-' . $notice . '-bg',
+				'text'       => array( 'adam-notice-' . $notice . '-text' ),
+				'border'     => array( 'adam-notice-' . $notice . '-border' ),
+			);
+		}
+	}
+
+	private function surface_contract( $background, $prefix ) {
+		return array(
+			'background' => $background,
+			'heading'    => array( $prefix . '-heading' ),
+			'text'       => array( $prefix . '-text' ),
+			'link'       => array( $prefix . '-link' ),
+		);
+	}
+
+	private function button_contract( $background, $text, $hover, $hover_text, $border = '', $focus = '', $disabled = false ) {
+		$contract = array(
+			'background'       => $background,
+			'text'             => array( $text ),
+			'hover_background' => array( $hover ),
+			'hover_text'       => array( $hover_text ),
+		);
+		if ( $border ) { $contract['border'] = array( $border ); }
+		if ( $focus ) { $contract['focus'] = array( $focus ); }
+		if ( $disabled ) {
+			$contract['disabled_background'] = array( 'adam-button-disabled-bg' );
+			$contract['disabled_text']       = array( 'adam-button-disabled-text' );
+		}
+		return $contract;
 	}
 
 	private function group( $label, $fields ) {

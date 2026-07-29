@@ -5,13 +5,15 @@ defined( 'ABSPATH' ) || exit;
 
 final class ADAM_UI_Theme_Repository {
 	const OPTION_KEY = 'adam_ui_themes';
-	const SCHEMA_VERSION = 3;
+	const SCHEMA_VERSION = 4;
 
 	private $schema;
 	private $component_registry;
+	private $color_engine;
 
-	public function __construct( $component_registry = null ) {
+	public function __construct( $component_registry = null, $color_engine = null ) {
 		$this->component_registry = $component_registry ? $component_registry : new ADAM_UI_Theme_Component_Registry();
+		$this->color_engine       = $color_engine ? $color_engine : new ADAM_UI_Color_Engine();
 		$this->schema = $this->build_schema();
 	}
 
@@ -151,13 +153,12 @@ final class ADAM_UI_Theme_Repository {
 
 	/** Derives readable foregrounds from each Night surface. */
 	private function apply_automatic_contrast( $tokens ) {
-		foreach ( $this->contrast_map() as $background => $foregrounds ) {
-			if ( ! isset( $tokens[ $background ] ) ) { continue; }
-			$contrast = $this->contrast_text( $tokens[ $background ] );
-			foreach ( $foregrounds as $foreground ) { if ( isset( $tokens[ $foreground ] ) ) { $tokens[ $foreground ] = $contrast; } }
-		}
-		if ( isset( $tokens['adam-section-standard-bg'], $tokens['adam-form-label'] ) ) { $tokens['adam-form-label'] = $this->contrast_text( $tokens['adam-section-standard-bg'] ); }
-		return $tokens;
+		return $this->color_engine->derive( $tokens, $this->intelligence_contracts() );
+	}
+
+	/** Returns semantic generation contracts for server and live preview. */
+	public function intelligence_contracts() {
+		return $this->component_registry->intelligence_contracts();
 	}
 
 	/** Returns the single background-to-foreground derivation contract. */
@@ -193,48 +194,6 @@ final class ADAM_UI_Theme_Repository {
 
 	/** @return ADAM_UI_Theme_Component_Registry */
 	public function component_registry() { return $this->component_registry; }
-
-	/** Chooses the higher-contrast Night foreground for a CSS colour. */
-	private function contrast_text( $color ) {
-		$rgb = $this->css_color_rgb( $color );
-		if ( ! $rgb ) { return '#f2f4ee'; }
-		$luminance = 0;
-		foreach ( array( 0.2126, 0.7152, 0.0722 ) as $index => $weight ) {
-			$channel = $rgb[ $index ] / 255;
-			$channel = $channel <= 0.04045 ? $channel / 12.92 : pow( ( $channel + 0.055 ) / 1.055, 2.4 );
-			$luminance += $channel * $weight;
-		}
-		$light_luminance = 0.904;
-		$dark_luminance = 0.014;
-		$light_ratio = ( max( $light_luminance, $luminance ) + 0.05 ) / ( min( $light_luminance, $luminance ) + 0.05 );
-		$dark_ratio = ( max( $dark_luminance, $luminance ) + 0.05 ) / ( min( $dark_luminance, $luminance ) + 0.05 );
-		if ( max( $light_ratio, $dark_ratio ) < 4.5 ) { return $luminance <= 0.179 ? '#ffffff' : '#000000'; }
-		return $light_ratio >= $dark_ratio ? '#f2f4ee' : '#172107';
-	}
-
-	/** Parses the editable CSS colour formats needed for contrast calculation. */
-	private function css_color_rgb( $color ) {
-		$color = strtolower( trim( (string) $color ) );
-		$named = array( 'black' => array( 0, 0, 0 ), 'white' => array( 255, 255, 255 ), 'transparent' => array( 0, 0, 0 ) );
-		if ( isset( $named[ $color ] ) ) { return $named[ $color ]; }
-		if ( preg_match( '/^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i', $color, $match ) ) {
-			$hex = $match[1];
-			if ( in_array( strlen( $hex ), array( 3, 4 ), true ) ) { $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2]; }
-			return array( hexdec( substr( $hex, 0, 2 ) ), hexdec( substr( $hex, 2, 2 ) ), hexdec( substr( $hex, 4, 2 ) ) );
-		}
-		if ( preg_match( '/^rgba?\(([^)]+)\)$/i', $color, $match ) ) {
-			$parts = preg_split( '/[\s,\/]+/', trim( $match[1] ) );
-			if ( count( $parts ) >= 3 ) { return array_map( static function ( $part ) { return false !== strpos( $part, '%' ) ? 255 * (float) $part / 100 : max( 0, min( 255, (float) $part ) ); }, array_slice( $parts, 0, 3 ) ); }
-		}
-		if ( preg_match( '/^hsla?\(\s*([-+0-9.]+)(?:deg)?[\s,]+([-+0-9.]+)%[\s,]+([-+0-9.]+)%/i', $color, $match ) ) {
-			$h = fmod( (float) $match[1], 360 ) / 360; if ( $h < 0 ) { $h += 1; } $s = max( 0, min( 1, (float) $match[2] / 100 ) ); $l = max( 0, min( 1, (float) $match[3] / 100 ) );
-			if ( $s <= 0 ) { return array( 255 * $l, 255 * $l, 255 * $l ); }
-			$q = $l < .5 ? $l * ( 1 + $s ) : $l + $s - ( $l * $s ); $p = ( 2 * $l ) - $q;
-			$hue = static function ( $p, $q, $t ) { if ( $t < 0 ) { $t += 1; } if ( $t > 1 ) { $t -= 1; } if ( $t < 1/6 ) { return $p + ( $q - $p ) * 6 * $t; } if ( $t < 1/2 ) { return $q; } if ( $t < 2/3 ) { return $p + ( $q - $p ) * ( 2/3 - $t ) * 6; } return $p; };
-			return array( 255 * $hue( $p, $q, $h + 1/3 ), 255 * $hue( $p, $q, $h ), 255 * $hue( $p, $q, $h - 1/3 ) );
-		}
-		return null;
-	}
 
 	public function themes() { $all = $this->all(); return $all['themes']; }
 	/** Returns only Night presets managed by ADAM UI. Legacy Light data stays stored but hidden. */

@@ -7,17 +7,18 @@
 		return;
 	}
 
-	let contrastMap = {};
 	let styleMaps = {};
-	try {
-		contrastMap = JSON.parse( root.dataset.adamContrastMap || '{}' );
-	} catch ( error ) {
-		contrastMap = {};
-	}
+	let intelligenceContracts = [];
+	let intelligenceFrame = 0;
 	try {
 		styleMaps = JSON.parse( root.dataset.adamStyleMaps || '{}' );
 	} catch ( error ) {
 		styleMaps = {};
+	}
+	try {
+		intelligenceContracts = JSON.parse( root.dataset.adamIntelligence || '[]' );
+	} catch ( error ) {
+		intelligenceContracts = [];
 	}
 
 	function isValidColor( value ) {
@@ -48,14 +49,106 @@
 		return lightRatio >= darkRatio ? '#f2f4ee' : '#172107';
 	}
 
-	function applyAutomaticContrast( token, background ) {
-		const name = token.replace( /^--/, '' );
-		const foregrounds = contrastMap[ name ] || [];
-		const contrast = readableText( background );
-		foregrounds.forEach( ( foreground ) => root.style.setProperty( '--' + foreground, contrast ) );
-		if ( 'adam-section-standard-bg' === name ) {
-			root.style.setProperty( '--adam-form-label', contrast );
+	function resolvedRgb( color ) {
+		const probe = document.createElement( 'span' );
+		probe.style.color = color;
+		probe.hidden = true;
+		root.appendChild( probe );
+		const channels = window.getComputedStyle( probe ).color.match( /[\d.]+/g );
+		probe.remove();
+		return channels && channels.length >= 3 ? channels.slice( 0, 3 ).map( Number ) : null;
+	}
+
+	function luminance( color ) {
+		return [ 0.2126, 0.7152, 0.0722 ].reduce( ( total, weight, index ) => {
+			let channel = color[ index ] / 255;
+			channel = channel <= 0.04045 ? channel / 12.92 : Math.pow( ( channel + 0.055 ) / 1.055, 2.4 );
+			return total + ( channel * weight );
+		}, 0 );
+	}
+
+	function contrastRatio( foreground, background ) {
+		const first = luminance( foreground );
+		const second = luminance( background );
+		return ( Math.max( first, second ) + 0.05 ) / ( Math.min( first, second ) + 0.05 );
+	}
+
+	function mixColor( from, to, amount ) {
+		return from.map( ( channel, index ) => channel + ( ( to[ index ] - channel ) * amount ) );
+	}
+
+	function colorHex( color ) {
+		return '#' + color.map( ( channel ) => Math.max( 0, Math.min( 255, Math.round( channel ) ) ).toString( 16 ).padStart( 2, '0' ) ).join( '' );
+	}
+
+	function ensureContrast( color, background, minimum, toward ) {
+		for ( let amount = 0; amount <= 1.001; amount += 0.04 ) {
+			const candidate = mixColor( color || toward, toward, amount );
+			if ( contrastRatio( candidate, background ) >= minimum ) {
+				return candidate;
+			}
 		}
+		return toward;
+	}
+
+	function tokenColor( token ) {
+		return resolvedRgb( window.getComputedStyle( root ).getPropertyValue( '--' + token ).trim() );
+	}
+
+	function setRoleTokens( contract, role, color ) {
+		( contract[ role ] || [] ).forEach( ( token ) => root.style.setProperty( '--' + token, colorHex( color ) ) );
+	}
+
+	function applyIntelligence() {
+		intelligenceContracts.forEach( ( contract ) => {
+			const background = tokenColor( contract.background );
+			if ( ! background ) {
+				return;
+			}
+			const heading = resolvedRgb( readableText( colorHex( background ) ) );
+			const body = ensureContrast( mixColor( background, heading, 0.76 ), background, 4.5, heading );
+			const muted = ensureContrast( mixColor( background, heading, 0.58 ), background, 4.5, heading );
+			const accent = contract.accent ? tokenColor( contract.accent ) : tokenColor( 'adam-btn-primary-bg' );
+			const safeAccent = accent || heading;
+			const link = ensureContrast( safeAccent, background, 4.5, heading );
+			const icon = ensureContrast( safeAccent, background, 3, heading );
+			const border = mixColor( background, heading, 0.18 );
+			const hover = mixColor( background, heading, 0.12 );
+			const hoverText = resolvedRgb( readableText( colorHex( hover ) ) );
+			const focus = ensureContrast( safeAccent, background, 3, heading );
+			const surface = mixColor( background, heading, 0.075 );
+			const surfaceText = resolvedRgb( readableText( colorHex( surface ) ) );
+			const disabledBackground = mixColor( background, heading, 0.08 );
+			const disabledText = ensureContrast( mixColor( disabledBackground, heading, 0.48 ), disabledBackground, 3, heading );
+
+			setRoleTokens( contract, 'heading', heading );
+			setRoleTokens( contract, 'text', body );
+			setRoleTokens( contract, 'muted', muted );
+			setRoleTokens( contract, 'link', link );
+			setRoleTokens( contract, 'icon', icon );
+			setRoleTokens( contract, 'border', border );
+			setRoleTokens( contract, 'hover_background', hover );
+			setRoleTokens( contract, 'hover_text', hoverText );
+			setRoleTokens( contract, 'focus', focus );
+			setRoleTokens( contract, 'surface', surface );
+			setRoleTokens( contract, 'surface_text', surfaceText );
+			setRoleTokens( contract, 'disabled_background', disabledBackground );
+			setRoleTokens( contract, 'disabled_text', disabledText );
+
+			( contract.shadow || [] ).forEach( ( token ) => {
+				root.style.setProperty( '--' + token, luminance( background ) < 0.25 ? 'rgb(0 0 0 / 0.42)' : 'rgb(0 0 0 / 0.2)' );
+			} );
+		} );
+	}
+
+	function scheduleIntelligence() {
+		if ( intelligenceFrame ) {
+			window.cancelAnimationFrame( intelligenceFrame );
+		}
+		intelligenceFrame = window.requestAnimationFrame( () => {
+			intelligenceFrame = 0;
+			applyIntelligence();
+		} );
 	}
 
 	function syncTokenControls( source, value ) {
@@ -108,10 +201,10 @@
 		}
 
 		root.style.setProperty( input.dataset.adamToken, value );
-		applyAutomaticContrast( input.dataset.adamToken, value );
 		if ( input.dataset.adamStyleComponent ) {
 			applyComponentStyle( input.dataset.adamStyleComponent, value );
 		}
+		scheduleIntelligence();
 		const output = input.parentNode.querySelector( 'output' );
 		if ( output ) {
 			output.value = value;

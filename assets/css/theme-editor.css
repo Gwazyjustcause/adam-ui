@@ -80,8 +80,10 @@
 .adam-mini-hero small { color: var(--adam-hero-eyebrow); }
 .adam-mini-hero h3 { color: var(--adam-hero-heading); }
 .adam-mini-hero p { color: var(--adam-hero-text); }
-.adam-mini-hero button { padding: var(--adam-space-2) var(--adam-space-3); color: var(--adam-btn-primary-text); background: var(--adam-hero-primary); border-radius: var(--adam-button-radius); }
-.adam-mini-hero button.is-secondary { color: var(--adam-btn-secondary-text); background: var(--adam-hero-secondary); }
+.adam-mini-hero button { padding: var(--adam-space-2) var(--adam-space-3); color: var(--adam-hero-primary-text); background: var(--adam-hero-primary); border-radius: var(--adam-button-radius); }
+.adam-mini-hero button:hover { color: var(--adam-hero-primary-hover-text); background: var(--adam-hero-primary-hover); }
+.adam-mini-hero button.is-secondary { color: var(--adam-hero-secondary-text); background: var(--adam-hero-secondary); }
+.adam-mini-hero button.is-secondary:hover { color: var(--adam-hero-secondary-hover-text); background: var(--adam-hero-secondary-hover); }
 
 .adam-mini-sections { display: grid; gap: var(--adam-space-1); }
 .adam-mini-sections > div { display: flex; justify-content: space-between; padding: var(--adam-space-3); }
@@ -286,12 +288,12 @@
 	background: color-mix(in srgb, var(--adam-header-bg) var(--adam-header-surface-opacity, 100%), transparent);
 	border-bottom-width: var(--adam-header-border-width, 1px);
 	box-shadow: var(--adam-header-shadow, none);
-	border-bottom-color: color-mix(in srgb, var(--adam-header-bg) 76%, white);
+	border-bottom-color: var(--adam-header-border);
 }
 
 .adam-mini-header nav span:hover {
-	color: var(--adam-header-active-text);
-	background: color-mix(in srgb, var(--adam-header-active-bg) 28%, var(--adam-header-bg));
+	color: var(--adam-header-hover-text);
+	background: var(--adam-header-hover-bg);
 }
 
 .adam-mini-footer {
@@ -300,7 +302,7 @@
 
 .adam-mini-footer small {
 	border-top-width: var(--adam-footer-divider-width, 1px);
-	border-top-color: color-mix(in srgb, var(--adam-footer-bg) 76%, white);
+	border-top-color: var(--adam-footer-divider);
 }
 
 .adam-mini-hero {
@@ -314,8 +316,7 @@
 .adam-mini-card {
 	padding: var(--adam-card-padding, var(--adam-space-4));
 	background: color-mix(in srgb, var(--adam-card-bg) var(--adam-card-surface-opacity, 100%), transparent);
-	backdrop-filter: var(--adam-card-backdrop, none);
-	border-color: color-mix(in srgb, var(--adam-card-bg) 78%, white);
+	border-color: var(--adam-card-border);
 }
 
 .adam-mini-buttons button {

@@ -48,8 +48,8 @@ final class ADAM_UI_Theme_Editor {
 		<div
 			class="wrap adam-admin-page adam-theme-editor"
 			data-adam-theme-editor
-			data-adam-contrast-map="<?php echo esc_attr( wp_json_encode( $this->repository->contrast_map() ) ); ?>"
 			data-adam-style-maps="<?php echo esc_attr( wp_json_encode( $this->components->style_maps() ) ); ?>"
+			data-adam-intelligence="<?php echo esc_attr( wp_json_encode( $this->repository->intelligence_contracts() ) ); ?>"
 		>
 			<header class="adam-page-header">
 				<div>

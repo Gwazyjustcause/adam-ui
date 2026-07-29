@@ -2,7 +2,7 @@
 /** Phase 6 service contract smoke test. */
 
 define( 'ABSPATH', __DIR__ . '/' );
-define( 'ADAM_UI_VERSION', '3.0.0' );
+define( 'ADAM_UI_VERSION', '4.0.0' );
 define( 'ADAM_UI_URL', 'https://example.test/adam-ui/' );
 
 $test_options = array();
@@ -43,6 +43,7 @@ function wp_localize_script( $handle, $name, $data ) { global $test_localized; $
 function wp_add_inline_style() { return true; }
 
 require dirname( __DIR__ ) . '/includes/class-settings.php';
+require dirname( __DIR__ ) . '/includes/class-color-engine.php';
 require dirname( __DIR__ ) . '/includes/class-theme-component-registry.php';
 require dirname( __DIR__ ) . '/includes/class-theme-repository.php';
 require dirname( __DIR__ ) . '/includes/class-asset-registry.php';
@@ -83,13 +84,49 @@ $stored['themes']['adam-night']['tokens']['adam-header-logo-bg'] = 'transparent'
 $stored['themes']['adam-night']['tokens']['adam-card-bg'] = '#FFFFFF';
 $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ] = $stored;
 $repository = new ADAM_UI_Theme_Repository();
+$color_engine = new ADAM_UI_Color_Engine();
 assert_contract( '#000' === $repository->token( 'adam-header-bg', 'dark' ), 'three-digit HEX colours are accepted' );
-assert_contract( '#000000' === $repository->token( 'adam-header-nav-text', 'dark' ), 'mid-tone Night surfaces receive a WCAG-safe fallback foreground' );
+assert_contract( 4.5 <= $color_engine->contrast_ratio( $repository->token( 'adam-header-nav-text', 'dark' ), $repository->token( 'adam-header-nav-bg', 'dark' ) ), 'generated navigation text meets WCAG contrast' );
 assert_contract( 'rgb(255 255 255 / 85%)' === $repository->token( 'adam-footer-bg', 'dark' ), 'modern RGB colours are accepted' );
 assert_contract( 'hsl(120 20% 10% / 0.8)' === $repository->token( 'adam-section-overlay-bg', 'dark' ), 'HSL alpha colours are accepted' );
 assert_contract( 'transparent' === $repository->token( 'adam-header-logo-bg', 'dark' ), 'transparent colours are accepted' );
 assert_contract( '#FFFFFF' === $repository->token( 'adam-card-bg', 'dark' ), 'pure white is accepted without palette restrictions' );
-assert_contract( '#172107' === $repository->token( 'adam-card-text', 'dark' ), 'light Night surfaces automatically receive readable dark text' );
+assert_contract( 4.5 <= $color_engine->contrast_ratio( $repository->token( 'adam-card-text', 'dark' ), $repository->token( 'adam-card-bg', 'dark' ) ), 'light Night surfaces automatically receive readable dark text' );
+assert_contract( $repository->token( 'adam-card-border', 'dark' ) !== $repository->token( 'adam-card-bg', 'dark' ), 'cards derive a subtle border from their background' );
+assert_contract( $repository->token( 'adam-btn-primary-hover-bg', 'dark' ) !== $repository->token( 'adam-btn-primary-bg', 'dark' ), 'buttons derive their hover state from the selected background' );
+assert_contract( 3 <= $color_engine->contrast_ratio( $repository->token( 'adam-button-focus', 'dark' ), $repository->token( 'adam-btn-primary-bg', 'dark' ) ), 'button focus treatment maintains non-text contrast' );
+foreach ( array( '#11170e', '#ffffff', 'rgb(32 80 51)', 'hsl(95 45% 30%)', 'hwb(95 10% 55%)', 'oklch(32% 0.08 135)' ) as $surface ) {
+	assert_contract( 4.5 <= $color_engine->contrast_ratio( $color_engine->foreground( $surface ), $surface ), 'supported CSS colours always receive readable foregrounds' );
+}
+$derived_contract = $color_engine->derive(
+	array(
+		'test-bg'       => '#ffffff',
+		'test-heading'  => '#ffffff',
+		'test-text'     => '#ffffff',
+		'test-link'     => '#ffffff',
+		'test-border'   => '#ffffff',
+		'test-hover'    => '#ffffff',
+		'test-hover-text' => '#ffffff',
+		'test-focus'    => '#ffffff',
+		'adam-btn-primary-bg' => '#416900',
+	),
+	array(
+		array(
+			'background'       => 'test-bg',
+			'heading'          => array( 'test-heading' ),
+			'text'             => array( 'test-text' ),
+			'link'             => array( 'test-link' ),
+			'border'           => array( 'test-border' ),
+			'hover_background' => array( 'test-hover' ),
+			'hover_text'       => array( 'test-hover-text' ),
+			'focus'            => array( 'test-focus' ),
+		),
+	)
+);
+assert_contract( 7 <= $color_engine->contrast_ratio( $derived_contract['test-heading'], $derived_contract['test-bg'] ), 'headings target enhanced contrast' );
+assert_contract( 4.5 <= $color_engine->contrast_ratio( $derived_contract['test-text'], $derived_contract['test-bg'] ), 'body text targets WCAG AA contrast' );
+assert_contract( 4.5 <= $color_engine->contrast_ratio( $derived_contract['test-link'], $derived_contract['test-bg'] ), 'links target WCAG AA contrast' );
+assert_contract( 4.5 <= $color_engine->contrast_ratio( $derived_contract['test-hover-text'], $derived_contract['test-hover'] ), 'generated hover states remain readable' );
 
 $test_options[ 'adam_' . 'inter' . 'face_settings' ] = array( 'default_theme' => 'dark' );
 $settings->migrate_saved_settings();

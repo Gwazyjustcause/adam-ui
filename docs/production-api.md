@@ -106,7 +106,9 @@ The base stylesheet is scoped to `#wpbody-content` in WordPress admin. The toolb
 
 ## Theme component registration
 
-`adam_ui_register_theme_component( $slug, $definition )` registers a reusable Night Theme component. The definition supplies grouped controls, optional style presets, a safe preview fragment, hidden supporting tokens, and background-to-foreground contrast relationships. ADAM UI then creates the editor tab and includes those tokens in persistence, JSON import/export, generated CSS, and live preview automatically.
+`adam_ui_register_theme_component( $slug, $definition )` registers a reusable Night Theme component. The definition supplies grouped controls, optional style presets, a safe preview fragment, hidden supporting tokens, and semantic `intelligence` contracts. ADAM UI then creates the editor tab and includes those tokens in persistence, JSON import/export, generated CSS, automatic WCAG-aware derivation, and live preview automatically.
+
+An intelligence contract names a `background` token and maps semantic roles such as `heading`, `text`, `muted`, `link`, `icon`, `border`, `hover_background`, `hover_text`, `focus`, `surface`, `disabled_background`, and `disabled_text` to output tokens. Plugins declare meaning; the central colour engine owns the calculations.
 
 Register components after ADAM UI is available (normally on `plugins_loaded`). See [Theme engine](theme-engine.md#registering-components) for a complete definition.
 
