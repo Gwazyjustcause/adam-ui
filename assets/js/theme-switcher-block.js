@@ -8,7 +8,7 @@
 	const SelectControl = components.SelectControl;
 
 	blocks.registerBlockType( 'adam-ui/theme-switcher', {
-		apiVersion: 2,
+		apiVersion: 3,
 		title: __( 'Theme Switcher', 'adam-ui' ),
 		description: __( 'Place the ADAM UI Light, Night, and System selector.', 'adam-ui' ),
 		icon: 'admin-appearance',
@@ -47,9 +47,12 @@
 				),
 				el(
 					'div',
-					{ className: 'adam-ui-theme-switcher-block-preview' },
-					el( 'strong', null, __( 'ADAM UI Theme Switcher', 'adam-ui' ) ),
-					el( 'span', null, label )
+					{
+						className: 'adam-ui-theme-switcher-block-preview',
+						'data-adam-display-style': style,
+					},
+					el( 'strong', { className: 'adam-ui-theme-switcher-block-preview__title' }, __( 'ADAM UI Theme Switcher', 'adam-ui' ) ),
+					el( 'span', { className: 'adam-ui-theme-switcher-block-preview__control' }, label )
 				)
 			);
 		},

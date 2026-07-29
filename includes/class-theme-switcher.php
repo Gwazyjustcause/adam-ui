@@ -53,6 +53,8 @@ final class ADAM_UI_Theme_Switcher {
 			return;
 		}
 
+		$this->assets->register_assets();
+
 		wp_register_script(
 			'adam-ui-theme-switcher-block',
 			ADAM_UI_URL . 'assets/js/theme-switcher-block.js',
@@ -68,8 +70,10 @@ final class ADAM_UI_Theme_Switcher {
 		register_block_type(
 			'adam-ui/theme-switcher',
 			array(
-				'api_version'     => 2,
+				'api_version'     => 3,
 				'editor_script'   => 'adam-ui-theme-switcher-block',
+				'editor_style'    => 'adam-ui-theme-switcher-editor',
+				'style'           => 'adam-ui-theme-switcher',
 				'render_callback' => array( $this, 'render_block' ),
 				'attributes'      => array(
 					'style' => array(

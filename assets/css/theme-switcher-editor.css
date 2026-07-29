@@ -1,0 +1,40 @@
+/**
+ * Gutenberg preview for the ADAM UI Theme Switcher block.
+ */
+
+.adam-ui-theme-switcher-block-preview {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+	width: fit-content;
+	max-width: 100%;
+	padding: 12px;
+	color: inherit;
+	background: var(--wp-components-color-background, Canvas);
+	border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+	border-radius: 6px;
+	box-shadow: 0 1px 2px color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.adam-ui-theme-switcher-block-preview__title {
+	display: block;
+	width: 100%;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.adam-ui-theme-switcher-block-preview__control {
+	display: inline-flex;
+	align-items: center;
+	min-height: 36px;
+	padding: 0 10px;
+	border: 1px solid color-mix(in srgb, currentColor 55%, transparent);
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+.adam-ui-theme-switcher-block-preview[data-adam-display-style="icon-only"] .adam-ui-theme-switcher-block-preview__control,
+.adam-ui-theme-switcher-block-preview[data-adam-display-style="icon-label"] .adam-ui-theme-switcher-block-preview__control {
+	white-space: pre;
+}

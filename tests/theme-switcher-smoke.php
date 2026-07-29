@@ -4,6 +4,7 @@
 $root = dirname( __DIR__ );
 $js   = file_get_contents( $root . '/assets/js/ui.js' );
 $css  = file_get_contents( $root . '/assets/css/theme-switcher.css' );
+$editor_css = file_get_contents( $root . '/assets/css/theme-switcher-editor.css' );
 $manager = file_get_contents( $root . '/includes/class-theme-manager.php' );
 $component = file_get_contents( $root . '/includes/class-theme-switcher.php' );
 $widget = file_get_contents( $root . '/includes/class-theme-switcher-widget.php' );
@@ -27,6 +28,9 @@ adam_ui_switcher_assert( false !== strpos( $js, '[data-adam-theme-value]' ), 'Ic
 adam_ui_switcher_assert( false !== strpos( $js, "button.setAttribute( 'aria-pressed'" ), 'Icon controls must expose their active mode accessibly.' );
 adam_ui_switcher_assert( false !== strpos( $component, "add_shortcode( 'adam_theme_switcher'" ), 'The portable shortcode adapter is missing.' );
 adam_ui_switcher_assert( false !== strpos( $component, "register_block_type(\n\t\t\t'adam-ui/theme-switcher'" ), 'The dynamic Gutenberg block is missing.' );
+adam_ui_switcher_assert( false !== strpos( $component, "'editor_style'    => 'adam-ui-theme-switcher-editor'" ), 'The Gutenberg editor stylesheet is not registered.' );
+adam_ui_switcher_assert( false !== strpos( $component, "'style'           => 'adam-ui-theme-switcher'" ), 'The block frontend stylesheet is not registered.' );
+adam_ui_switcher_assert( false !== strpos( $editor_css, '.adam-ui-theme-switcher-block-preview' ), 'The Gutenberg block preview stylesheet is missing.' );
 adam_ui_switcher_assert( false !== strpos( $component, "register_widget( 'ADAM_UI_Theme_Switcher_Widget' )" ), 'The WordPress widget adapter is missing.' );
 adam_ui_switcher_assert( false !== strpos( $component, "'shortcode' !== \$this->settings->get_theme_switcher_placement()" ), 'The shortcode must render only when its placement is selected.' );
 adam_ui_switcher_assert( false !== strpos( $component, "'block' !== \$this->settings->get_theme_switcher_placement()" ), 'The block must render only when its placement is selected.' );
