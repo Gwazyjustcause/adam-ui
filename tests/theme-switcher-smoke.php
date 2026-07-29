@@ -47,6 +47,7 @@ adam_ui_switcher_assert( false !== strpos( $component, 'adam-theme-select-' ) &&
 adam_ui_switcher_assert( false !== strpos( $component, 'adam-ui-theme-switcher' ), 'The switcher must expose a dedicated ADAM-owned component root.' );
 adam_ui_switcher_assert( false !== strpos( $css, '.adam-ui-theme-switcher.adam-theme-switcher' ), 'Switcher rules must be scoped with sufficient component specificity.' );
 adam_ui_switcher_assert( false !== strpos( $css, 'box-sizing: border-box' ), 'The component boundary must include its padding and border.' );
+adam_ui_switcher_assert( false !== strpos( $css, 'flex: 0 0 auto' ) && false !== strpos( $css, 'width: auto !important' ) && false !== strpos( $css, 'min-width: max-content' ), 'The dropdown must preserve its intrinsic text and indicator width.' );
 adam_ui_switcher_assert( false !== strpos( $css, '.adam-theme-switcher__select:focus-visible' ) && false !== strpos( $css, 'outline-offset: -3px' ), 'Dropdown focus must render inside the control boundary.' );
 adam_ui_switcher_assert( false !== strpos( $css, '.adam-theme-switcher__choice:focus-visible' ) && false !== strpos( $css, 'box-shadow: inset 0 0 0 1px var(--adam-primary)' ), 'Button focus must render inside the control boundary.' );
 adam_ui_switcher_assert( false !== strpos( $base_css, '):not(.adam-theme-switcher__choice):focus-visible' ), 'Global button focus must defer to the Theme Switcher component.' );

@@ -27,6 +27,10 @@
 
 .adam-ui-theme-switcher.adam-theme-switcher .adam-theme-switcher__select {
 	box-sizing: border-box;
+	flex: 0 0 auto;
+	width: auto !important;
+	min-width: max-content;
+	max-width: none;
 	min-height: var(--adam-control-height);
 	padding: var(--adam-space-1) var(--adam-space-6) var(--adam-space-1) var(--adam-space-2);
 	color: var(--adam-text);
