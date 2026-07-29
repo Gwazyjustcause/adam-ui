@@ -5,6 +5,11 @@
  * UI colours with semantic design tokens. Theme files remain token-only.
  */
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) {
+	--theme-heading-color: var(--adam-heading);
+	--theme-headings-color: var(--adam-heading);
+	--theme-text-color: var(--adam-text);
+	--theme-link-initial-color: var(--adam-link);
+	--theme-link-hover-color: var(--adam-link-hover);
 	color: var(--adam-text);
 	background-color: var(--adam-bg);
 	font-family: var(--adam-font-family);
@@ -43,8 +48,18 @@
 	transition-timing-function: var(--adam-transition-timing);
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, legend) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(p, li, dt, dd, label, legend) {
 	color: var(--adam-text);
+}
+
+/*
+ * Headings need normal framework specificity. Wrapping both sides in
+ * :where() allowed a theme's bare h1 rule to win even though ADAM UI loaded
+ * later. Component and classified-surface rules below remain more specific.
+ */
+body.adam-theme-dark:not(.wp-admin) :is(h1, h2, h3, h4, h5, h6),
+body.wp-admin.adam-theme-dark #wpbody-content :is(h1, h2, h3, h4, h5, h6) {
+	color: var(--adam-heading);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(small, figcaption, caption, .description, .meta, .entry-meta, .wp-block-post-date) {

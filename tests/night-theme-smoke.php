@@ -78,6 +78,9 @@ foreach ( array( 'feature', 'cta', 'overlay', 'alternate', 'standard' ) as $role
 foreach ( array( '--adam-night-surface-heading', '--adam-night-surface-text', '--adam-night-surface-link', '--theme-heading-color', '--theme-text-color', '--theme-link-initial-color' ) as $foreground_token ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, $foreground_token ), 'Classified surfaces do not own typography token ' . $foreground_token . '.' );
 }
+adam_ui_night_assert( false !== strpos( $ui_css, '--theme-heading-color: var(--adam-heading)' ), 'Blocksy must resolve its heading variable through the global Night heading token.' );
+adam_ui_night_assert( false !== strpos( $ui_css, 'body.adam-theme-dark:not(.wp-admin) :is(h1, h2, h3, h4, h5, h6)' ), 'Global Night headings need enough specificity to outrank a theme bare-element rule.' );
+adam_ui_night_assert( false === strpos( $ui_css, ':where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, legend)' ), 'Headings must not share the zero-specificity body-copy rule.' );
 foreach ( array( 'h1, h2, h3, h4, h5, h6', 'p, li, dt, dd, figcaption, caption, .wp-element-caption, label, legend, blockquote', 'a:not(.adam-button):not(.wp-element-button)' ) as $content_selector ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, $content_selector ), 'Classified-surface typography coverage is missing for ' . $content_selector . '.' );
 }
