@@ -525,6 +525,80 @@ body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="overlay"] {
 	background: var(--adam-night-overlay) !important;
 }
 
+/*
+ * Footer is a terminal surface. These rules intentionally follow the generic
+ * classifier so nested Blocksy rows and containers cannot be promoted to a
+ * card or alternate section colour.
+ */
+body.adam-theme-dark:not(.wp-admin) :is(
+	footer,
+	.ct-footer,
+	.site-footer,
+	#colophon,
+	footer.wp-block-template-part
+),
+body.adam-theme-dark:not(.wp-admin) :is(
+	footer,
+	.ct-footer,
+	.site-footer,
+	#colophon,
+	footer.wp-block-template-part
+) :is(
+	.ct-container,
+	.ct-container-fluid,
+	[data-row],
+	[data-row] > div,
+	[data-column],
+	.footer-container,
+	.footer-inner,
+	.footer-content,
+	.footer-main,
+	.footer-top,
+	.footer-middle,
+	.footer-bottom,
+	.footer-widgets,
+	.footer-widget-area,
+	.footer-navigation,
+	.footer-menu,
+	.widget-area,
+	.site-info,
+	.ct-footer-copyright,
+	.wp-block-group,
+	[data-adam-night-background="footer"]
+) {
+	background: var(--adam-night-bg) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	footer,
+	.ct-footer,
+	.site-footer,
+	#colophon,
+	.ct-footer [data-row],
+	.site-footer .footer-widgets,
+	.site-footer .footer-bottom
+)::before,
+body.adam-theme-dark:not(.wp-admin) :is(
+	footer,
+	.ct-footer,
+	.site-footer,
+	#colophon,
+	.ct-footer [data-row],
+	.site-footer .footer-widgets,
+	.site-footer .footer-bottom
+)::after {
+	background: transparent !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	.ct-footer [data-row],
+	.site-footer .footer-widgets,
+	.site-footer .footer-bottom,
+	#colophon .site-info
+) {
+	border-color: var(--adam-footer-divider);
+}
+
 body.adam-theme-dark:not(.wp-admin) :is(
 	[data-adam-night-background="content"],
 	[data-adam-night-background="alternate"]

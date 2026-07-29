@@ -304,6 +304,10 @@
 		const style = window.getComputedStyle( element );
 		const backgroundImage = style.backgroundImage || 'none';
 
+		if ( typeof element.closest === 'function' && element.closest( 'footer, .ct-footer, .site-footer, #colophon' ) ) {
+			return 'footer';
+		}
+
 		if ( hasContentImage( element, backgroundImage ) ) {
 			return 'image';
 		}

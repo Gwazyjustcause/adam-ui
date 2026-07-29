@@ -37,6 +37,9 @@ function backgroundElement(type, backgroundColor, backgroundImage = 'none') {
 		querySelector(selector) {
 			return type === 'image' && selector.includes('.wp-block-cover__image-background') ? {} : null;
 		},
+		closest() {
+			return type === 'footer' ? {} : null;
+		},
 	};
 }
 const lightSection = backgroundElement('content', 'rgb(255, 255, 255)');
@@ -45,7 +48,8 @@ const gradientSection = backgroundElement('gradient', 'rgb(240, 248, 235)', 'lin
 const gradientCover = backgroundElement('cover-gradient', 'rgb(240, 248, 235)', 'linear-gradient(rgb(255, 255, 255), rgb(220, 240, 210))');
 const imageCover = backgroundElement('image', 'rgb(255, 255, 255)', 'url("field.jpg")');
 const coverOverlay = backgroundElement('overlay', 'rgba(0, 0, 0, 0.35)');
-const backgroundElements = [lightSection, alternateSection, gradientSection, gradientCover, imageCover, coverOverlay];
+const footerContainer = backgroundElement('footer', 'rgb(42, 60, 40)');
+const backgroundElements = [lightSection, alternateSection, gradientSection, gradientCover, imageCover, coverOverlay, footerContainer];
 const document = {
 	readyState: 'complete',
 	body: { classList: classList(), dataset: {} },
@@ -107,6 +111,7 @@ assert(gradientSection.dataset.adamNightBackground === 'accent', 'Decorative gra
 assert(gradientCover.dataset.adamNightBackground === 'accent', 'Image-free gradient Covers must become Night accent surfaces.');
 assert(imageCover.dataset.adamNightBackground === 'image', 'Image-backed Covers must remain classified as protected images.');
 assert(coverOverlay.dataset.adamNightBackground === 'overlay', 'Cover overlays must be recalculated independently of images.');
+assert(footerContainer.dataset.adamNightBackground === 'footer', 'Nested footer containers must use the terminal Night canvas.');
 
 select.value = 'light';
 listeners.change();

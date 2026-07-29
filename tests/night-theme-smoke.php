@@ -40,9 +40,13 @@ foreach ( array( '.wp-block-group', '.wp-block-cover', '.wp-block-columns', '.ct
 	adam_ui_night_assert( false !== strpos( $controller . $ui_css, $selector ), 'Generic background classification is missing for ' . $selector . '.' );
 }
 adam_ui_night_assert( false !== strpos( $controller, "backgroundImage.includes( 'url(' )" ), 'Background images are not protected by the classifier.' );
+adam_ui_night_assert( false !== strpos( $controller, "return 'footer'" ), 'Nested footer containers do not receive the terminal Night surface classification.' );
 adam_ui_night_assert( false !== strpos( $controller, "return 'accent'" ) && false !== strpos( $controller, 'colourLuminance' ), 'Gradient and light-surface detection are missing.' );
 adam_ui_night_assert( false !== strpos( $ui_css, ':not(.wp-block-cover):not(.has-background-image):not([style*="url(" i])' ), 'Immediate CSS classification does not exclude image-backed blocks.' );
 adam_ui_night_assert( false === strpos( $ui_css, '[data-adam-night-background="image"]' ), 'Protected images must not receive a Night background override.' );
+foreach ( array( '.ct-container', '[data-row] > div', '[data-column]', '.footer-widgets', '.footer-bottom', '.site-info', '[data-adam-night-background="footer"]' ) as $footer_layer ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, $footer_layer ), 'Nested footer surface coverage is missing for ' . $footer_layer . '.' );
+}
 adam_ui_night_assert( false !== strpos( $editor, 'night_themes()' ) && false === strpos( $editor, "active_id( 'light' )" ), 'Theme Editor must expose Night presets only.' );
 
 foreach ( array( 'header', 'footer', 'card', 'form', 'table', 'notice' ) as $component ) {
