@@ -260,7 +260,70 @@
 		'.has-background',
 		'[class*="-background-color"]',
 		'[class*="-gradient-background"]',
+		'[class^="adam-"]',
+		'[class*=" adam-"]',
 	].join( ',' );
+
+	const protectedComponentSelector = [
+		'img',
+		'picture',
+		'video',
+		'canvas',
+		'svg',
+		'button',
+		'input',
+		'select',
+		'textarea',
+		'option',
+		'.adam-button',
+		'.adam-badge',
+		'.adam-status',
+		'.adam-notice',
+		'.adam-alert',
+		'[class*="button"]',
+		'[class*="-badge"]',
+		'[class*="-status"]',
+		'[class*="-notice"]',
+		'[class*="-alert"]',
+		'[role="button"]',
+		'[role="status"]',
+		'[role="alert"]',
+	].join( ',' );
+
+	function componentClassNames( element ) {
+		if ( typeof element.className !== 'string' ) {
+			return [];
+		}
+
+		return element.className.split( /\s+/ ).filter( Boolean );
+	}
+
+	function classifyComponent( element ) {
+		const allClassNames = componentClassNames( element );
+		const classNames = allClassNames.filter( ( className ) => ! className.includes( '__' ) );
+
+		if ( element.matches( 'form' ) || classNames.some( ( className ) => /(?:filter|toolbar|universal-search|search-bar|search-box)(?:$|--|-)/.test( className ) ) ) {
+			return 'form';
+		}
+
+		if ( allClassNames.some( ( className ) => /(?:^|-|__)(?:empty|blank-state)(?:$|--|-)/.test( className ) ) ) {
+			return 'empty';
+		}
+
+		if ( classNames.some( ( className ) => /(?:^|-)(?:stat|stats|statistics)(?:$|--|-)/.test( className ) ) ) {
+			return 'stat';
+		}
+
+		if ( classNames.some( ( className ) => /(?:^|-)card(?:$|--|-)/.test( className ) ) ) {
+			return 'card';
+		}
+
+		if ( classNames.some( ( className ) => /(?:^|-)hero(?:$|--|-)/.test( className ) ) ) {
+			return 'hero';
+		}
+
+		return '';
+	}
 
 	function colourLuminance( colour ) {
 		const values = String( colour ).match( /[\d.]+/g );
@@ -308,6 +371,10 @@
 			return 'footer';
 		}
 
+		if ( element.matches( protectedComponentSelector ) ) {
+			return '';
+		}
+
 		if ( hasContentImage( element, backgroundImage ) ) {
 			return 'image';
 		}
@@ -352,13 +419,21 @@
 		document.querySelectorAll( '[data-adam-night-background]' ).forEach( ( element ) => {
 			delete element.dataset.adamNightBackground;
 		} );
+		document.querySelectorAll( '[data-adam-night-component]' ).forEach( ( element ) => {
+			delete element.dataset.adamNightComponent;
+		} );
 
 		if ( ! isNight ) {
 			return;
 		}
 
 		document.querySelectorAll( backgroundCandidates ).forEach( ( element ) => {
+			const component = classifyComponent( element );
 			const classification = classifyBackground( element );
+
+			if ( component ) {
+				element.dataset.adamNightComponent = component;
+			}
 
 			if ( classification ) {
 				element.dataset.adamNightBackground = classification;

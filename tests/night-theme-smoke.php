@@ -39,6 +39,14 @@ adam_ui_night_assert( false !== strpos( $engine, "'hover_background'" ) && false
 foreach ( array( '.wp-block-group', '.wp-block-cover', '.wp-block-columns', '.ct-container', 'data-adam-night-background' ) as $selector ) {
 	adam_ui_night_assert( false !== strpos( $controller . $ui_css, $selector ), 'Generic background classification is missing for ' . $selector . '.' );
 }
+foreach ( array( '[class^="adam-"]', '[class*=" adam-"]', 'classifyComponent', 'data-adam-night-component' ) as $selector ) {
+	adam_ui_night_assert( false !== strpos( $controller . $ui_css, $selector ), 'ADAM ecosystem semantic classification is missing for ' . $selector . '.' );
+}
+foreach ( array( '"card"', '"empty"', '"stat"', '"form"', '"hero"' ) as $component_role ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component=' . $component_role . ']' ), 'Shared component bridge is missing for ' . $component_role . '.' );
+}
+adam_ui_night_assert( false !== strpos( $controller, 'protectedComponentSelector' ), 'Semantic badges, controls, and media must be protected from surface classification.' );
+adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component="form"] :is(' ), 'ADAM-owned form controls do not have an authoritative Night contract.' );
 adam_ui_night_assert( false !== strpos( $controller, "backgroundImage.includes( 'url(' )" ), 'Background images are not protected by the classifier.' );
 adam_ui_night_assert( false !== strpos( $controller, "return 'footer'" ), 'Nested footer containers do not receive the terminal Night surface classification.' );
 adam_ui_night_assert( false !== strpos( $controller, "return 'accent'" ) && false !== strpos( $controller, 'colourLuminance' ), 'Gradient and light-surface detection are missing.' );

@@ -145,3 +145,25 @@ Guard every integration call with `function_exists()` or `class_exists()`. When 
 - Keep business logic and data ownership inside the plugin.
 - Test Light mode without ADAM overrides and Night mode with generated tokens.
 
+## ADAM Comunidade Night Theme audit
+
+ADAM UI's compatibility bridge recognises ADAM-owned semantic roots without
+depending on an ADAM Comunidade page, route, or namespace. A root class whose
+component word identifies a card, empty state, statistic, hero, filter,
+toolbar, search bar, or form receives `data-adam-night-component` at runtime.
+Its background, typography, borders, controls, buttons, and states then resolve
+through the shared component tokens.
+
+The public templates audited for this contract include the Community landing
+page, Teams, Fields, Partners, Institutions, News, Events, directory archives
+and cards, single entity views, submission forms, and manager portals. Their
+hero banners, filter bars, search controls, selects, buttons, empty states,
+cards, and statistics fit the shared semantic contract and do not need
+page-specific Night CSS.
+
+Media remains intentionally outside this bridge. Photographs, card cover
+images, hero images, map tiles, videos, canvases, and SVG artwork are never
+recoloured. A future plugin component that cannot express its surface using a
+semantic component root must register that component with ADAM UI or add an
+explicit `data-adam-night-component` contract in its own markup; ADAM UI must
+not guess from a page URL or add a plugin-specific selector.

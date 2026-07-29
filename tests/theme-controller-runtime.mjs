@@ -26,8 +26,10 @@ function backgroundElement(type, backgroundColor, backgroundImage = 'none') {
 	return {
 		type,
 		dataset: {},
+		className: type === 'component-card' ? 'adam-example-card' : type === 'component-form' ? 'adam-example-filters' : type === 'component-empty' ? 'adam-comunidade__empty' : '',
 		computedStyle: { backgroundColor, backgroundImage },
 		matches(selector) {
+			if (selector === 'form') return type === 'component-form';
 			if (type === 'overlay') return selector.includes('.wp-block-cover__background');
 			if (type === 'alternate') return selector.includes('.is-style-alternate');
 			if (type === 'gradient') return selector.includes('-gradient-background');
@@ -49,7 +51,10 @@ const gradientCover = backgroundElement('cover-gradient', 'rgb(240, 248, 235)', 
 const imageCover = backgroundElement('image', 'rgb(255, 255, 255)', 'url("field.jpg")');
 const coverOverlay = backgroundElement('overlay', 'rgba(0, 0, 0, 0.35)');
 const footerContainer = backgroundElement('footer', 'rgb(42, 60, 40)');
-const backgroundElements = [lightSection, alternateSection, gradientSection, gradientCover, imageCover, coverOverlay, footerContainer];
+const componentCard = backgroundElement('component-card', 'rgb(255, 255, 255)');
+const componentForm = backgroundElement('component-form', 'rgb(255, 255, 255)');
+const componentEmpty = backgroundElement('component-empty', 'rgb(248, 250, 252)');
+const backgroundElements = [lightSection, alternateSection, gradientSection, gradientCover, imageCover, coverOverlay, footerContainer, componentCard, componentForm, componentEmpty];
 const document = {
 	readyState: 'complete',
 	body: { classList: classList(), dataset: {} },
@@ -61,6 +66,9 @@ const document = {
 		if (selector === '[data-adam-theme-select]') return [select];
 		if (selector === '[data-adam-night-background]') {
 			return backgroundElements.filter(element => element.dataset.adamNightBackground);
+		}
+		if (selector === '[data-adam-night-component]') {
+			return backgroundElements.filter(element => element.dataset.adamNightComponent);
 		}
 		return selector.includes('.wp-block-group') ? backgroundElements : [];
 	},
@@ -112,6 +120,9 @@ assert(gradientCover.dataset.adamNightBackground === 'accent', 'Image-free gradi
 assert(imageCover.dataset.adamNightBackground === 'image', 'Image-backed Covers must remain classified as protected images.');
 assert(coverOverlay.dataset.adamNightBackground === 'overlay', 'Cover overlays must be recalculated independently of images.');
 assert(footerContainer.dataset.adamNightBackground === 'footer', 'Nested footer containers must use the terminal Night canvas.');
+assert(componentCard.dataset.adamNightComponent === 'card', 'ADAM ecosystem cards must receive the shared card contract.');
+assert(componentForm.dataset.adamNightComponent === 'form', 'ADAM ecosystem filter forms must receive the shared form contract.');
+assert(componentEmpty.dataset.adamNightComponent === 'empty', 'BEM empty states must receive the shared empty-state contract.');
 
 select.value = 'light';
 listeners.change();
@@ -120,5 +131,6 @@ assert(!document.body.classList.contains('adam-theme-light'), 'Light selection m
 assert(document.body.dataset.adamTheme === 'light', 'Light pass-through state must remain observable through data attributes.');
 assert(stored.get('adam-theme') === 'light', 'Light selection must persist in localStorage.');
 assert(!lightSection.dataset.adamNightBackground, 'Light mode must remove Night background classifications.');
+assert(!componentCard.dataset.adamNightComponent, 'Light mode must remove Night component classifications.');
 
 console.log('PASS: Theme controller runtime contract.');

@@ -898,6 +898,116 @@ body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="accent"] :where
 body.adam-theme-dark:not(.wp-admin) :is(.has-palette-color-1-background-color, .has-palette-color-5-background-color) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-feature-text); }
 body.adam-theme-dark:not(.wp-admin) .has-palette-color-2-background-color :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-cta-text); }
 body.adam-theme-dark:not(.wp-admin) .has-palette-color-4-background-color :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-overlay-text); }
+
+/*
+ * Semantic ADAM component bridge.
+ *
+ * ADAM plugins may retain structural class names while migrating to the
+ * component library. The controller recognises generic component semantics
+ * from those names and assigns this stable data contract. No plugin or page
+ * name is required here.
+ */
+body.adam-theme-dark:not(.wp-admin) :is(
+	[data-adam-night-component="card"],
+	[data-adam-night-component="empty"],
+	[data-adam-night-component="stat"]
+) {
+	--adam-night-component-heading: var(--adam-card-heading);
+	--adam-night-component-text: var(--adam-card-text);
+	--adam-night-component-link: var(--adam-card-link);
+	color: var(--adam-card-text) !important;
+	background: var(--adam-card-bg) !important;
+	border-color: var(--adam-card-border) !important;
+	box-shadow: var(--adam-card-shadow);
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] {
+	--adam-night-component-heading: var(--adam-global-heading);
+	--adam-night-component-text: var(--adam-global-text);
+	--adam-night-component-link: var(--adam-global-link);
+	color: var(--adam-global-text) !important;
+	background: var(--adam-form-input-bg) !important;
+	border-color: var(--adam-form-border) !important;
+	box-shadow: var(--adam-form-shadow, none);
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="hero"] {
+	--adam-night-component-heading: var(--adam-hero-heading);
+	--adam-night-component-text: var(--adam-hero-text);
+	--adam-night-component-link: var(--adam-global-link);
+	color: var(--adam-hero-text);
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="hero"]:is(
+	:not([data-adam-night-background]),
+	[data-adam-night-background="content"],
+	[data-adam-night-background="alternate"],
+	[data-adam-night-background="accent"]
+) {
+	background: var(--adam-hero-bg) !important;
+	border-color: var(--adam-global-border);
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	[data-adam-night-component="card"],
+	[data-adam-night-component="empty"],
+	[data-adam-night-component="stat"],
+	[data-adam-night-component="form"],
+	[data-adam-night-component="hero"]
+) :where(h1, h2, h3, h4, h5, h6) {
+	color: var(--adam-night-component-heading) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	[data-adam-night-component="card"],
+	[data-adam-night-component="empty"],
+	[data-adam-night-component="stat"],
+	[data-adam-night-component="form"],
+	[data-adam-night-component="hero"]
+) :where(p, li, dt, dd, figcaption, caption, label, legend, blockquote) {
+	color: var(--adam-night-component-text) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	[data-adam-night-component="card"],
+	[data-adam-night-component="empty"],
+	[data-adam-night-component="stat"],
+	[data-adam-night-component="form"],
+	[data-adam-night-component="hero"]
+) a:not(.adam-button):not(.wp-element-button):not([class*="button"]) {
+	color: var(--adam-night-component-link) !important;
+}
+
+/*
+ * ADAM-owned forms can load structural CSS after the framework. Important
+ * declarations are deliberately limited to classified form components so
+ * third-party forms and native WordPress screens remain untouched.
+ */
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(
+	input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+	select,
+	textarea
+) {
+	color: var(--adam-form-input-text) !important;
+	background-color: var(--adam-form-input-bg) !important;
+	border-color: var(--adam-form-border) !important;
+	box-shadow: var(--adam-form-shadow, none) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(input, select, textarea)::placeholder {
+	color: var(--adam-form-placeholder) !important;
+	opacity: 1;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(input, select, textarea):focus {
+	border-color: var(--adam-form-focus) !important;
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--adam-form-focus) 38%, transparent) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(option, optgroup) {
+	color: var(--adam-form-input-text) !important;
+	background-color: var(--adam-form-input-bg) !important;
+}
 body.adam-theme-dark:not(.wp-admin) .has-palette-color-6-background-color :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-alternate-text); }
 body.adam-theme-dark:not(.wp-admin) :is(.has-palette-color-7-background-color, .has-palette-color-8-background-color) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-standard-text); }
 
