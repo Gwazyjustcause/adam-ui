@@ -2,7 +2,7 @@
 
 ADAM UI stores Night presets in the `adam_ui_themes` WordPress option. **ADAM Night** is the safe built-in default and cannot be deleted. Administrators can edit Night overrides under **ADAM UI → Theme Editor**, duplicate a preset, rename or delete custom Night presets, and import/export complete JSON packages. Legacy Light theme data remains stored for backwards compatibility but is no longer exposed or emitted.
 
-The editor exposes six approachable component areas: Header, Sections, Cards, Buttons, Forms, and Footer. Advanced retains detailed Night surface, border, hover, and state controls. Foreground colours are derived automatically from component backgrounds, so administrators do not maintain separate text colours.
+The editor is generated from eight reusable component definitions: Header, Sections, Feature Sections, Hero, Cards, Buttons, Forms, and Footer. It no longer exposes a page-oriented colour matrix. Each component offers only its meaningful background and a small visual-style choice, while foreground colours are derived automatically.
 
 Light, Night, and System remain preference modes:
 
@@ -13,6 +13,8 @@ Light, Night, and System remain preference modes:
 ADAM UI does not generate a Light palette or a Light stylesheet. `variables.css` provides only structural tokens and a neutral bridge to Blocksy/browser values. `ui.css` is scoped exclusively to Night mode.
 
 Every component panel includes a compact live example. Changes update the preview immediately. Colour fields support short and long HEX, RGB/RGBA, HSL/HSLA, named colours, and `transparent`; values are validated again before storage.
+
+Visual styles are high-impact presets rather than collections of CSS controls. For example, Cards provides Flat, Elevated, Glass, and Minimal; Buttons provides Filled, Outline, and Soft; Header provides Solid, Transparent, and Elevated. A preset resolves into structural design tokens for borders, depth, spacing, opacity, and contrast, so all consumers change consistently.
 
 ## PHP API
 
@@ -41,6 +43,46 @@ Ecosystem plugins should consume component variables such as `--adam-header-bg`,
 ```
 
 Reusable section modifiers map to Standard, Alternate, Feature Strip, CTA, and Image Overlay roles. Their foreground tokens are calculated from the selected Night backgrounds.
+
+## Registering components
+
+Future ADAM plugins can add component types without editing the Theme Editor:
+
+```php
+adam_ui_register_theme_component(
+  'event-card',
+  array(
+    'label'       => 'Event Card',
+    'description' => 'Cards used by ADAM Comunidade events.',
+    'controls'    => array(
+      array(
+        'label'  => 'Background',
+        'fields' => array(
+          array(
+            'token'   => 'adam-event-card-bg',
+            'label'   => 'Background',
+            'type'    => 'color',
+            'default' => '#1a2019',
+          ),
+        ),
+      ),
+    ),
+    'styles'   => array(),
+    'tokens'   => array(
+      'adam-event-card-text' => array(
+        'type'    => 'color',
+        'default' => '#f2f4ee',
+      ),
+    ),
+    'contrast' => array(
+      'adam-event-card-bg' => array( 'adam-event-card-text' ),
+    ),
+    'preview'  => '<article class="adam-event-card-preview"><h3>Event</h3><p>Details</p></article>',
+  )
+);
+```
+
+The registered definition automatically becomes an editor tab, participates in persistence and automatic contrast, and is included in the live-preview schema. Plugins may alternatively extend the complete registry through the `adam_ui_theme_components` filter.
 
 ## JavaScript API
 

@@ -18,3 +18,5 @@ The plugin does not style native WordPress or third-party administration pages. 
 - Theme event: `adam:themeChanged`
 
 See [Component library](docs/components.md), [Production API](docs/production-api.md), and [Theme engine](docs/theme-engine.md) for the supported tokens, visual editor, presets, import/export, inspector, components, helpers, asset loading, events, and compatibility contract.
+
+The Night Theme Editor is generated from a reusable component registry. Header, Sections, Feature Sections, Hero, Cards, Buttons, Forms, and Footer ship as built-ins; future ADAM plugins can add editor-ready component types with `adam_ui_register_theme_component()`.

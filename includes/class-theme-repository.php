@@ -8,8 +8,10 @@ final class ADAM_UI_Theme_Repository {
 	const SCHEMA_VERSION = 3;
 
 	private $schema;
+	private $component_registry;
 
-	public function __construct() {
+	public function __construct( $component_registry = null ) {
+		$this->component_registry = $component_registry ? $component_registry : new ADAM_UI_Theme_Component_Registry();
 		$this->schema = $this->build_schema();
 	}
 
@@ -19,7 +21,10 @@ final class ADAM_UI_Theme_Repository {
 		add_action( 'admin_post_adam_ui_export_theme', array( $this, 'export_theme' ) );
 	}
 
-	public function schema() { return $this->schema; }
+	public function schema() {
+		$this->schema = $this->build_schema();
+		return $this->schema;
+	}
 
 	public function ensure_storage() {
 		if ( false === get_option( self::OPTION_KEY, false ) ) {
@@ -39,9 +44,10 @@ final class ADAM_UI_Theme_Repository {
 
 	private function preset( $name, $mode, $column, $builtin ) {
 		$tokens = array();
-		foreach ( $this->schema as $key => $field ) {
+		foreach ( $this->schema() as $key => $field ) {
 			$tokens[ $key ] = $field[ $column ];
 		}
+		$tokens = $this->component_registry->apply_styles( $tokens );
 		return array( 'name' => $name, 'mode' => $mode, 'builtin' => $builtin, 'tokens' => $this->apply_automatic_contrast( $tokens ) );
 	}
 
@@ -74,11 +80,14 @@ final class ADAM_UI_Theme_Repository {
 		);
 		$tokens = isset( $theme['tokens'] ) && is_array( $theme['tokens'] ) ? $theme['tokens'] : array();
 		$tokens = $this->migrate_legacy_tokens( $tokens );
-		foreach ( $this->schema as $key => $field ) {
+		foreach ( $this->schema() as $key => $field ) {
 			$value = isset( $tokens[ $key ] ) ? wp_unslash( $tokens[ $key ] ) : $fallback['tokens'][ $key ];
 			$out['tokens'][ $key ] = $this->sanitize_token( $value, $field );
 		}
-		if ( 'dark' === $out['mode'] ) { $out['tokens'] = $this->apply_automatic_contrast( $out['tokens'] ); }
+		if ( 'dark' === $out['mode'] ) {
+			$out['tokens'] = $this->component_registry->apply_styles( $out['tokens'] );
+			$out['tokens'] = $this->apply_automatic_contrast( $out['tokens'] );
+		}
 		return $out;
 	}
 
@@ -106,6 +115,10 @@ final class ADAM_UI_Theme_Repository {
 	}
 
 	private function sanitize_token( $value, $field ) {
+		if ( 'select' === $field['type'] ) {
+			$value = sanitize_key( $value );
+			return isset( $field['options'][ $value ] ) ? $value : $field['dark'];
+		}
 		if ( 'color' === $field['type'] ) {
 			return $this->sanitize_css_color( $value, $field['light'] );
 		}
@@ -172,8 +185,14 @@ final class ADAM_UI_Theme_Repository {
 			$groups[ 'adam-btn-' . $button . '-bg' ] = array( 'adam-btn-' . $button . '-text' );
 			$groups[ 'adam-btn-' . $button . '-hover-bg' ] = array( 'adam-btn-' . $button . '-hover-text' );
 		}
+		foreach ( $this->component_registry->contrast_map() as $background => $foregrounds ) {
+			$groups[ $background ] = array_values( array_unique( array_merge( isset( $groups[ $background ] ) ? $groups[ $background ] : array(), $foregrounds ) ) );
+		}
 		return $groups;
 	}
+
+	/** @return ADAM_UI_Theme_Component_Registry */
+	public function component_registry() { return $this->component_registry; }
 
 	/** Chooses the higher-contrast Night foreground for a CSS colour. */
 	private function contrast_text( $color ) {
@@ -338,6 +357,9 @@ final class ADAM_UI_Theme_Repository {
 		foreach ($numbers as $n) { $add($n[0],$n[1],$n[2],'number',(string)$n[3].$n[6],(string)$n[4].$n[6],(string)$n[5].$n[6],array('unit'=>$n[6],'min'=>$n[7],'max'=>$n[8],'step'=>isset($n[9])?$n[9]:1)); }
 		$hidden = array('adam-radius-sm'=>'4px','adam-radius'=>'8px','adam-radius-lg'=>'16px','adam-badge-radius'=>'999px','adam-badge-padding-x'=>'10px','adam-badge-padding-y'=>'4px','adam-space-1'=>'0.25rem','adam-space-2'=>'0.5rem','adam-space-3'=>'0.75rem','adam-space-4'=>'1rem','adam-space-6'=>'1.5rem','adam-space-8'=>'2rem','adam-shadow-sm'=>'0 1px 3px rgb(0 0 0 / 0.12)','adam-shadow-md'=>'0 8px 24px rgb(0 0 0 / 0.14)','adam-shadow-lg'=>'0 20px 48px rgb(0 0 0 / 0.18)','adam-font-body'=>'system-ui, sans-serif','adam-font-heading'=>'inherit','adam-z-modal'=>'100000','adam-duration'=>'200ms');
 		foreach ($hidden as $key=>$value) { $add($key,'Foundation',$key,'text',$value,$value,$value,array('editable'=>false)); }
+		foreach ( $this->component_registry->schema_fields() as $key => $field ) {
+			$s[ $key ] = isset( $s[ $key ] ) ? array_merge( $field, $s[ $key ] ) : $field;
+		}
 		return $s;
 	}
 }

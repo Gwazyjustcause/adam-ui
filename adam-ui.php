@@ -22,6 +22,7 @@ define( 'ADAM_UI_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ADAM_UI_URL', plugin_dir_url( __FILE__ ) );
 
 require_once ADAM_UI_PATH . 'includes/class-settings.php';
+require_once ADAM_UI_PATH . 'includes/class-theme-component-registry.php';
 require_once ADAM_UI_PATH . 'includes/class-theme-repository.php';
 require_once ADAM_UI_PATH . 'includes/class-asset-registry.php';
 require_once ADAM_UI_PATH . 'includes/class-plugin-registry.php';
@@ -239,6 +240,20 @@ function adam_card( $content, $args = array() ) {
  */
 function adam_ui_register_plugin( $slug, $name, $args = array() ) {
 	return ADAM_UI::register_plugin( $slug, $name, $args );
+}
+
+/**
+ * Registers an extensible Night Theme component.
+ *
+ * Registered components automatically receive an editor tab, controls, preview,
+ * persistent tokens, preset effects, and optional automatic contrast mapping.
+ *
+ * @param string $slug Component identifier.
+ * @param array  $args Component schema.
+ * @return bool
+ */
+function adam_ui_register_theme_component( $slug, $args ) {
+	return ADAM_UI::register_theme_component( $slug, $args );
 }
 
 add_action( 'plugins_loaded', 'adam_ui' );

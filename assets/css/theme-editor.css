@@ -280,3 +280,121 @@
 .adam-preview-card h3 { color: var(--adam-card-heading); }
 .adam-preview-card input { color: var(--adam-form-input-text); background: var(--adam-form-input-bg); border-color: var(--adam-form-border); }
 .adam-preview-footer { color: var(--adam-footer-text); background: var(--adam-footer-bg); }
+
+/* Registry-driven preset effects and the eight component previews. */
+.adam-mini-header {
+	background: color-mix(in srgb, var(--adam-header-bg) var(--adam-header-surface-opacity, 100%), transparent);
+	border-bottom-width: var(--adam-header-border-width, 1px);
+	box-shadow: var(--adam-header-shadow, none);
+	border-bottom-color: color-mix(in srgb, var(--adam-header-bg) 76%, white);
+}
+
+.adam-mini-header nav span:hover {
+	color: var(--adam-header-active-text);
+	background: color-mix(in srgb, var(--adam-header-active-bg) 28%, var(--adam-header-bg));
+}
+
+.adam-mini-footer {
+	padding: var(--adam-footer-padding, var(--adam-space-4));
+}
+
+.adam-mini-footer small {
+	border-top-width: var(--adam-footer-divider-width, 1px);
+	border-top-color: color-mix(in srgb, var(--adam-footer-bg) 76%, white);
+}
+
+.adam-mini-hero {
+	display: grid;
+	grid-template-columns: var(--adam-hero-layout-columns, 1fr);
+	gap: var(--adam-space-4);
+	padding: var(--adam-hero-padding, var(--adam-space-6));
+	border: var(--adam-hero-border-width, 0) solid var(--adam-border);
+}
+
+.adam-mini-card {
+	padding: var(--adam-card-padding, var(--adam-space-4));
+	background: color-mix(in srgb, var(--adam-card-bg) var(--adam-card-surface-opacity, 100%), transparent);
+	backdrop-filter: var(--adam-card-backdrop, none);
+	border-color: color-mix(in srgb, var(--adam-card-bg) 78%, white);
+}
+
+.adam-mini-buttons button {
+	border-width: var(--adam-button-border-width, 1px);
+	box-shadow: var(--adam-button-shadow, none);
+}
+
+.adam-mini-buttons .is-primary {
+	color: var(--adam-button-primary-text-display, var(--adam-btn-primary-text));
+	background: color-mix(in srgb, var(--adam-btn-primary-bg) var(--adam-button-fill-opacity, 100%), transparent);
+}
+
+.adam-mini-buttons .is-secondary {
+	color: var(--adam-button-secondary-text-display, var(--adam-btn-secondary-text));
+	background: color-mix(in srgb, var(--adam-btn-secondary-bg) var(--adam-button-fill-opacity, 100%), transparent);
+}
+
+.adam-mini-form input,
+.adam-mini-form select {
+	padding: var(--adam-space-2);
+	color: var(--adam-form-input-text);
+	background: color-mix(in srgb, var(--adam-form-input-bg) var(--adam-form-surface-opacity, 100%), transparent);
+	border-color: var(--adam-form-border);
+	border-style: solid;
+	border-width: var(--adam-form-border-width, 1px);
+	border-radius: var(--adam-input-radius);
+	box-shadow: var(--adam-form-shadow, none);
+}
+
+.adam-mini-section {
+	padding: var(--adam-section-padding, 2rem);
+	color: var(--adam-section-standard-text);
+	background: var(--adam-section-standard-bg);
+	border: var(--adam-section-border-width, 0) solid var(--adam-card-border);
+	box-shadow: var(--adam-section-shadow, none);
+}
+
+.adam-mini-section h3 { color: var(--adam-section-standard-heading); }
+.adam-mini-section button,
+.adam-mini-card button {
+	padding: var(--adam-space-2) var(--adam-space-3);
+	color: var(--adam-btn-primary-text);
+	background: var(--adam-btn-primary-bg);
+	border: 0;
+	border-radius: var(--adam-button-radius);
+}
+
+.adam-mini-feature {
+	display: flex;
+	align-items: center;
+	gap: var(--adam-space-4);
+	padding: var(--adam-feature-padding, 2rem);
+	color: var(--adam-section-feature-text);
+	background: var(--adam-section-feature-bg);
+	border: var(--adam-feature-border-width, 0) solid var(--adam-card-border);
+}
+
+.adam-mini-feature > span {
+	display: grid;
+	place-items: center;
+	width: var(--adam-feature-icon-size, 2.25rem);
+	height: var(--adam-feature-icon-size, 2.25rem);
+	font-size: var(--adam-feature-icon-size, 2.25rem);
+}
+
+.adam-mini-feature h3 { color: var(--adam-section-feature-heading); }
+.adam-mini-image {
+	display: grid;
+	place-items: center;
+	min-height: 8rem;
+	color: var(--adam-hero-text);
+	background: var(--adam-card-bg);
+	border: 1px dashed var(--adam-card-border);
+	border-radius: var(--adam-card-radius);
+}
+
+.adam-mini-form .is-check {
+	display: flex;
+	align-items: center;
+}
+.adam-mini-form .is-check input { width: auto; }
+.adam-mini-socials { color: var(--adam-footer-social); }

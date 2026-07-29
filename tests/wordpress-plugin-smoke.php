@@ -47,6 +47,10 @@ function add_filter( $hook, $callback, $priority = 10 ) {
 	return add_action( $hook, $callback, $priority );
 }
 
+function apply_filters( $hook, $value ) {
+	return $value;
+}
+
 function is_admin() {
 	return false;
 }
@@ -57,6 +61,10 @@ function sanitize_key( $key ) {
 
 function wp_parse_args( $args, $defaults = array() ) {
 	return array_merge( $defaults, is_array( $args ) ? $args : array() );
+}
+
+function __( $text ) {
+	return $text;
 }
 
 define( 'ABSPATH', dirname( __DIR__ ) . DIRECTORY_SEPARATOR );

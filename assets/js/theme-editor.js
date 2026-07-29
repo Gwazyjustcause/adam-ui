@@ -8,10 +8,16 @@
 	}
 
 	let contrastMap = {};
+	let styleMaps = {};
 	try {
 		contrastMap = JSON.parse( root.dataset.adamContrastMap || '{}' );
 	} catch ( error ) {
 		contrastMap = {};
+	}
+	try {
+		styleMaps = JSON.parse( root.dataset.adamStyleMaps || '{}' );
+	} catch ( error ) {
+		styleMaps = {};
 	}
 
 	function isValidColor( value ) {
@@ -103,10 +109,24 @@
 
 		root.style.setProperty( input.dataset.adamToken, value );
 		applyAutomaticContrast( input.dataset.adamToken, value );
+		if ( input.dataset.adamStyleComponent ) {
+			applyComponentStyle( input.dataset.adamStyleComponent, value );
+		}
 		const output = input.parentNode.querySelector( 'output' );
 		if ( output ) {
 			output.value = value;
 		}
+	}
+
+	function applyComponentStyle( component, style ) {
+		const tokens = styleMaps[ component ] && styleMaps[ component ][ style ];
+		if ( ! tokens ) {
+			return;
+		}
+		Object.keys( tokens ).forEach( ( token ) => {
+			root.style.setProperty( '--' + token.replace( /^--/, '' ), tokens[ token ] );
+		} );
+		root.dataset.adamPreviewStyle = component + ':' + style;
 	}
 
 	root.addEventListener( 'input', ( event ) => {

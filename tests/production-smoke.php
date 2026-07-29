@@ -43,6 +43,7 @@ function wp_localize_script( $handle, $name, $data ) { global $test_localized; $
 function wp_add_inline_style() { return true; }
 
 require dirname( __DIR__ ) . '/includes/class-settings.php';
+require dirname( __DIR__ ) . '/includes/class-theme-component-registry.php';
 require dirname( __DIR__ ) . '/includes/class-theme-repository.php';
 require dirname( __DIR__ ) . '/includes/class-asset-registry.php';
 require dirname( __DIR__ ) . '/includes/class-plugin-registry.php';
@@ -65,6 +66,8 @@ $repository->ensure_storage();
 assert_contract( isset( $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ]['themes']['adam-night'] ), 'built-in Night preset is persisted' );
 assert_contract( ! isset( $test_options[ ADAM_UI_Theme_Repository::OPTION_KEY ]['themes']['adam-light'] ), 'ADAM UI must not create a Light preset' );
 assert_contract( isset( $repository->schema()['adam-card-radius'] ), 'component token schema is available' );
+assert_contract( isset( $repository->schema()['adam-card-style'], $repository->schema()['adam-header-style'] ), 'component style choices are persisted as design tokens' );
+assert_contract( '.35' === $repository->token( 'adam-card-shadow-strength', 'dark' ), 'the Elevated card preset applies its shared structural tokens' );
 assert_contract( false !== strpos( $repository->generated_css(), 'body.adam-theme-dark' ), 'saved tokens generate scoped runtime CSS' );
 assert_contract( false === strpos( $repository->generated_css(), 'adam-theme-light' ), 'runtime CSS must contain Night overrides only' );
 assert_contract( array() === $repository->tokens( 'light' ), 'Light mode must not expose an ADAM palette' );
@@ -130,6 +133,29 @@ assert_contract( ! in_array( 'adam-ui-components', $test_scripts['enqueued'] ?? 
 $assets->enqueue_component( 'modal' );
 assert_contract( in_array( 'adam-ui-components', $test_scripts['enqueued'], true ), 'interactive component loads one controller' );
 assert_contract( array( 'table', 'modal' ) === $assets->get_loaded_components(), 'loaded component diagnostics are deterministic' );
+
+$component_registry = new ADAM_UI_Theme_Component_Registry();
+$component_registry->register(
+	'chat-window',
+	array(
+		'label'    => 'Chat Window',
+		'controls' => array(
+			array(
+				'label'  => 'Background',
+				'fields' => array(
+					array( 'token' => 'adam-chat-bg', 'label' => 'Background', 'type' => 'color', 'default' => '#121712' ),
+				),
+			),
+		),
+		'tokens'   => array( 'adam-chat-text' => array( 'type' => 'color', 'default' => '#f2f4ee' ) ),
+		'contrast' => array( 'adam-chat-bg' => array( 'adam-chat-text' ) ),
+		'preview'  => '<div>Chat preview</div>',
+	)
+);
+$extended_repository = new ADAM_UI_Theme_Repository( $component_registry );
+assert_contract( null !== $component_registry->get( 'chat-window' ), 'future plugins can register component types' );
+assert_contract( isset( $extended_repository->schema()['adam-chat-bg'], $extended_repository->schema()['adam-chat-text'] ), 'registered component tokens join persistence without editor changes' );
+assert_contract( in_array( 'adam-chat-text', $extended_repository->contrast_map()['adam-chat-bg'], true ), 'registered components participate in automatic contrast' );
 
 $plugins->register( 'future-plugin', 'ADAM Future', array( 'version' => '1.0.0', 'requires_ui' => '9.0.0' ) );
 assert_contract( 1 === count( $plugins->get_warnings() ), 'incompatible versions produce warnings' );

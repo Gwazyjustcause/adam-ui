@@ -72,8 +72,11 @@
 /* Site chrome and navigation. */
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(body > header, .site-header, .ct-header, #masthead, header.wp-block-template-part) {
 	color: var(--adam-header-text);
-	background-color: var(--adam-header-bg);
-	border-color: var(--adam-header-border);
+	background-color: color-mix(in srgb, var(--adam-header-bg) var(--adam-header-surface-opacity, 100%), transparent);
+	border-bottom-width: var(--adam-header-border-width, 1px);
+	border-bottom-style: solid;
+	border-color: color-mix(in srgb, var(--adam-header-bg) 76%, white);
+	box-shadow: var(--adam-header-shadow, none);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(body > footer, .site-footer, #colophon, footer.wp-block-template-part) {
@@ -92,8 +95,8 @@
 }
 
 :where(body.adam-theme-dark:not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(.menu-item > a, .wp-block-navigation-item__content):hover {
-	color: var(--adam-header-hover-text);
-	background-color: var(--adam-header-hover-bg);
+	color: var(--adam-header-active-text);
+	background-color: color-mix(in srgb, var(--adam-header-active-bg) 28%, var(--adam-header-bg));
 }
 
 :where(body.adam-theme-dark:not(.wp-admin)) :where(.ct-header, .site-header, #masthead) :where(.current-menu-item > a, .current_page_item > a) {
@@ -194,9 +197,11 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-query .wp-block-post
 ) {
 	color: var(--adam-card-text);
-	background-color: var(--adam-card-bg);
-	border-color: var(--adam-card-border);
-	box-shadow: var(--adam-shadow);
+	background-color: color-mix(in srgb, var(--adam-card-bg) var(--adam-card-surface-opacity, 100%), transparent);
+	border-color: color-mix(in srgb, var(--adam-card-bg) 78%, white);
+	border-width: var(--adam-card-border-width);
+	box-shadow: var(--adam-card-shadow);
+	backdrop-filter: var(--adam-card-backdrop, none);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.card, .widget, .panel, .entry-card, .wp-block-group.is-style-card, .wp-block-query .wp-block-post) :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-card-heading); }
@@ -206,8 +211,10 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) {
 	min-height: var(--adam-control-height);
 	color: var(--adam-form-input-text);
-	background-color: var(--adam-form-input-bg);
+	background-color: color-mix(in srgb, var(--adam-form-input-bg) var(--adam-form-surface-opacity, 100%), transparent);
 	border-color: var(--adam-form-border);
+	border-width: var(--adam-form-border-width, 1px);
+	box-shadow: var(--adam-form-shadow, none);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(input, select, textarea)::placeholder {

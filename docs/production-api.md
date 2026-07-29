@@ -104,6 +104,12 @@ if ( $is_adam_owned_screen && function_exists( 'adam_ui_enable_admin_theme' ) ) 
 
 The base stylesheet is scoped to `#wpbody-content` in WordPress admin. The toolbar, admin menu, native screens, WooCommerce, Forminator, and third-party plugins retain their own presentation.
 
+## Theme component registration
+
+`adam_ui_register_theme_component( $slug, $definition )` registers a reusable Night Theme component. The definition supplies grouped controls, optional style presets, a safe preview fragment, hidden supporting tokens, and background-to-foreground contrast relationships. ADAM UI then creates the editor tab and includes those tokens in persistence, JSON import/export, generated CSS, and live preview automatically.
+
+Register components after ADAM UI is available (normally on `plugins_loaded`). See [Theme engine](theme-engine.md#registering-components) for a complete definition.
+
 ## JavaScript namespace and events
 
 `window.ADAMUI` is the only public runtime namespace. WordPress bootstrap configuration globals are consumed and removed during initialization.

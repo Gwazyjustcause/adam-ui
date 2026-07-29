@@ -33,6 +33,8 @@ final class ADAM_UI {
 	private $theme_manager;
 	/** @var ADAM_UI_Theme_Repository */
 	private $theme_repository;
+	/** @var ADAM_UI_Theme_Component_Registry */
+	private $theme_components;
 
 	/**
 	 * Shared component renderer.
@@ -74,18 +76,24 @@ final class ADAM_UI {
 		return self::instance()->get_plugin_registry()->register( $slug, $name, $args );
 	}
 
+	/** Registers a Theme Editor component through the stable ecosystem API. */
+	public static function register_theme_component( $slug, $args ) {
+		return self::instance()->get_theme_component_registry()->register( $slug, $args );
+	}
+
 	/**
 	 * Creates and starts the frontend services.
 	 */
 	private function __construct() {
 		$this->settings      = new ADAM_UI_Settings();
 		$this->assets        = new ADAM_UI_Asset_Registry();
-		$this->theme_repository = new ADAM_UI_Theme_Repository();
+		$this->theme_components = new ADAM_UI_Theme_Component_Registry();
+		$this->theme_repository = new ADAM_UI_Theme_Repository( $this->theme_components );
 		$this->plugins       = new ADAM_UI_Plugin_Registry();
 		$this->theme_manager = new ADAM_UI_Theme_Manager( $this->settings, $this->assets, $this->theme_repository );
 		$this->components    = new ADAM_UI_Components();
 		$this->admin         = new ADAM_UI_Admin( $this->settings, $this->theme_manager, $this->assets, $this->plugins );
-		$this->theme_editor  = new ADAM_UI_Theme_Editor( $this->theme_repository, $this->assets );
+		$this->theme_editor  = new ADAM_UI_Theme_Editor( $this->theme_repository, $this->assets, $this->theme_components );
 
 		$this->settings->register_hooks();
 		$this->theme_repository->register_hooks();
@@ -120,6 +128,9 @@ final class ADAM_UI {
 
 	/** @return ADAM_UI_Theme_Repository */
 	public function get_theme_repository() { return $this->theme_repository; }
+
+	/** @return ADAM_UI_Theme_Component_Registry */
+	public function get_theme_component_registry() { return $this->theme_components; }
 
 	/**
 	 * Returns the shared component renderer.
