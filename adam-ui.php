@@ -3,7 +3,7 @@
  * Plugin Name:       ADAM UI
  * Plugin URI:        https://github.com/Gwazyjustcause/adam-ui
  * Description:       Shared UI framework, theme manager and design system for the ADAM ecosystem.
- * Version:           5.0.0
+ * Version:           5.1.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            ADAM
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ADAM_UI_VERSION', '5.0.0' );
+define( 'ADAM_UI_VERSION', '5.1.0' );
 define( 'ADAM_UI_FILE', __FILE__ );
 define( 'ADAM_UI_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ADAM_UI_URL', plugin_dir_url( __FILE__ ) );
@@ -30,6 +30,7 @@ require_once ADAM_UI_PATH . 'includes/class-plugin-registry.php';
 require_once ADAM_UI_PATH . 'includes/class-theme-switcher.php';
 require_once ADAM_UI_PATH . 'includes/class-theme-manager.php';
 require_once ADAM_UI_PATH . 'includes/class-components.php';
+require_once ADAM_UI_PATH . 'includes/class-system-page-protection.php';
 require_once ADAM_UI_PATH . 'includes/class-admin.php';
 require_once ADAM_UI_PATH . 'includes/class-theme-editor.php';
 require_once ADAM_UI_PATH . 'includes/class-ui.php';
@@ -257,6 +258,21 @@ function adam_card( $content, $args = array() ) {
  */
 function adam_ui_register_plugin( $slug, $name, $args = array() ) {
 	return ADAM_UI::register_plugin( $slug, $name, $args );
+}
+
+/** Registers a lazy set of ADAM-owned WordPress system pages. */
+function adam_ui_register_system_pages( $provider, $resolver ) {
+	return ADAM_UI_System_Page_Protection::instance()->register_provider( $provider, $resolver );
+}
+
+/** Returns whether a registered ADAM system page is protected. */
+function adam_ui_is_system_page_protected( $page_id ) {
+	return ADAM_UI_System_Page_Protection::instance()->is_protected( $page_id );
+}
+
+/** Updates protection for a registered ADAM system page. */
+function adam_ui_set_system_page_protected( $page_id, $protected ) {
+	return ADAM_UI_System_Page_Protection::instance()->set_protected( $page_id, $protected );
 }
 
 /**

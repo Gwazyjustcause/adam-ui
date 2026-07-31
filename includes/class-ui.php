@@ -108,6 +108,7 @@ final class ADAM_UI {
 		$this->components    = new ADAM_UI_Components();
 		$this->admin         = new ADAM_UI_Admin( $this->settings, $this->theme_manager, $this->assets, $this->plugins );
 		$this->theme_editor  = new ADAM_UI_Theme_Editor( $this->theme_repository, $this->assets, $this->theme_components );
+		ADAM_UI_System_Page_Protection::instance()->register_hooks();
 
 		add_action( 'adam_ui_theme_component_registered', array( $this, 'register_theme_component_assets' ), 5 );
 		$this->settings->register_hooks();
