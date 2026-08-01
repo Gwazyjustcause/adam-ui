@@ -4,6 +4,8 @@ ADAM UI is the visual source of truth for ADAM-owned frontend and WordPress admi
 
 Components inherit the website's normal Blocksy appearance in Light mode. Night mode adds the `adam-theme-dark` body class and supplies ADAM override tokens; System resolves to either state. The stable API value for Night remains `dark`. Component CSS must use `--adam-*` tokens and must not contain its own Night palette.
 
+WordPress editors created through `wp_editor()` automatically inherit the shared `rich-text-editor` contract. TinyMCE canvases receive Night tokens inside their same-origin iframe without modifying serialised content; QuickTags uses the same form tokens in the parent document.
+
 ## Adoption contract
 
 1. Detect ADAM UI with `function_exists( 'adam_ui_get_theme_manager' )`.

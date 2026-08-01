@@ -68,6 +68,13 @@ foreach ( array( 'color-scheme: dark', 'var(--adam-form-placeholder)', 'var(--ad
 }
 adam_ui_night_assert( false !== strpos( $ui_css, 'select:is(:invalid, :has(option:checked[value=""]))' ), 'Native select placeholders must inherit the muted Night foreground.' );
 adam_ui_night_assert( false !== strpos( $ui_css, '.select2-results__option--highlighted' ) && false !== strpos( $ui_css, '.choices__item--choice.is-highlighted' ), 'Searchable select dropdown states are incomplete.' );
+foreach ( array( '.wp-editor-wrap', '.mce-toolbar-grp', '.mce-statusbar', '.quicktags-toolbar', '.tox-editor-header', 'textarea.wp-editor-area', '.mce-resizehandle' ) as $editor_part ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, $editor_part ), 'WordPress rich-text editor chrome is missing Night support for ' . $editor_part . '.' );
+}
+foreach ( array( 'syncRichTextEditors', 'richTextEditorFrameSelector', 'adam-ui-rich-text-editor-theme', 'contenteditable="true"', '--adam-editor-selection-bg' ) as $editor_contract ) {
+	adam_ui_night_assert( false !== strpos( $controller, $editor_contract ), 'TinyMCE iframe Night synchronisation is incomplete: ' . $editor_contract . '.' );
+}
+adam_ui_night_assert( false !== strpos( $assets, "'rich-text-editor'" ), 'The central asset registry must expose the rich-text-editor component.' );
 adam_ui_night_assert( false !== strpos( $controller, "backgroundImage.includes( 'url(' )" ), 'Background images are not protected by the classifier.' );
 adam_ui_night_assert( false !== strpos( $controller, "return 'footer'" ), 'Nested footer containers do not receive the terminal Night surface classification.' );
 adam_ui_night_assert( false !== strpos( $controller, "return 'accent'" ) && false !== strpos( $controller, 'colourLuminance' ), 'Gradient and light-surface detection are missing.' );

@@ -37,7 +37,7 @@ final class ADAM_UI_Asset_Registry {
 	/** Creates the built-in component registry. */
 	public function __construct() {
 		$interactive = array( 'dropdown', 'loading', 'modal', 'side-panel', 'confirmation' );
-		$names       = array( 'card', 'button', 'forms', 'table', 'tabs', 'modal', 'notice', 'badge', 'status-badge', 'breadcrumbs', 'empty-state', 'loading', 'pagination', 'toolbar', 'search', 'search-bar', 'dropdown', 'side-panel', 'confirmation', 'stat-card', 'section-header', 'admin-layout' );
+		$names       = array( 'card', 'button', 'forms', 'rich-text-editor', 'table', 'tabs', 'modal', 'notice', 'badge', 'status-badge', 'breadcrumbs', 'empty-state', 'loading', 'pagination', 'toolbar', 'search', 'search-bar', 'dropdown', 'side-panel', 'confirmation', 'stat-card', 'section-header', 'admin-layout' );
 
 		foreach ( $names as $name ) {
 			$this->register_component(

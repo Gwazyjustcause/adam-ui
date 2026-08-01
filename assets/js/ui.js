@@ -21,6 +21,13 @@
 	let mediaQuery = null;
 	let lastEventMode = null;
 	let lastEventTheme = null;
+	const observedRichTextFrames = new WeakSet();
+	const observedRichTextDocuments = new WeakSet();
+	const richTextEditorFrameSelector = [
+		'.wp-editor-wrap iframe',
+		'.mce-edit-area iframe',
+		'.tox-edit-area iframe',
+	].join( ',' );
 
 	storageAdapters.localStorage = {
 		load( key ) {
@@ -173,6 +180,124 @@
 		} );
 	}
 
+	function editorToken( style, name, fallback ) {
+		const value = style && typeof style.getPropertyValue === 'function'
+			? style.getPropertyValue( name ).trim()
+			: '';
+
+		return value || fallback;
+	}
+
+	/**
+	 * Applies the Night palette inside a same-origin WordPress editor iframe.
+	 * The style lives in the iframe head, outside TinyMCE's serialised body, so
+	 * it can never become part of the content saved by wp_editor().
+	 */
+	function syncRichTextEditorFrame( frame, isNight ) {
+		let editorDocument = null;
+
+		try {
+			editorDocument = frame.contentDocument || ( frame.contentWindow && frame.contentWindow.document );
+		} catch ( error ) {
+			// Third-party or cross-origin editor frames are outside ADAM UI's scope.
+			return;
+		}
+
+		if ( ! editorDocument || ! editorDocument.documentElement || ! editorDocument.head ) {
+			return;
+		}
+
+		const editorWrapper = typeof frame.closest === 'function' ? frame.closest( '.wp-editor-wrap' ) : null;
+		if ( ! observedRichTextDocuments.has( editorDocument ) && typeof editorDocument.addEventListener === 'function' ) {
+			observedRichTextDocuments.add( editorDocument );
+			editorDocument.addEventListener( 'focusin', () => {
+				if ( editorWrapper ) {
+					editorWrapper.classList.add( 'adam-ui-editor-focus' );
+				}
+			} );
+			editorDocument.addEventListener( 'focusout', () => {
+				window.setTimeout( () => {
+					if ( editorWrapper && ( typeof editorDocument.hasFocus !== 'function' || ! editorDocument.hasFocus() ) ) {
+						editorWrapper.classList.remove( 'adam-ui-editor-focus' );
+					}
+				}, 0 );
+			} );
+		}
+
+		const styleId = 'adam-ui-rich-text-editor-theme';
+		const existingStyle = typeof editorDocument.head.querySelector === 'function'
+			? editorDocument.head.querySelector( 'style[data-adam-ui-editor-theme]' )
+			: null;
+		const propertyNames = [
+			'--adam-editor-bg',
+			'--adam-editor-text',
+			'--adam-editor-placeholder',
+			'--adam-editor-heading',
+			'--adam-editor-link',
+			'--adam-editor-selection-bg',
+			'--adam-editor-selection-text',
+		];
+
+		if ( ! isNight ) {
+			if ( existingStyle ) {
+				existingStyle.remove();
+			}
+			propertyNames.forEach( ( property ) => editorDocument.documentElement.style.removeProperty( property ) );
+			return;
+		}
+
+		const sourceStyle = window.getComputedStyle( document.body || document.documentElement );
+		const properties = {
+			'--adam-editor-bg': editorToken( sourceStyle, '--adam-form-input-bg', 'Canvas' ),
+			'--adam-editor-text': editorToken( sourceStyle, '--adam-form-input-text', 'CanvasText' ),
+			'--adam-editor-placeholder': editorToken( sourceStyle, '--adam-form-placeholder', 'GrayText' ),
+			'--adam-editor-heading': editorToken( sourceStyle, '--adam-global-heading', 'CanvasText' ),
+			'--adam-editor-link': editorToken( sourceStyle, '--adam-global-link', 'LinkText' ),
+			'--adam-editor-selection-bg': editorToken( sourceStyle, '--adam-selection-bg', 'Highlight' ),
+			'--adam-editor-selection-text': editorToken( sourceStyle, '--adam-selection-text', 'HighlightText' ),
+		};
+
+		Object.entries( properties ).forEach( ( entry ) => {
+			editorDocument.documentElement.style.setProperty( entry[ 0 ], entry[ 1 ] );
+		} );
+
+		let editorStyle = existingStyle;
+		if ( ! editorStyle ) {
+			editorStyle = editorDocument.createElement( 'style' );
+			editorStyle.id = styleId;
+			editorStyle.setAttribute( 'data-adam-ui-editor-theme', '' );
+			editorDocument.head.appendChild( editorStyle );
+		}
+
+		editorStyle.textContent = [
+			':root{color-scheme:dark;background:var(--adam-editor-bg);}',
+			'html body#tinymce,html body.mce-content-body,html body[contenteditable="true"]{background:var(--adam-editor-bg)!important;color:var(--adam-editor-text)!important;caret-color:var(--adam-editor-text);}',
+			'body :where(h1,h2,h3,h4,h5,h6){color:var(--adam-editor-heading);}',
+			'body :where(a){color:var(--adam-editor-link);}',
+			'body :where([data-mce-placeholder]:empty)::before,body.mce-content-body[data-placeholder]:empty::before,body :where(.mce-placeholder){color:var(--adam-editor-placeholder)!important;opacity:1;}',
+			'body ::selection{background:var(--adam-editor-selection-bg);color:var(--adam-editor-selection-text);}',
+		].join( '' );
+	}
+
+	function syncRichTextEditors() {
+		if ( ! document.body ) {
+			return;
+		}
+
+		const nightClass = classMap[ config.systemDark ];
+		const isNight = Boolean( nightClass && document.body.classList.contains( nightClass ) );
+
+		document.querySelectorAll( richTextEditorFrameSelector ).forEach( ( frame ) => {
+			if ( ! observedRichTextFrames.has( frame ) ) {
+				observedRichTextFrames.add( frame );
+				if ( typeof frame.addEventListener === 'function' ) {
+					frame.addEventListener( 'load', syncRichTextEditors );
+				}
+			}
+			syncRichTextEditorFrame( frame, isNight );
+		} );
+	}
+
 	function applyTheme( mode, options = {} ) {
 		const nextMode = modes.includes( mode ) ? mode : config.systemMode;
 		const theme = resolveTheme( nextMode );
@@ -181,6 +306,7 @@
 		updateBodyClass( theme, nextMode );
 		syncThemeSwitchers();
 		refreshBackgrounds();
+		syncRichTextEditors();
 
 		if ( options.persist ) {
 			const adapter = getStorageAdapter();
@@ -585,6 +711,7 @@
 				scheduled = false;
 				bindThemeSwitchers();
 				refreshBackgrounds();
+				syncRichTextEditors();
 			} );
 		} );
 
@@ -605,6 +732,7 @@
 		getTokens: ( theme ) => Object.assign( {}, ( config.tokens || {} )[ theme || resolveTheme( currentMode ) ] || {} ),
 		off,
 		refreshBackgrounds,
+		refreshRichTextEditors: syncRichTextEditors,
 		on,
 		registerStorageAdapter( name, adapter ) {
 			if ( name && adapter ) {

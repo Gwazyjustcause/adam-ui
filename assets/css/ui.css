@@ -405,6 +405,76 @@ body.adam-theme-dark:not(.wp-admin) :is(
 	background-color: var(--adam-surface-hover);
 }
 
+/*
+ * WordPress rich-text editors are a compound form component. TinyMCE's
+ * editable canvas is an iframe and is synchronised by ui.js; this parent-page
+ * contract covers its chrome and the QuickTags/Code textarea fallback.
+ */
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(.wp-editor-wrap, .wp-editor-container, .mce-tinymce, .tox-tinymce) {
+	color: var(--adam-form-input-text);
+	background-color: var(--adam-form-input-bg);
+	border-color: var(--adam-form-border);
+	color-scheme: dark;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) .wp-editor-wrap :is(
+	.wp-editor-container,
+	.mce-panel,
+	.mce-toolbar-grp,
+	.mce-statusbar,
+	.quicktags-toolbar,
+	.tox-editor-header,
+	.tox-toolbar,
+	.tox-toolbar__primary,
+	.tox-statusbar
+) {
+	color: var(--adam-form-input-text);
+	background: var(--adam-form-input-bg);
+	border-color: var(--adam-form-border);
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) .wp-editor-wrap.wp-core-ui :is(.wp-switch-editor, .mce-btn, .quicktags-toolbar .button, .ed_button, .tox-tbtn) {
+	color: var(--adam-form-input-text);
+	background: var(--adam-form-input-bg);
+	border-color: var(--adam-form-border);
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) .wp-editor-wrap.wp-core-ui :is(.mce-btn, .quicktags-toolbar .button, .ed_button, .tox-tbtn):is(:hover, :focus-visible),
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) .wp-editor-wrap.wp-core-ui :is(.mce-btn.mce-active, .tox-tbtn--enabled) {
+	color: var(--adam-form-input-text);
+	background: var(--adam-surface-hover);
+	border-color: var(--adam-form-focus);
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) .wp-editor-wrap :is(.mce-ico, .mce-btn button, .tox-tbtn, .tox-icon, svg) {
+	color: currentColor;
+	fill: currentColor;
+	stroke: currentColor;
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) .wp-editor-wrap.wp-core-ui.tmce-active .switch-tmce,
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) .wp-editor-wrap.wp-core-ui.html-active .switch-html {
+	color: var(--adam-form-input-text);
+	background: var(--adam-form-input-bg);
+	border-color: var(--adam-form-focus);
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) .wp-editor-wrap :is(iframe, textarea.wp-editor-area) {
+	color: var(--adam-form-input-text);
+	background-color: var(--adam-form-input-bg);
+	border-color: var(--adam-form-border);
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) .wp-editor-wrap:is(:focus-within, .adam-ui-editor-focus) :is(.wp-editor-container, .mce-tinymce, .tox-tinymce) {
+	border-color: var(--adam-form-focus);
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--adam-form-focus) 38%, transparent);
+}
+
+:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) .wp-editor-wrap :is(.mce-resizehandle, .mce-resizehandle i, .tox-statusbar__resize-handle) {
+	color: var(--adam-form-placeholder);
+	border-color: transparent var(--adam-form-placeholder) var(--adam-form-placeholder) transparent;
+}
+
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(fieldset) {
 	color: var(--adam-text);
 	background-color: var(--adam-input-bg);
@@ -461,7 +531,7 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor) {
 	--adam-current-button-focus: var(--adam-button-focus);
 	color: var(--adam-night-button-text) !important;
 	background-color: var(--adam-night-button-bg) !important;
@@ -480,7 +550,7 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):is(:hover, :focus-visible, :active) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):is(:hover, :focus-visible, :active) {
 	color: var(--adam-night-button-hover-text) !important;
 	background-color: var(--adam-night-button-hover-bg) !important;
 	border-color: var(--adam-night-button-hover-border) !important;
@@ -594,7 +664,7 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):focus-visible {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):focus-visible {
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--adam-current-button-focus) 42%, transparent) !important;
 	outline: 2px solid var(--adam-current-button-focus) !important;
 	outline-offset: 2px;
@@ -611,7 +681,7 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
 	color: var(--adam-button-disabled-text) !important;
 	background-color: var(--adam-button-disabled-bg) !important;
 	border-color: var(--adam-button-disabled-bg) !important;

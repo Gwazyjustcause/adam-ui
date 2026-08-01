@@ -29,6 +29,33 @@ const modeButton = {
 	addEventListener(name, callback) { buttonListeners[name] = callback; },
 	setAttribute(name, value) { this.attributes[name] = value; },
 };
+const editorProperties = new Map();
+let editorStyle = null;
+const editorDocument = {
+	documentElement: {
+		style: {
+			setProperty(name, value) { editorProperties.set(name, value); },
+			removeProperty(name) { editorProperties.delete(name); },
+		},
+	},
+	head: {
+		appendChild(node) { editorStyle = node; },
+		querySelector(selector) { return selector === 'style[data-adam-ui-editor-theme]' ? editorStyle : null; },
+	},
+	createElement() {
+		return {
+			id: '',
+			textContent: '',
+			setAttribute() {},
+			remove() { editorStyle = null; },
+		};
+	},
+};
+const editorFrameListeners = {};
+const editorFrame = {
+	contentDocument: editorDocument,
+	addEventListener(name, callback) { editorFrameListeners[name] = callback; },
+};
 function backgroundElement(type, backgroundColor, backgroundImage = 'none') {
 	return {
 		type,
@@ -88,6 +115,7 @@ const document = {
 	querySelectorAll(selector) {
 		if (selector === '[data-adam-theme-select]') return [select];
 		if (selector === '[data-adam-theme-value]') return [modeButton];
+		if (selector.includes('.wp-editor-wrap iframe')) return [editorFrame];
 		if (selector === '[data-adam-night-background]') {
 			return backgroundElements.filter(element => element.dataset.adamNightBackground);
 		}
@@ -139,6 +167,10 @@ assert(document.body.classList.contains('adam-theme-dark'), 'Night selection mus
 assert(document.body.dataset.adamTheme === 'dark', 'Night selection must update the body data attribute.');
 assert(stored.get('adam-theme') === 'dark', 'Night selection must persist in localStorage.');
 assert(modeButton.attributes['aria-pressed'] === 'true', 'All Theme Switcher instances must synchronize their active mode.');
+assert(editorStyle && editorStyle.id === 'adam-ui-rich-text-editor-theme', 'Night mode must inject a presentation-only stylesheet into TinyMCE iframes.');
+assert(editorStyle.textContent.includes('body#tinymce') && editorStyle.textContent.includes('[contenteditable="true"]'), 'The editor stylesheet must cover TinyMCE and generic WordPress contenteditable canvases.');
+assert(editorProperties.get('--adam-editor-bg') === 'Canvas', 'Editor iframe tokens must have system-safe fallbacks when an integration omits a token.');
+assert(typeof editorFrameListeners.load === 'function', 'Dynamically loaded TinyMCE iframe documents must be re-synchronised.');
 assert(lightSection.dataset.adamNightBackground === 'content', 'Very light sections must become Night content surfaces.');
 assert(alternateSection.dataset.adamNightBackground === 'alternate', 'Pale alternate sections must retain their semantic hierarchy.');
 assert(gradientSection.dataset.adamNightBackground === 'accent', 'Decorative gradients must become solid Night accent surfaces.');
@@ -169,5 +201,6 @@ assert(document.body.dataset.adamTheme === 'light', 'Light pass-through state mu
 assert(stored.get('adam-theme') === 'light', 'Light selection must persist in localStorage.');
 assert(!lightSection.dataset.adamNightBackground, 'Light mode must remove Night background classifications.');
 assert(!componentCard.dataset.adamNightComponent, 'Light mode must remove Night component classifications.');
+assert(editorStyle === null && editorProperties.size === 0, 'Light mode must remove every ADAM UI editor override and restore WordPress defaults.');
 
 console.log('PASS: Theme controller runtime contract.');
