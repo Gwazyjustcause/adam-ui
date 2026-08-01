@@ -47,6 +47,9 @@ foreach ( array( '"card"', '"empty"', '"stat"', '"panel"', '"feature"', '"form"'
 }
 adam_ui_night_assert( false !== strpos( $controller, "element.matches( 'details' )" ) && false !== strpos( $controller, 'content-section|section' ), 'Collapsible and standard content panels must share semantic discovery.' );
 adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component="panel"]' ) && false !== strpos( $ui_css, 'background: var(--adam-night-surface) !important' ), 'Standard content panels must own the primary Night surface.' );
+adam_ui_night_assert( false !== strpos( $controller, 'typographyElementSelector' ) && false !== strpos( $controller, "return 'typography'" ), 'Typography elements require an explicit non-surface classification.' );
+adam_ui_night_assert( false !== strpos( $controller, 'isPanelDisclosureHeader' ) && false !== strpos( $controller, "'details > summary'" ) && false !== strpos( $ui_css, '[data-adam-night-component="panel"] > summary[data-adam-night-background="transparent"]' ), 'Panel disclosure headings must be discovered and remain transparent.' );
+adam_ui_night_assert( false !== strpos( $controller, 'hasExplicitBackgroundIntent' ), 'Explicitly designed typography backgrounds must remain distinguishable from accidental surfaces.' );
 adam_ui_night_assert( false !== strpos( $controller, "return 'transparent'" ), 'Transparent structural wrappers need an explicit non-surface classification.' );
 adam_ui_night_assert( false !== strpos( $controller, 'inheritedCollectionComponent' ) && false !== strpos( $controller, 'isRenderedSurface' ), 'Unclassed feature tiles must be discovered through surfaced semantic collections.' );
 adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component="feature"]' ) && false !== strpos( $ui_css, 'background: var(--adam-night-surface-alt) !important' ), 'Feature tiles must inherit the alternate Night surface contract.' );

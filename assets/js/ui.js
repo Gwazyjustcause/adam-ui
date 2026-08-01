@@ -271,6 +271,7 @@
 		'.wp-block-cover',
 		'.wp-block-cover__background',
 		'details',
+		'details > summary',
 		'[class*="-panel"]',
 		'[class*="-section"]',
 		'.has-background',
@@ -306,6 +307,24 @@
 		'[role="button"]',
 		'[role="status"]',
 		'[role="alert"]',
+	].join( ',' );
+
+	const typographyElementSelector = [
+		'h1',
+		'h2',
+		'h3',
+		'h4',
+		'h5',
+		'h6',
+		'p',
+		'li',
+		'dt',
+		'dd',
+		'figcaption',
+		'caption',
+		'label',
+		'legend',
+		'blockquote',
 	].join( ',' );
 
 	function componentClassNames( element ) {
@@ -359,7 +378,7 @@
 		const allClassNames = componentClassNames( element );
 		const classNames = allClassNames.filter( ( className ) => ! className.includes( '__' ) );
 
-		if ( element.matches( protectedComponentSelector ) ) {
+		if ( element.matches( protectedComponentSelector ) || element.matches( typographyElementSelector ) ) {
 			return '';
 		}
 
@@ -443,9 +462,38 @@
 			&& Boolean( element.querySelector( ':scope > .wp-block-cover__image-background, :scope > .wp-block-cover__video-background' ) );
 	}
 
+	function hasExplicitBackgroundIntent( element ) {
+		const inlineStyle = String( element.getAttribute && element.getAttribute( 'style' ) || '' );
+
+		return /(?:^|;)\s*background(?:-color|-image)?\s*:/i.test( inlineStyle )
+			|| element.matches( '.has-background, [class*="-background-color"], [class*="-gradient-background"]' );
+	}
+
+	function isPanelDisclosureHeader( element ) {
+		if ( ! element.matches( 'summary' ) || ! element.parentElement ) {
+			return false;
+		}
+
+		const parentClasses = componentClassNames( element.parentElement );
+
+		return element.parentElement.dataset.adamNightComponent === 'panel'
+			|| ( isRenderedSurface( element.parentElement ) && (
+				element.parentElement.matches( 'details' )
+				|| hasSemanticClass( parentClasses, /(?:^|-)(?:panel|content-panel|content-section|section)(?:$|--)/ )
+			) );
+	}
+
 	function classifyBackground( element ) {
 		const style = window.getComputedStyle( element );
 		const backgroundImage = style.backgroundImage || 'none';
+
+		if ( element.matches( typographyElementSelector ) && ! hasExplicitBackgroundIntent( element ) ) {
+			return 'typography';
+		}
+
+		if ( isPanelDisclosureHeader( element ) ) {
+			return 'transparent';
+		}
 
 		if ( typeof element.closest === 'function' && element.closest( 'footer, .ct-footer, .site-footer, #colophon' ) ) {
 			return 'footer';

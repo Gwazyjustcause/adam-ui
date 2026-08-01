@@ -1103,6 +1103,20 @@ body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="panel"] {
 }
 
 /*
+ * Typography is never promoted to a Night surface by computed-colour
+ * classification. Disclosure headings inside standard panels also remain
+ * part of the panel surface instead of becoming standalone accordion bars.
+ */
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="typography"] {
+	background: transparent !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="panel"] > summary[data-adam-night-background="transparent"] {
+	background: transparent;
+	border-color: transparent;
+}
+
+/*
  * Compact feature tiles may be unclassed children of a semantic component
  * collection. The classifier assigns this contract only when the child is a
  * visibly surfaced box, so transparent grid and positioning wrappers remain

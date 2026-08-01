@@ -37,6 +37,8 @@ function backgroundElement(type, backgroundColor, backgroundImage = 'none') {
 		computedStyle: { backgroundColor, backgroundImage, padding: '0px', borderWidth: '0px', borderRadius: '0px' },
 		matches(selector) {
 			if (selector === 'form') return type === 'component-form';
+			if (type === 'typography-heading' && selector.includes('h1')) return true;
+			if (type === 'panel-summary' && selector === 'summary') return true;
 			if (type === 'overlay') return selector.includes('.wp-block-cover__background');
 			if (type === 'alternate') return selector.includes('.is-style-alternate');
 			if (type === 'gradient') return selector.includes('-gradient-background');
@@ -62,6 +64,9 @@ const componentCard = backgroundElement('component-card', 'rgb(255, 255, 255)');
 const componentPanel = backgroundElement('component-panel', 'rgb(255, 255, 255)');
 componentPanel.computedStyle.padding = '30px';
 componentPanel.computedStyle.borderWidth = '1px';
+const panelSummary = backgroundElement('panel-summary', 'rgb(36, 43, 35)');
+panelSummary.parentElement = componentPanel;
+const typographyHeading = backgroundElement('typography-heading', 'rgb(255, 255, 255)');
 const componentForm = backgroundElement('component-form', 'rgb(255, 255, 255)');
 const componentEmpty = backgroundElement('component-empty', 'rgb(248, 250, 252)');
 const featureCollection = { className: 'adam-facilities-grid' };
@@ -72,7 +77,7 @@ componentFeature.computedStyle.borderWidth = '1px';
 componentFeature.computedStyle.borderRadius = '8px';
 const transparentWrapper = backgroundElement('transparent-wrapper', 'rgba(0, 0, 0, 0)');
 const heroBadges = backgroundElement('hero-badges', 'rgba(0, 0, 0, 0)');
-const backgroundElements = [lightSection, alternateSection, gradientSection, gradientCover, imageCover, coverOverlay, footerContainer, componentCard, componentPanel, componentForm, componentEmpty, componentFeature, transparentWrapper, heroBadges];
+const backgroundElements = [lightSection, alternateSection, gradientSection, gradientCover, imageCover, coverOverlay, footerContainer, componentCard, componentPanel, panelSummary, typographyHeading, componentForm, componentEmpty, componentFeature, transparentWrapper, heroBadges];
 const document = {
 	readyState: 'complete',
 	body: { classList: classList(), dataset: {} },
@@ -144,6 +149,10 @@ assert(footerContainer.dataset.adamNightBackground === 'footer', 'Nested footer 
 assert(componentCard.dataset.adamNightComponent === 'card', 'ADAM ecosystem cards must receive the shared card contract.');
 assert(componentPanel.dataset.adamNightComponent === 'panel', 'Surfaced semantic content sections must receive the shared panel contract.');
 assert(componentPanel.dataset.adamNightBackground === 'content', 'Standard content panels must retain the content-surface classification.');
+assert(panelSummary.dataset.adamNightBackground === 'transparent', 'Disclosure headings inside content panels must remain part of the panel surface.');
+assert(!panelSummary.dataset.adamNightComponent, 'Disclosure headings must never be promoted to standalone components.');
+assert(typographyHeading.dataset.adamNightBackground === 'typography', 'Typography elements must receive a non-surface Night classification.');
+assert(!typographyHeading.dataset.adamNightComponent, 'Typography elements must never be promoted to components.');
 assert(componentForm.dataset.adamNightComponent === 'form', 'ADAM ecosystem filter forms must receive the shared form contract.');
 assert(componentEmpty.dataset.adamNightComponent === 'empty', 'BEM empty states must receive the shared empty-state contract.');
 assert(componentFeature.dataset.adamNightComponent === 'feature', 'Surfaced children of semantic feature collections must receive the shared feature contract.');
