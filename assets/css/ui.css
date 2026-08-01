@@ -215,36 +215,55 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is
 	fill: currentColor;
 }
 
-/* Blocksy renders submenu indicators as an SVG inside a sibling button. */
-body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) .ct-sub-menu-parent > .ct-toggle-dropdown-mobile {
-	color: var(--adam-header-nav-text) !important;
-	background: transparent !important;
-	border-color: transparent !important;
-}
-
-body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) .menu-item-has-children:is(:hover, :focus-within) > .ct-sub-menu-parent > .ct-toggle-dropdown-mobile {
-	color: var(--adam-header-hover-text) !important;
+/*
+ * Blocksy's desktop arrow is an inline SVG inside the menu link. Its mobile
+ * arrow lives in a sibling toggle button, while desktop keyboard interaction
+ * uses a separate transparent ghost button. Each control inherits the colour
+ * from the Blocksy link/parent that already owns normal, hover and active
+ * states. The same structure is used recursively in nested submenus.
+ */
+body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(
+	.ct-menu-link > .ct-toggle-dropdown-desktop,
+	.ct-sub-menu-parent > .ct-toggle-dropdown-mobile
+) {
+	color: inherit;
 }
 
 body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(
-	.current-menu-item,
-	.current-menu-parent,
-	.current-menu-ancestor,
-	.current_page_item,
-	.current_page_parent,
-	.current_page_ancestor
-) > .ct-sub-menu-parent > .ct-toggle-dropdown-mobile {
-	color: var(--adam-header-active-text) !important;
+	.ct-toggle-dropdown-mobile,
+	.ct-toggle-dropdown-desktop-ghost
+) {
+	background: transparent;
+	border-color: transparent;
 }
 
-body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) .ct-toggle-dropdown-mobile:focus-visible {
-	outline: 2px solid var(--adam-header-search-icon) !important;
+body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(
+	.ct-toggle-dropdown-desktop,
+	.ct-toggle-dropdown-mobile
+) .ct-icon {
+	color: inherit;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(
+	.ct-toggle-dropdown-desktop,
+	.ct-toggle-dropdown-mobile
+) .ct-icon:not([fill="none"]) {
+	fill: currentColor;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(
+	.ct-toggle-dropdown-desktop,
+	.ct-toggle-dropdown-mobile
+) .ct-icon[stroke]:not([stroke="none"]) {
+	stroke: currentColor;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(
+	.ct-toggle-dropdown-mobile,
+	.ct-toggle-dropdown-desktop-ghost
+):focus-visible {
+	outline: 2px solid var(--adam-header-search-icon);
 	outline-offset: 2px;
-}
-
-body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) .ct-toggle-dropdown-mobile :is(svg, .ct-icon, path) {
-	color: inherit !important;
-	fill: currentColor !important;
 }
 body.adam-theme-dark:not(.wp-admin) :is(.ct-footer, .site-footer, #colophon) :is(h1, h2, h3, h4, h5, h6) { color: var(--adam-footer-heading); }
 body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-socials, .site-footer .socials) :is(svg, .ct-icon) { color: var(--adam-footer-social); fill: currentColor; }
@@ -337,7 +356,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost) {
 	--adam-current-button-focus: var(--adam-button-focus);
 	color: var(--adam-night-button-text) !important;
 	background-color: var(--adam-night-button-bg) !important;
@@ -356,7 +375,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):is(:hover, :focus-visible, :active) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):is(:hover, :focus-visible, :active) {
 	color: var(--adam-night-button-hover-text) !important;
 	background-color: var(--adam-night-button-hover-bg) !important;
 	border-color: var(--adam-night-button-hover-border) !important;
@@ -470,7 +489,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):focus-visible {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):focus-visible {
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--adam-current-button-focus) 42%, transparent) !important;
 	outline: 2px solid var(--adam-current-button-focus) !important;
 	outline-offset: 2px;
@@ -487,7 +506,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
 	color: var(--adam-button-disabled-text) !important;
 	background-color: var(--adam-button-disabled-bg) !important;
 	border-color: var(--adam-button-disabled-bg) !important;
