@@ -42,9 +42,11 @@ foreach ( array( '.wp-block-group', '.wp-block-cover', '.wp-block-columns', '.ct
 foreach ( array( '[class^="adam-"]', '[class*=" adam-"]', 'classifyComponent', 'data-adam-night-component' ) as $selector ) {
 	adam_ui_night_assert( false !== strpos( $controller . $ui_css, $selector ), 'ADAM ecosystem semantic classification is missing for ' . $selector . '.' );
 }
-foreach ( array( '"card"', '"empty"', '"stat"', '"feature"', '"form"', '"hero"' ) as $component_role ) {
+foreach ( array( '"card"', '"empty"', '"stat"', '"panel"', '"feature"', '"form"', '"hero"' ) as $component_role ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component=' . $component_role . ']' ), 'Shared component bridge is missing for ' . $component_role . '.' );
 }
+adam_ui_night_assert( false !== strpos( $controller, "element.matches( 'details' )" ) && false !== strpos( $controller, 'content-section|section' ), 'Collapsible and standard content panels must share semantic discovery.' );
+adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component="panel"]' ) && false !== strpos( $ui_css, 'background: var(--adam-night-surface) !important' ), 'Standard content panels must own the primary Night surface.' );
 adam_ui_night_assert( false !== strpos( $controller, "return 'transparent'" ), 'Transparent structural wrappers need an explicit non-surface classification.' );
 adam_ui_night_assert( false !== strpos( $controller, 'inheritedCollectionComponent' ) && false !== strpos( $controller, 'isRenderedSurface' ), 'Unclassed feature tiles must be discovered through surfaced semantic collections.' );
 adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component="feature"]' ) && false !== strpos( $ui_css, 'background: var(--adam-night-surface-alt) !important' ), 'Feature tiles must inherit the alternate Night surface contract.' );

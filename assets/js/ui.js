@@ -270,6 +270,9 @@
 		'.wp-block-column',
 		'.wp-block-cover',
 		'.wp-block-cover__background',
+		'details',
+		'[class*="-panel"]',
+		'[class*="-section"]',
 		'.has-background',
 		'[class*="-background-color"]',
 		'[class*="-gradient-background"]',
@@ -383,6 +386,14 @@
 		if ( hasSemanticClass( classNames, /(?:^|-)card(?:$|--)/ )
 			|| hasSemanticClass( allClassNames, /__card(?:$|--)/ ) ) {
 			return 'card';
+		}
+
+		if ( isRenderedSurface( element ) && (
+			element.matches( 'details' )
+			|| hasSemanticClass( classNames, /(?:^|-)(?:panel|content-panel|content-section|section)(?:$|--)/ )
+			|| hasSemanticClass( allClassNames, /__(?:panel|content-panel|content-section|section)(?:$|--)/ )
+		) ) {
+			return 'panel';
 		}
 
 		if ( ( hasSemanticClass( classNames, /(?:^|-)hero(?:$|--)/ )
