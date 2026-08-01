@@ -33,8 +33,8 @@ function backgroundElement(type, backgroundColor, backgroundImage = 'none') {
 	return {
 		type,
 		dataset: {},
-		className: type === 'component-card' ? 'adam-example-card' : type === 'component-form' ? 'adam-example-filters' : type === 'component-empty' ? 'adam-comunidade__empty' : '',
-		computedStyle: { backgroundColor, backgroundImage },
+		className: type === 'component-card' ? 'adam-example-card' : type === 'component-form' ? 'adam-example-filters' : type === 'component-empty' ? 'adam-comunidade__empty' : type === 'transparent-wrapper' ? 'adam-fields-hero-copy' : type === 'hero-badges' ? 'adam-field-badges--hero' : '',
+		computedStyle: { backgroundColor, backgroundImage, padding: '0px', borderWidth: '0px', borderRadius: '0px' },
 		matches(selector) {
 			if (selector === 'form') return type === 'component-form';
 			if (type === 'overlay') return selector.includes('.wp-block-cover__background');
@@ -61,7 +61,15 @@ const footerContainer = backgroundElement('footer', 'rgb(42, 60, 40)');
 const componentCard = backgroundElement('component-card', 'rgb(255, 255, 255)');
 const componentForm = backgroundElement('component-form', 'rgb(255, 255, 255)');
 const componentEmpty = backgroundElement('component-empty', 'rgb(248, 250, 252)');
-const backgroundElements = [lightSection, alternateSection, gradientSection, gradientCover, imageCover, coverOverlay, footerContainer, componentCard, componentForm, componentEmpty];
+const featureCollection = { className: 'adam-facilities-grid' };
+const componentFeature = backgroundElement('component-feature', 'rgb(248, 250, 252)');
+componentFeature.parentElement = featureCollection;
+componentFeature.computedStyle.padding = '13px';
+componentFeature.computedStyle.borderWidth = '1px';
+componentFeature.computedStyle.borderRadius = '8px';
+const transparentWrapper = backgroundElement('transparent-wrapper', 'rgba(0, 0, 0, 0)');
+const heroBadges = backgroundElement('hero-badges', 'rgba(0, 0, 0, 0)');
+const backgroundElements = [lightSection, alternateSection, gradientSection, gradientCover, imageCover, coverOverlay, footerContainer, componentCard, componentForm, componentEmpty, componentFeature, transparentWrapper, heroBadges];
 const document = {
 	readyState: 'complete',
 	body: { classList: classList(), dataset: {} },
@@ -133,6 +141,11 @@ assert(footerContainer.dataset.adamNightBackground === 'footer', 'Nested footer 
 assert(componentCard.dataset.adamNightComponent === 'card', 'ADAM ecosystem cards must receive the shared card contract.');
 assert(componentForm.dataset.adamNightComponent === 'form', 'ADAM ecosystem filter forms must receive the shared form contract.');
 assert(componentEmpty.dataset.adamNightComponent === 'empty', 'BEM empty states must receive the shared empty-state contract.');
+assert(componentFeature.dataset.adamNightComponent === 'feature', 'Surfaced children of semantic feature collections must receive the shared feature contract.');
+assert(componentFeature.dataset.adamNightBackground === 'content', 'Light feature tiles must still be identified as converted surfaces.');
+assert(transparentWrapper.dataset.adamNightBackground === 'transparent', 'Transparent layout wrappers must retain an explicit non-surface classification.');
+assert(!transparentWrapper.dataset.adamNightComponent, 'Hero copy wrappers must not be promoted to Hero components.');
+assert(heroBadges.dataset.adamNightBackground === 'transparent' && !heroBadges.dataset.adamNightComponent, 'Hero badge positioning wrappers must remain transparent.');
 
 select.value = 'light';
 listeners.change();

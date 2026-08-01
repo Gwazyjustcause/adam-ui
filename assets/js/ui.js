@@ -275,6 +275,8 @@
 		'[class*="-gradient-background"]',
 		'[class^="adam-"]',
 		'[class*=" adam-"]',
+		'[class^="adam-"] > *',
+		'[class*=" adam-"] > *',
 	].join( ',' );
 
 	const protectedComponentSelector = [
@@ -311,27 +313,81 @@
 		return element.className.split( /\s+/ ).filter( Boolean );
 	}
 
+	function hasSemanticClass( classNames, pattern ) {
+		return classNames.some( ( className ) => pattern.test( className ) );
+	}
+
+	function isRenderedSurface( element ) {
+		const style = window.getComputedStyle( element );
+		const luminance = colourLuminance( style.backgroundColor );
+		const padding = String( style.padding || '' ).match( /[\d.]+/g ) || [];
+		const borderWidth = String( style.borderWidth || '' ).match( /[\d.]+/g ) || [];
+		const borderRadius = String( style.borderRadius || '' ).match( /[\d.]+/g ) || [];
+		const hasBoxTreatment = padding.some( ( value ) => Number( value ) > 0 )
+			|| borderWidth.some( ( value ) => Number( value ) > 0 )
+			|| borderRadius.some( ( value ) => Number( value ) > 0 );
+
+		return null !== luminance && hasBoxTreatment;
+	}
+
+	function inheritedCollectionComponent( element ) {
+		if ( ! element.parentElement || ! isRenderedSurface( element ) ) {
+			return '';
+		}
+
+		const parentClasses = componentClassNames( element.parentElement );
+
+		if ( hasSemanticClass( parentClasses, /(?:^|-)(?:facilities|facility|amenities|features|benefits|capabilities)(?:$|--|-)/ ) ) {
+			return 'feature';
+		}
+
+		if ( hasSemanticClass( parentClasses, /(?:^|-)(?:stats|statistics)(?:$|--|-)/ ) ) {
+			return 'stat';
+		}
+
+		if ( hasSemanticClass( parentClasses, /(?:^|-)(?:cards|directory|results|teams|partners|news|information)(?:$|--|-)/ ) ) {
+			return 'card';
+		}
+
+		return '';
+	}
+
 	function classifyComponent( element ) {
 		const allClassNames = componentClassNames( element );
 		const classNames = allClassNames.filter( ( className ) => ! className.includes( '__' ) );
+
+		if ( element.matches( protectedComponentSelector ) ) {
+			return '';
+		}
+
+		const inheritedComponent = inheritedCollectionComponent( element );
+
+		if ( inheritedComponent ) {
+			return inheritedComponent;
+		}
 
 		if ( element.matches( 'form' ) || classNames.some( ( className ) => /(?:filter|toolbar|universal-search|search-bar|search-box)(?:$|--|-)/.test( className ) ) ) {
 			return 'form';
 		}
 
-		if ( allClassNames.some( ( className ) => /(?:^|-|__)(?:empty|blank-state)(?:$|--|-)/.test( className ) ) ) {
+		if ( hasSemanticClass( classNames, /(?:^|-)(?:empty|empty-state|blank-state)(?:$|--)/ )
+			|| hasSemanticClass( allClassNames, /__(?:empty|empty-state|blank-state)(?:$|--)/ ) ) {
 			return 'empty';
 		}
 
-		if ( classNames.some( ( className ) => /(?:^|-)(?:stat|stats|statistics)(?:$|--|-)/.test( className ) ) ) {
+		if ( hasSemanticClass( classNames, /(?:^|-)(?:stat|stat-card|statistic-card)(?:$|--)/ )
+			|| hasSemanticClass( allClassNames, /__(?:stat|stat-card|statistic-card)(?:$|--)/ ) ) {
 			return 'stat';
 		}
 
-		if ( classNames.some( ( className ) => /(?:^|-)card(?:$|--|-)/.test( className ) ) ) {
+		if ( hasSemanticClass( classNames, /(?:^|-)card(?:$|--)/ )
+			|| hasSemanticClass( allClassNames, /__card(?:$|--)/ ) ) {
 			return 'card';
 		}
 
-		if ( classNames.some( ( className ) => /(?:^|-)hero(?:$|--|-)/.test( className ) ) ) {
+		if ( ( hasSemanticClass( classNames, /(?:^|-)hero(?:$|--)/ )
+			|| hasSemanticClass( allClassNames, /__hero(?:$|--)/ ) )
+			&& ! hasSemanticClass( classNames, /--hero(?:$|-)/ ) ) {
 			return 'hero';
 		}
 
@@ -411,7 +467,7 @@
 		const luminance = colourLuminance( style.backgroundColor );
 
 		if ( null === luminance ) {
-			return '';
+			return 'transparent';
 		}
 
 		if ( luminance >= 0.82 ) {

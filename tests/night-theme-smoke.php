@@ -42,8 +42,14 @@ foreach ( array( '.wp-block-group', '.wp-block-cover', '.wp-block-columns', '.ct
 foreach ( array( '[class^="adam-"]', '[class*=" adam-"]', 'classifyComponent', 'data-adam-night-component' ) as $selector ) {
 	adam_ui_night_assert( false !== strpos( $controller . $ui_css, $selector ), 'ADAM ecosystem semantic classification is missing for ' . $selector . '.' );
 }
-foreach ( array( '"card"', '"empty"', '"stat"', '"form"', '"hero"' ) as $component_role ) {
+foreach ( array( '"card"', '"empty"', '"stat"', '"feature"', '"form"', '"hero"' ) as $component_role ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component=' . $component_role . ']' ), 'Shared component bridge is missing for ' . $component_role . '.' );
+}
+adam_ui_night_assert( false !== strpos( $controller, "return 'transparent'" ), 'Transparent structural wrappers need an explicit non-surface classification.' );
+adam_ui_night_assert( false !== strpos( $controller, 'inheritedCollectionComponent' ) && false !== strpos( $controller, 'isRenderedSurface' ), 'Unclassed feature tiles must be discovered through surfaced semantic collections.' );
+adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component="feature"]' ) && false !== strpos( $ui_css, 'background: var(--adam-night-surface-alt) !important' ), 'Feature tiles must inherit the alternate Night surface contract.' );
+foreach ( array( '.ct-toggle-dropdown-mobile', '.ct-sub-menu-parent', '.menu-item-has-children:is(:hover, :focus-within)', 'fill: currentColor !important' ) as $indicator_contract ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, $indicator_contract ), 'Blocksy navigation indicator contract is incomplete: ' . $indicator_contract );
 }
 adam_ui_night_assert( false !== strpos( $controller, 'protectedComponentSelector' ), 'Semantic badges, controls, and media must be protected from surface classification.' );
 adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component="form"] :is(' ), 'ADAM-owned form controls do not have an authoritative Night contract.' );

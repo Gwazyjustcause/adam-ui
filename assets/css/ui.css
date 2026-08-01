@@ -214,6 +214,38 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is
 	color: var(--adam-header-search-icon);
 	fill: currentColor;
 }
+
+/* Blocksy renders submenu indicators as an SVG inside a sibling button. */
+body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) .ct-sub-menu-parent > .ct-toggle-dropdown-mobile {
+	color: var(--adam-header-nav-text) !important;
+	background: transparent !important;
+	border-color: transparent !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) .menu-item-has-children:is(:hover, :focus-within) > .ct-sub-menu-parent > .ct-toggle-dropdown-mobile {
+	color: var(--adam-header-hover-text) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) :is(
+	.current-menu-item,
+	.current-menu-parent,
+	.current-menu-ancestor,
+	.current_page_item,
+	.current_page_parent,
+	.current_page_ancestor
+) > .ct-sub-menu-parent > .ct-toggle-dropdown-mobile {
+	color: var(--adam-header-active-text) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) .ct-toggle-dropdown-mobile:focus-visible {
+	outline: 2px solid var(--adam-header-search-icon) !important;
+	outline-offset: 2px;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(.ct-header, .site-header, #masthead) .ct-toggle-dropdown-mobile :is(svg, .ct-icon, path) {
+	color: inherit !important;
+	fill: currentColor !important;
+}
 body.adam-theme-dark:not(.wp-admin) :is(.ct-footer, .site-footer, #colophon) :is(h1, h2, h3, h4, h5, h6) { color: var(--adam-footer-heading); }
 body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-socials, .site-footer .socials) :is(svg, .ct-icon) { color: var(--adam-footer-social); fill: currentColor; }
 body.adam-theme-dark:not(.wp-admin) :is(.ct-footer, .site-footer, #colophon) :is([data-row], hr) { border-color: var(--adam-footer-divider); }
@@ -305,7 +337,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile) {
 	--adam-current-button-focus: var(--adam-button-focus);
 	color: var(--adam-night-button-text) !important;
 	background-color: var(--adam-night-button-bg) !important;
@@ -324,7 +356,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):is(:hover, :focus-visible, :active) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):is(:hover, :focus-visible, :active) {
 	color: var(--adam-night-button-hover-text) !important;
 	background-color: var(--adam-night-button-hover-bg) !important;
 	border-color: var(--adam-night-button-hover-border) !important;
@@ -438,7 +470,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):focus-visible {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):focus-visible {
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--adam-current-button-focus) 42%, transparent) !important;
 	outline: 2px solid var(--adam-current-button-focus) !important;
 	outline-offset: 2px;
@@ -455,7 +487,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
 	color: var(--adam-button-disabled-text) !important;
 	background-color: var(--adam-button-disabled-bg) !important;
 	border-color: var(--adam-button-disabled-bg) !important;
@@ -936,6 +968,43 @@ body.adam-theme-dark:not(.wp-admin) :is(
 	box-shadow: var(--adam-card-shadow);
 }
 
+/*
+ * Compact feature tiles may be unclassed children of a semantic component
+ * collection. The classifier assigns this contract only when the child is a
+ * visibly surfaced box, so transparent grid and positioning wrappers remain
+ * transparent.
+ */
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="feature"] {
+	--adam-night-component-heading: var(--adam-global-heading);
+	--adam-night-component-text: var(--adam-global-text);
+	--adam-night-component-link: var(--adam-global-link);
+	color: var(--adam-global-text) !important;
+	background: var(--adam-night-surface-alt) !important;
+	border-color: var(--adam-global-border) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="feature"] :where(
+	h1, h2, h3, h4, h5, h6, p, strong, span:not([role="status"]), li, dt, dd
+) {
+	color: var(--adam-global-text) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="feature"] :where(
+	.adam-icon,
+	[class*="icon"],
+	svg
+) {
+	color: var(--adam-night-accent) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="feature"] svg:not([fill="none"]) {
+	fill: currentColor !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="feature"] svg[stroke]:not([stroke="none"]) {
+	stroke: currentColor !important;
+}
+
 body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] {
 	--adam-night-component-heading: var(--adam-global-heading);
 	--adam-night-component-text: var(--adam-global-text);
@@ -967,6 +1036,7 @@ body.adam-theme-dark:not(.wp-admin) :is(
 	[data-adam-night-component="card"],
 	[data-adam-night-component="empty"],
 	[data-adam-night-component="stat"],
+	[data-adam-night-component="feature"],
 	[data-adam-night-component="form"],
 	[data-adam-night-component="hero"]
 ) :where(h1, h2, h3, h4, h5, h6) {
@@ -977,6 +1047,7 @@ body.adam-theme-dark:not(.wp-admin) :is(
 	[data-adam-night-component="card"],
 	[data-adam-night-component="empty"],
 	[data-adam-night-component="stat"],
+	[data-adam-night-component="feature"],
 	[data-adam-night-component="form"],
 	[data-adam-night-component="hero"]
 ) :where(p, li, dt, dd, figcaption, caption, label, legend, blockquote) {
@@ -987,6 +1058,7 @@ body.adam-theme-dark:not(.wp-admin) :is(
 	[data-adam-night-component="card"],
 	[data-adam-night-component="empty"],
 	[data-adam-night-component="stat"],
+	[data-adam-night-component="feature"],
 	[data-adam-night-component="form"],
 	[data-adam-night-component="hero"]
 ) a:not(.adam-button):not(.wp-element-button):not([class*="button"]) {
