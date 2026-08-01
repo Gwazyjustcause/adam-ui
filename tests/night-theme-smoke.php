@@ -55,6 +55,14 @@ adam_ui_night_assert( false === strpos( $ui_css, '.ct-toggle-dropdown-mobile {
 	color: var(--adam-header-nav-text) !important' ), 'Blocksy navigation indicators must inherit state instead of receiving a fixed colour.' );
 adam_ui_night_assert( false !== strpos( $controller, 'protectedComponentSelector' ), 'Semantic badges, controls, and media must be protected from surface classification.' );
 adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component="form"] :is(' ), 'ADAM-owned form controls do not have an authoritative Night contract.' );
+foreach ( array( '.ct-pseudo-input', '[role="combobox"]', '.select2-selection', '.choices__inner', '.ts-control', '.selectize-input' ) as $form_family ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, $form_family ), 'Global Night form coverage is missing for ' . $form_family . '.' );
+}
+foreach ( array( 'color-scheme: dark', 'var(--adam-form-placeholder)', 'var(--adam-form-focus)', 'var(--adam-form-disabled-bg)', 'var(--adam-form-disabled-text)', 'var(--adam-surface-hover)' ) as $form_state ) {
+	adam_ui_night_assert( false !== strpos( $ui_css, $form_state ), 'Native Night form state is missing: ' . $form_state . '.' );
+}
+adam_ui_night_assert( false !== strpos( $ui_css, 'select:is(:invalid, :has(option:checked[value=""]))' ), 'Native select placeholders must inherit the muted Night foreground.' );
+adam_ui_night_assert( false !== strpos( $ui_css, '.select2-results__option--highlighted' ) && false !== strpos( $ui_css, '.choices__item--choice.is-highlighted' ), 'Searchable select dropdown states are incomplete.' );
 adam_ui_night_assert( false !== strpos( $controller, "backgroundImage.includes( 'url(' )" ), 'Background images are not protected by the classifier.' );
 adam_ui_night_assert( false !== strpos( $controller, "return 'footer'" ), 'Nested footer containers do not receive the terminal Night surface classification.' );
 adam_ui_night_assert( false !== strpos( $controller, "return 'accent'" ) && false !== strpos( $controller, 'colourLuminance' ), 'Gradient and light-surface detection are missing.' );

@@ -289,31 +289,123 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.card, .widget, .panel, .entry-card, .wp-block-group.is-style-card, .wp-block-query .wp-block-post) :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-card-heading); }
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.card, .widget, .panel, .entry-card, .wp-block-group.is-style-card, .wp-block-query .wp-block-post) a:not(.wp-element-button):not(.adam-button) { color: var(--adam-card-link); }
 
-/* Form controls. */
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) {
+/*
+ * Native and progressively enhanced form controls are first-class Night
+ * components. These selectors intentionally carry normal specificity so a
+ * plugin's Light palette cannot beat the global frontend contract merely by
+ * using a class-qualified input rule.
+ */
+body.adam-theme-dark:not(.wp-admin) :is(
+	input:not(:is([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="color"], [type="submit"], [type="button"], [type="reset"], [type="image"], [type="hidden"])),
+	select,
+	textarea,
+	.ct-pseudo-input,
+	[role="combobox"],
+	.select2-selection,
+	.select2-search__field,
+	.choices__inner,
+	.choices__input,
+	.ts-control,
+	.selectize-input
+),
+body.wp-admin.adam-theme-dark #wpbody-content :is(
+	input:not(:is([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="color"], [type="submit"], [type="button"], [type="reset"], [type="image"], [type="hidden"])),
+	select,
+	textarea,
+	.ct-pseudo-input,
+	[role="combobox"]
+) {
 	min-height: var(--adam-control-height);
 	color: var(--adam-form-input-text);
 	background-color: color-mix(in srgb, var(--adam-form-input-bg) var(--adam-form-surface-opacity, 100%), transparent);
 	border-color: var(--adam-form-border);
 	border-width: var(--adam-form-border-width, 1px);
 	box-shadow: var(--adam-form-shadow, none);
+	color-scheme: dark;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(input, select, textarea)::placeholder {
+body.adam-theme-dark:not(.wp-admin) :is(input, textarea, .select2-search__field, .choices__input, .ts-control input, .selectize-input input)::placeholder,
+body.wp-admin.adam-theme-dark #wpbody-content :is(input, textarea)::placeholder,
+body.adam-theme-dark:not(.wp-admin) :is(.select2-selection__placeholder, .choices__placeholder) {
 	color: var(--adam-form-placeholder);
 	opacity: 1;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(input, select, textarea):hover {
+body.adam-theme-dark:not(.wp-admin) select:is(:invalid, :has(option:checked[value=""])),
+body.wp-admin.adam-theme-dark #wpbody-content select:is(:invalid, :has(option:checked[value=""])) {
+	color: var(--adam-form-placeholder);
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	input,
+	select,
+	textarea,
+	.ct-pseudo-input,
+	[role="combobox"],
+	.select2-selection,
+	.choices__inner,
+	.ts-control,
+	.selectize-input
+):not(:disabled):not([aria-disabled="true"]):hover,
+body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-pseudo-input, [role="combobox"]):not(:disabled):not([aria-disabled="true"]):hover {
+	background-color: color-mix(in srgb, var(--adam-form-input-bg) 90%, var(--adam-global-text) 10%);
 	border-color: var(--adam-border-strong);
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(input, select, textarea):focus {
+body.adam-theme-dark:not(.wp-admin) :is(
+	input,
+	select,
+	textarea,
+	.ct-pseudo-input,
+	[role="combobox"],
+	.select2-selection,
+	.choices__inner,
+	.ts-control,
+	.selectize-input
+):is(:focus, :focus-visible, :focus-within),
+body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-pseudo-input, [role="combobox"]):is(:focus, :focus-visible, :focus-within) {
 	border-color: var(--adam-form-focus);
-	box-shadow: 0 0 0 1px var(--adam-form-focus);
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--adam-form-focus) 38%, transparent);
+	outline-color: var(--adam-form-focus);
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(fieldset, option) {
+body.adam-theme-dark:not(.wp-admin) :is(
+	option,
+	optgroup,
+	.select2-dropdown,
+	.select2-results__options,
+	.choices__list--dropdown,
+	.ts-dropdown,
+	.selectize-dropdown
+),
+body.wp-admin.adam-theme-dark #wpbody-content :is(option, optgroup) {
+	color: var(--adam-form-input-text);
+	background-color: var(--adam-form-input-bg);
+	border-color: var(--adam-form-border);
+	color-scheme: dark;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	option[value=""],
+	option:disabled,
+	.select2-results__option[aria-disabled="true"],
+	.choices__placeholder
+) {
+	color: var(--adam-form-placeholder);
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(
+	.select2-results__option[aria-selected="true"],
+	.select2-results__option--highlighted,
+	.choices__item--choice.is-highlighted,
+	.ts-dropdown .active,
+	.selectize-dropdown .active
+) {
+	color: var(--adam-form-input-text);
+	background-color: var(--adam-surface-hover);
+}
+
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(fieldset) {
 	color: var(--adam-text);
 	background-color: var(--adam-input-bg);
 	border-color: var(--adam-border);
@@ -323,10 +415,23 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	accent-color: var(--adam-primary);
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(input, select, textarea):disabled {
+body.adam-theme-dark:not(.wp-admin) :is(
+	input,
+	select,
+	textarea,
+	.ct-pseudo-input,
+	[role="combobox"]
+):is(:disabled, [disabled], [aria-disabled="true"]),
+body.adam-theme-dark:not(.wp-admin) :is(
+	.select2-container--disabled .select2-selection,
+	.choices.is-disabled .choices__inner,
+	.ts-wrapper.disabled .ts-control,
+	.selectize-control.disabled .selectize-input
+),
+body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-pseudo-input, [role="combobox"]):is(:disabled, [disabled], [aria-disabled="true"]) {
 	color: var(--adam-form-disabled-text);
 	background-color: var(--adam-form-disabled-bg);
-	border-color: var(--adam-form-disabled-bg);
+	border-color: var(--adam-form-border);
 	cursor: not-allowed;
 	opacity: 1;
 }
@@ -356,7 +461,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]) {
 	--adam-current-button-focus: var(--adam-button-focus);
 	color: var(--adam-night-button-text) !important;
 	background-color: var(--adam-night-button-bg) !important;
@@ -375,7 +480,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):is(:hover, :focus-visible, :active) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):is(:hover, :focus-visible, :active) {
 	color: var(--adam-night-button-hover-text) !important;
 	background-color: var(--adam-night-button-hover-bg) !important;
 	border-color: var(--adam-night-button-hover-border) !important;
@@ -489,7 +594,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):focus-visible {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):focus-visible {
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--adam-current-button-focus) 42%, transparent) !important;
 	outline: 2px solid var(--adam-current-button-focus) !important;
 	outline-offset: 2px;
@@ -506,7 +611,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
 	color: var(--adam-button-disabled-text) !important;
 	background-color: var(--adam-button-disabled-bg) !important;
 	border-color: var(--adam-button-disabled-bg) !important;
@@ -1090,9 +1195,17 @@ body.adam-theme-dark:not(.wp-admin) :is(
  * third-party forms and native WordPress screens remain untouched.
  */
 body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(
-	input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+	input:not(:is([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="color"], [type="submit"], [type="button"], [type="reset"], [type="image"], [type="hidden"])),
 	select,
-	textarea
+	textarea,
+	.ct-pseudo-input,
+	[role="combobox"],
+	.select2-selection,
+	.select2-search__field,
+	.choices__inner,
+	.choices__input,
+	.ts-control,
+	.selectize-input
 ) {
 	color: var(--adam-form-input-text) !important;
 	background-color: var(--adam-form-input-bg) !important;
@@ -1105,9 +1218,52 @@ body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(input
 	opacity: 1;
 }
 
-body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(input, select, textarea):focus {
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(
+	input,
+	select,
+	textarea,
+	.ct-pseudo-input,
+	[role="combobox"],
+	.select2-selection,
+	.choices__inner,
+	.ts-control,
+	.selectize-input
+):not(:disabled):not([aria-disabled="true"]):hover {
+	background-color: color-mix(in srgb, var(--adam-form-input-bg) 90%, var(--adam-global-text) 10%) !important;
+	border-color: var(--adam-border-strong) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(
+	input,
+	select,
+	textarea,
+	.ct-pseudo-input,
+	[role="combobox"],
+	.select2-selection,
+	.choices__inner,
+	.ts-control,
+	.selectize-input
+):is(:focus, :focus-visible, :focus-within) {
 	border-color: var(--adam-form-focus) !important;
 	box-shadow: 0 0 0 2px color-mix(in srgb, var(--adam-form-focus) 38%, transparent) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(input, select, textarea, .ct-pseudo-input, [role="combobox"]):is(
+	:disabled,
+	[disabled],
+	[aria-disabled="true"]
+),
+body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(
+	.select2-container--disabled .select2-selection,
+	.choices.is-disabled .choices__inner,
+	.ts-wrapper.disabled .ts-control,
+	.selectize-control.disabled .selectize-input
+) {
+	color: var(--adam-form-disabled-text) !important;
+	background-color: var(--adam-form-disabled-bg) !important;
+	border-color: var(--adam-form-border) !important;
+	cursor: not-allowed;
+	opacity: 1;
 }
 
 body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(option, optgroup) {

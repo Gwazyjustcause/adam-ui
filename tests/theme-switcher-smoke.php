@@ -50,7 +50,7 @@ adam_ui_switcher_assert( false !== strpos( $css, 'box-sizing: border-box' ), 'Th
 adam_ui_switcher_assert( false !== strpos( $css, 'flex: 0 0 auto' ) && false !== strpos( $css, 'width: auto !important' ) && false !== strpos( $css, 'min-width: max-content' ), 'The dropdown must preserve its intrinsic text and indicator width.' );
 adam_ui_switcher_assert( false !== strpos( $css, '.adam-theme-switcher__select:focus-visible' ) && false !== strpos( $css, 'outline-offset: -3px' ), 'Dropdown focus must render inside the control boundary.' );
 adam_ui_switcher_assert( false !== strpos( $css, '.adam-theme-switcher__choice:focus-visible' ) && false !== strpos( $css, 'box-shadow: inset 0 0 0 1px var(--adam-primary)' ), 'Button focus must render inside the control boundary.' );
-adam_ui_switcher_assert( false !== strpos( $base_css, '):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):focus-visible' ), 'Global button focus must defer to owned Theme Switcher and Blocksy navigation controls.' );
+adam_ui_switcher_assert( false !== strpos( $base_css, '):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):focus-visible' ), 'Global button focus must defer to owned Theme Switcher, dropdown, and Blocksy navigation controls.' );
 foreach ( array( 'icon-only', 'icon-label', 'dropdown' ) as $style ) {
 	adam_ui_switcher_assert( false !== strpos( $component . $widget . $block, $style ), 'Instance display style is missing: ' . $style );
 }
