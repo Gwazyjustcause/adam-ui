@@ -95,7 +95,7 @@ foreach ( array( 'header', 'footer', 'card', 'form', 'table', 'notice' ) as $com
 foreach ( array( '--adam-night-button-bg', '--adam-night-button-text', '--adam-night-accent', '--adam-night-on-accent' ) as $button_token ) {
 	adam_ui_night_assert( false !== strpos( $variables . $repository . $ui_css, $button_token ), 'Night button token is missing: ' . $button_token );
 }
-foreach ( array( '.ct-button', '.wp-element-button', '.wp-block-button__link', '[role="button"]', 'a[class*="button"]' ) as $button_family ) {
+foreach ( array( '.ct-button', '.wp-element-button', '.wp-block-button__link', '[role="button"]', 'a[class*="button"]', '.adam-card-link' ) as $button_family ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, $button_family ), 'Shared Night button coverage is missing for ' . $button_family . '.' );
 }
 foreach ( array( ':hover, :focus-visible, :active', '[aria-disabled="true"]', '.adam-button--outline', '.adam-button--ghost', '.adam-button--accent', 'svg:not([fill="none"])', 'svg[stroke]:not([stroke="none"])' ) as $button_state ) {

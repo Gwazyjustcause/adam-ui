@@ -550,8 +550,11 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
  * Legacy ADAM button implementations commonly use --adam-text-inverse for
  * their label while deriving the fill from --adam-primary. In Night mode
  * that fill is the bright primary surface, so the paired foreground must be
- * the primary on-colour. Keep this scoped to controls; preserved visual
- * compositions such as the digital card retain their own inherited palette.
+ * the primary on-colour. The shared .adam-card-link surface is included here
+ * because it is an action component, but is not named "button" and therefore
+ * was missed by the generic button selectors. Keep this scoped to controls;
+ * preserved visual compositions such as the digital card retain their own
+ * inherited palette.
  */
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
 	button,
@@ -563,7 +566,8 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	.wp-element-button,
 	.wp-block-button__link,
 	[role="button"],
-	a[class*="button"]
+	a[class*="button"],
+	.adam-card-link
 ):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):not(.adam-digital-card *) {
 	--adam-text-inverse: var(--adam-on-primary);
 }
