@@ -594,6 +594,22 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	-webkit-text-fill-color: currentColor;
 }
 
+/* Explicit dark action surface: retain a light, readable foreground. */
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *) {
+	color: var(--adam-global-text) !important;
+	-webkit-text-fill-color: currentColor;
+}
+
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *):is(:hover, :focus, :focus-visible, :active) {
+	color: var(--adam-global-text) !important;
+	-webkit-text-fill-color: currentColor;
+}
+
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *):is(:disabled, [disabled], [aria-disabled="true"]) {
+	color: var(--adam-button-disabled-text) !important;
+	-webkit-text-fill-color: currentColor;
+}
+
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
 	button,
 	input[type="button"],

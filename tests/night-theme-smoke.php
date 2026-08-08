@@ -101,6 +101,7 @@ foreach ( array( '.ct-button', '.wp-element-button', '.wp-block-button__link', '
 adam_ui_night_assert( false !== strpos( $ui_css, ':not(.adam-card-link):not([class*="button"])' ), 'Classified Night link rules must not recolour the shared primary action surface.' );
 adam_ui_night_assert( false !== strpos( $ui_css, 'color: var(--adam-btn-primary-hover-text) !important' ), 'Bright primary action surfaces must use the dark paired foreground.' );
 adam_ui_night_assert( false !== strpos( $ui_css, '.adam-card-download-button' ) && false !== strpos( $ui_css, '[data-adam-card-download]' ), 'Explicit dark card action variants must retain their authored foreground/background pairing.' );
+adam_ui_night_assert( false !== strpos( $ui_css, 'color: var(--adam-global-text) !important' ), 'Explicit dark card action variants must retain a light foreground.' );
 foreach ( array( ':hover, :focus-visible, :active', '[aria-disabled="true"]', '.adam-button--outline', '.adam-button--ghost', '.adam-button--accent', 'svg:not([fill="none"])', 'svg[stroke]:not([stroke="none"])' ) as $button_state ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, $button_state ), 'Night button state or icon coverage is missing for ' . $button_state . '.' );
 }
