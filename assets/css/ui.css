@@ -285,7 +285,7 @@ body.adam-theme-dark:not(.wp-admin) :is(.ct-footer-copyright, .site-info, .foote
 }
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.card, .widget, .panel, .entry-card, .wp-block-group.is-style-card, .wp-block-query .wp-block-post) :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-card-heading); }
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.card, .widget, .panel, .entry-card, .wp-block-group.is-style-card, .wp-block-query .wp-block-post) a:not(.wp-element-button):not(.adam-button) { color: var(--adam-card-link); }
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.card, .widget, .panel, .entry-card, .wp-block-group.is-style-card, .wp-block-query .wp-block-post) a:not(.wp-element-button):not(.adam-button):not(.adam-card-link) { color: var(--adam-card-link); }
 
 /*
  * Native and progressively enhanced form controls are first-class Night
@@ -569,7 +569,28 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	a[class*="button"],
 	.adam-card-link
 ):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):not(.adam-digital-card *) {
-	--adam-text-inverse: var(--adam-on-primary);
+	--adam-text-inverse: var(--adam-btn-primary-hover-text);
+}
+
+/*
+ * .adam-card-link is ADAM's shared legacy primary action surface. Its
+ * authored fill resolves to the bright Night primary, while its authored
+ * foreground uses --adam-text-inverse. Keep the pairing explicit here so
+ * component-link rules cannot turn the label back into a light link colour.
+ */
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-link):not(.adam-digital-card *) {
+	color: var(--adam-btn-primary-hover-text) !important;
+	-webkit-text-fill-color: currentColor;
+}
+
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-link):not(.adam-digital-card *):is(:hover, :focus, :focus-visible, :active) {
+	color: var(--adam-btn-primary-hover-text) !important;
+	-webkit-text-fill-color: currentColor;
+}
+
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-link):not(.adam-digital-card *):is(:disabled, [disabled], [aria-disabled="true"]) {
+	color: var(--adam-button-disabled-text) !important;
+	-webkit-text-fill-color: currentColor;
 }
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
@@ -1123,7 +1144,7 @@ body.adam-theme-dark:not(.wp-admin) :is(
 	[data-adam-night-background="content"],
 	[data-adam-night-background="alternate"],
 	[data-adam-night-background="accent"]
-) a:not(.adam-button):not(.wp-element-button):not(:where(
+) a:not(.adam-button):not(.wp-element-button):not(.adam-card-link):not(:where(
 	.adam-badge,
 	.adam-badge *,
 	.adam-status,
@@ -1144,7 +1165,7 @@ body.adam-theme-dark:not(.wp-admin) :is(
 	[data-adam-night-background="content"],
 	[data-adam-night-background="alternate"],
 	[data-adam-night-background="accent"]
-) a:not(.adam-button):not(.wp-element-button):not(:where(
+) a:not(.adam-button):not(.wp-element-button):not(.adam-card-link):not(:where(
 	.adam-badge,
 	.adam-badge *,
 	.adam-status,
@@ -1163,14 +1184,14 @@ body.adam-theme-dark:not(.wp-admin) :is(
 
 body.adam-theme-dark:not(.wp-admin) [data-adam-night-background="accent"] :where(
 	h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend,
-	a:not(.wp-element-button):not(.adam-button), svg
+	a:not(.wp-element-button):not(.adam-button):not(.adam-card-link), svg
 ) {
 	color: var(--adam-section-feature-text);
 }
 
-body.adam-theme-dark:not(.wp-admin) :is(.has-palette-color-1-background-color, .has-palette-color-5-background-color) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-feature-text); }
-body.adam-theme-dark:not(.wp-admin) .has-palette-color-2-background-color :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-cta-text); }
-body.adam-theme-dark:not(.wp-admin) .has-palette-color-4-background-color :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-overlay-text); }
+body.adam-theme-dark:not(.wp-admin) :is(.has-palette-color-1-background-color, .has-palette-color-5-background-color) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button):not(.adam-card-link), svg) { color: var(--adam-section-feature-text); }
+body.adam-theme-dark:not(.wp-admin) .has-palette-color-2-background-color :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button):not(.adam-card-link), svg) { color: var(--adam-section-cta-text); }
+body.adam-theme-dark:not(.wp-admin) .has-palette-color-4-background-color :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button):not(.adam-card-link), svg) { color: var(--adam-section-overlay-text); }
 
 /*
  * Semantic ADAM component bridge.
@@ -1314,7 +1335,7 @@ body.adam-theme-dark:not(.wp-admin) :is(
 	[data-adam-night-component="feature"],
 	[data-adam-night-component="form"],
 	[data-adam-night-component="hero"]
-) a:not(.adam-button):not(.wp-element-button):not([class*="button"]) {
+) a:not(.adam-button):not(.wp-element-button):not(.adam-card-link):not([class*="button"]) {
 	color: var(--adam-night-component-link) !important;
 }
 
@@ -1399,8 +1420,8 @@ body.adam-theme-dark:not(.wp-admin) [data-adam-night-component="form"] :is(optio
 	color: var(--adam-form-input-text) !important;
 	background-color: var(--adam-form-input-bg) !important;
 }
-body.adam-theme-dark:not(.wp-admin) .has-palette-color-6-background-color :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-alternate-text); }
-body.adam-theme-dark:not(.wp-admin) :is(.has-palette-color-7-background-color, .has-palette-color-8-background-color) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button), svg) { color: var(--adam-section-standard-text); }
+body.adam-theme-dark:not(.wp-admin) .has-palette-color-6-background-color :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button):not(.adam-card-link), svg) { color: var(--adam-section-alternate-text); }
+body.adam-theme-dark:not(.wp-admin) :is(.has-palette-color-7-background-color, .has-palette-color-8-background-color) :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, label, legend, a:not(.wp-element-button):not(.adam-button):not(.adam-card-link), svg) { color: var(--adam-section-standard-text); }
 
 /* ADAM Sócios: account pages use one focused hero and stable card surfaces. */
 body.adam-theme-dark .adam-member-area {

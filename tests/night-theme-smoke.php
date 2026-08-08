@@ -98,6 +98,8 @@ foreach ( array( '--adam-night-button-bg', '--adam-night-button-text', '--adam-n
 foreach ( array( '.ct-button', '.wp-element-button', '.wp-block-button__link', '[role="button"]', 'a[class*="button"]', '.adam-card-link' ) as $button_family ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, $button_family ), 'Shared Night button coverage is missing for ' . $button_family . '.' );
 }
+adam_ui_night_assert( false !== strpos( $ui_css, ':not(.adam-card-link):not([class*="button"])' ), 'Classified Night link rules must not recolour the shared primary action surface.' );
+adam_ui_night_assert( false !== strpos( $ui_css, 'color: var(--adam-btn-primary-hover-text) !important' ), 'Bright primary action surfaces must use the dark paired foreground.' );
 foreach ( array( ':hover, :focus-visible, :active', '[aria-disabled="true"]', '.adam-button--outline', '.adam-button--ghost', '.adam-button--accent', 'svg:not([fill="none"])', 'svg[stroke]:not([stroke="none"])' ) as $button_state ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, $button_state ), 'Night button state or icon coverage is missing for ' . $button_state . '.' );
 }
