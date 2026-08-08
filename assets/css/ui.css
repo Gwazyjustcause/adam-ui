@@ -1465,6 +1465,36 @@ body.adam-theme-dark .adam-member-area :where(.adam-card, .adam-login-panel, .ad
 	color: var(--adam-text);
 }
 
+/*
+ * Digital card isolation boundary.
+ *
+ * ADAM Sócios owns this visual composition. Its stylesheet intentionally
+ * consumes the legacy --adam-* names with local fallbacks; Night must not
+ * change those values through inheritance. Reset only the shared inputs at
+ * the component boundary so the card resolves the same authored fallbacks
+ * it has in Light mode. Card-local --adam-card-* cosmetics remain untouched.
+ */
+body.adam-theme-dark .adam-digital-card-section {
+	--adam-bg: initial;
+	--adam-surface: initial;
+	--adam-surface-2: initial;
+	--adam-primary: initial;
+	--adam-primary-hover: initial;
+	--adam-primary-soft: initial;
+	--adam-success-bg: initial;
+	--adam-highlight: initial;
+	--adam-shadow-color: initial;
+	--adam-shadow: initial;
+	--adam-border: initial;
+	--adam-overlay: initial;
+	--adam-text: initial;
+	--adam-text-muted: initial;
+	--adam-text-inverse: initial;
+	--adam-link: initial;
+	--adam-link-hover: initial;
+	color-scheme: light;
+}
+
 /* ADAM BOT follows the selected website mode, not only the operating system. */
 body.adam-theme-dark .adam-bot {
 	--adam-accent: var(--adam-primary);
