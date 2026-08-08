@@ -59,6 +59,9 @@ foreach ( array( '.ct-toggle-dropdown-desktop', '.ct-toggle-dropdown-mobile', '.
 adam_ui_night_assert( false === strpos( $ui_css, '.ct-toggle-dropdown-mobile {
 	color: var(--adam-header-nav-text) !important' ), 'Blocksy navigation indicators must inherit state instead of receiving a fixed colour.' );
 adam_ui_night_assert( false !== strpos( $controller, 'protectedComponentSelector' ), 'Semantic badges, controls, and media must be protected from surface classification.' );
+adam_ui_night_assert( false !== strpos( $controller, 'preservedComponentSelector' ) && false !== strpos( $controller, '.adam-digital-card' ), 'Purpose-designed visual components must be excluded from Night surface classification.' );
+adam_ui_night_assert( false === strpos( $ui_css, "font-size: var(--adam-font-size);" ) && false === strpos( $ui_css, "line-height: var(--adam-line-height);" ), 'Night mode must not replace page typography metrics and alter geometry.' );
+adam_ui_night_assert( false === strpos( $ui_css, "min-height: var(--adam-control-height);" ), 'Night form overrides must not impose a different control geometry.' );
 adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component="form"] :is(' ), 'ADAM-owned form controls do not have an authoritative Night contract.' );
 foreach ( array( '.ct-pseudo-input', '[role="combobox"]', '.select2-selection', '.choices__inner', '.ts-control', '.selectize-input' ) as $form_family ) {
 	adam_ui_night_assert( false !== strpos( $ui_css, $form_family ), 'Global Night form coverage is missing for ' . $form_family . '.' );

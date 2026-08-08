@@ -435,6 +435,18 @@
 		'[role="alert"]',
 	].join( ',' );
 
+	/*
+	 * Some components are complete visual compositions, not Night surfaces.
+	 * Their artwork, gradients, inline cosmetics and internal colour system
+	 * must remain authored by the owning plugin.
+	 */
+	const preservedComponentSelector = [
+		'[data-adam-ui-preserve="true"]',
+		'[data-adam-preserve-styling="true"]',
+		'.adam-preserve-component',
+		'.adam-digital-card',
+	].join( ',' );
+
 	const typographyElementSelector = [
 		'h1',
 		'h2',
@@ -452,6 +464,15 @@
 		'legend',
 		'blockquote',
 	].join( ',' );
+
+	function isPreservedComponent( element ) {
+		if ( element.matches( preservedComponentSelector ) ) {
+			return true;
+		}
+
+		const ancestor = element.closest( preservedComponentSelector );
+		return Boolean( ancestor && typeof ancestor.matches === 'function' && ancestor.matches( preservedComponentSelector ) );
+	}
 
 	function componentClassNames( element ) {
 		if ( typeof element.className !== 'string' ) {
@@ -501,6 +522,10 @@
 	}
 
 	function classifyComponent( element ) {
+		if ( isPreservedComponent( element ) ) {
+			return '';
+		}
+
 		const allClassNames = componentClassNames( element );
 		const classNames = allClassNames.filter( ( className ) => ! className.includes( '__' ) );
 
@@ -610,6 +635,10 @@
 	}
 
 	function classifyBackground( element ) {
+		if ( isPreservedComponent( element ) ) {
+			return '';
+		}
+
 		const style = window.getComputedStyle( element );
 		const backgroundImage = style.backgroundImage || 'none';
 

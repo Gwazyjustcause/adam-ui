@@ -13,8 +13,6 @@
 	color: var(--adam-text);
 	background-color: var(--adam-bg);
 	font-family: var(--adam-font-family);
-	font-size: var(--adam-font-size);
-	line-height: var(--adam-line-height);
 	color-scheme: var(--adam-color-scheme);
 }
 
@@ -315,7 +313,6 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(
 	.ct-pseudo-input,
 	[role="combobox"]
 ) {
-	min-height: var(--adam-control-height);
 	color: var(--adam-form-input-text);
 	background-color: color-mix(in srgb, var(--adam-form-input-bg) var(--adam-form-surface-opacity, 100%), transparent);
 	border-color: var(--adam-form-border);
@@ -547,6 +544,28 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	border-color: var(--adam-night-button-border);
 	outline-color: var(--adam-button-focus);
 	-webkit-text-fill-color: currentColor;
+}
+
+/*
+ * Legacy ADAM button implementations commonly use --adam-text-inverse for
+ * their label while deriving the fill from --adam-primary. In Night mode
+ * that fill is the bright primary surface, so the paired foreground must be
+ * the primary on-colour. Keep this scoped to controls; preserved visual
+ * compositions such as the digital card retain their own inherited palette.
+ */
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
+	button,
+	input[type="button"],
+	input[type="submit"],
+	input[type="reset"],
+	.button,
+	.ct-button,
+	.wp-element-button,
+	.wp-block-button__link,
+	[role="button"],
+	a[class*="button"]
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):not(.adam-digital-card *) {
+	--adam-text-inverse: var(--adam-on-primary);
 }
 
 :where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
