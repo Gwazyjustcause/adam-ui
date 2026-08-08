@@ -702,14 +702,10 @@
 		const isNight = document.body && nightClass && document.body.classList.contains( nightClass );
 
 		document.querySelectorAll( '[data-adam-night-background]' ).forEach( ( element ) => {
-			if ( ! isPreservedComponent( element ) ) {
-				delete element.dataset.adamNightBackground;
-			}
+			delete element.dataset.adamNightBackground;
 		} );
 		document.querySelectorAll( '[data-adam-night-component]' ).forEach( ( element ) => {
-			if ( ! isPreservedComponent( element ) ) {
-				delete element.dataset.adamNightComponent;
-			}
+			delete element.dataset.adamNightComponent;
 		} );
 
 		if ( ! isNight ) {
