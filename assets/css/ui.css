@@ -40,13 +40,13 @@
 	[role="dialog"],
 	.adam-icon,
 	.adam-icon *
-) {
+) :not(.adam-digital-card-section *) {
 	transition-duration: var(--adam-transition-duration);
 	transition-property: background-color, border-color, box-shadow, color, fill, stroke;
 	transition-timing-function: var(--adam-transition-timing);
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(p, li, dt, dd, label, legend) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(p, li, dt, dd, label, legend):not(.adam-digital-card-section *) {
 	color: var(--adam-text);
 }
 
@@ -55,20 +55,20 @@
  * :where() allowed a theme's bare h1 rule to win even though ADAM UI loaded
  * later. Component and classified-surface rules below remain more specific.
  */
-body.adam-theme-dark:not(.wp-admin) :is(h1, h2, h3, h4, h5, h6),
-body.wp-admin.adam-theme-dark #wpbody-content :is(h1, h2, h3, h4, h5, h6) {
+body.adam-theme-dark:not(.wp-admin) :is(h1, h2, h3, h4, h5, h6):not(.adam-digital-card-section *),
+body.wp-admin.adam-theme-dark #wpbody-content :is(h1, h2, h3, h4, h5, h6):not(.adam-digital-card-section *) {
 	color: var(--adam-heading);
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(small, figcaption, caption, .description, .meta, .entry-meta, .wp-block-post-date) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(small, figcaption, caption, .description, .meta, .entry-meta, .wp-block-post-date):not(.adam-digital-card-section *) {
 	color: var(--adam-text-muted);
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a):not(.adam-digital-card-section *) {
 	color: var(--adam-link);
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a:hover, a:focus-visible) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a:hover, a:focus-visible):not(.adam-digital-card-section *) {
 	color: var(--adam-link-hover);
 }
 
@@ -77,7 +77,7 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(h1, h2, h3, h4, h5, h6) {
 	background-color: var(--adam-selection-bg);
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(:focus-visible) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(:focus-visible):not(.adam-digital-card-section *) {
 	outline: 2px solid var(--adam-focus-ring);
 	outline-offset: 2px;
 }
@@ -537,7 +537,7 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"]
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):not(.adam-digital-card-section *):not(.adam-digital-card-section) {
 	--adam-current-button-focus: var(--adam-button-focus);
 	color: var(--adam-night-button-text);
 	background-color: var(--adam-night-button-bg);
@@ -568,7 +568,7 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	[role="button"],
 	a[class*="button"],
 	a.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])
-):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):not(.adam-digital-card *) {
+):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):not(.adam-digital-card-section):not(.adam-digital-card-section *):not(.adam-digital-card *) {
 	--adam-text-inverse: var(--adam-btn-primary-hover-text);
 }
 
@@ -579,33 +579,33 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
  * component-link rules cannot turn the bright-surface label back into a light
  * link colour. Explicit dark variants retain their authored pairing.
  */
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card *) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card-section):not(.adam-digital-card-section *):not(.adam-digital-card *) {
 	color: var(--adam-btn-primary-hover-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card *):is(:hover, :focus, :focus-visible, :active) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card-section):not(.adam-digital-card-section *):not(.adam-digital-card *):is(:hover, :focus, :focus-visible, :active) {
 	color: var(--adam-btn-primary-hover-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card *):is(:disabled, [disabled], [aria-disabled="true"]) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card-section):not(.adam-digital-card-section *):not(.adam-digital-card *):is(:disabled, [disabled], [aria-disabled="true"]) {
 	color: var(--adam-button-disabled-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
 
 /* Explicit dark action surface: retain a light, readable foreground. */
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(button.adam-card-link, .adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(button.adam-card-link, .adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card-section):not(.adam-digital-card-section *):not(.adam-digital-card *) {
 	color: var(--adam-global-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(button.adam-card-link, .adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *):is(:hover, :focus, :focus-visible, :active) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(button.adam-card-link, .adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card-section):not(.adam-digital-card-section *):not(.adam-digital-card *):is(:hover, :focus, :focus-visible, :active) {
 	color: var(--adam-global-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(button.adam-card-link, .adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *):is(:disabled, [disabled], [aria-disabled="true"]) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(button.adam-card-link, .adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card-section):not(.adam-digital-card-section *):not(.adam-digital-card *):is(:disabled, [disabled], [aria-disabled="true"]) {
 	color: var(--adam-button-disabled-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
@@ -1455,13 +1455,13 @@ body.adam-theme-dark .adam-member-area .adam-member-hero :where(h1, h2, h3, p, l
 	color: var(--adam-on-section-feature);
 }
 
-body.adam-theme-dark .adam-member-area :where(.adam-card, .adam-login-panel, .adam-form-card) {
+body.adam-theme-dark .adam-member-area :where(.adam-card, .adam-login-panel, .adam-form-card):not(.adam-digital-card-section) {
 	color: var(--adam-text);
 	background: var(--adam-section-base);
 	border-color: var(--adam-border);
 }
 
-body.adam-theme-dark .adam-member-area :where(.adam-card, .adam-login-panel, .adam-form-card) :where(h1, h2, h3, h4, p, label) {
+body.adam-theme-dark .adam-member-area :where(.adam-card, .adam-login-panel, .adam-form-card):not(.adam-digital-card-section) :where(h1, h2, h3, h4, p, label):not(.adam-digital-card-section *) {
 	color: var(--adam-text);
 }
 

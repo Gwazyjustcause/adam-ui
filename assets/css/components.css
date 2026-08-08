@@ -19,7 +19,7 @@
 	box-sizing: border-box;
 }
 
-.adam-card,
+.adam-card:not(.adam-digital-card-section),
 .adam-button,
 .adam-input,
 .adam-select,
@@ -80,7 +80,7 @@
 	overflow: auto;
 }
 
-.adam-card {
+.adam-card:not(.adam-digital-card-section) {
 	padding: var(--adam-card-padding, var(--adam-space-5));
 	border-width: var(--adam-card-border-width);
 	border-color: color-mix(in srgb, var(--adam-card-bg) 78%, white);
@@ -531,7 +531,7 @@
 }
 
 /* Component Theme Editor bindings. These rules are the public component contract. */
-.adam-card {
+.adam-card:not(.adam-digital-card-section) {
 	color: var(--adam-card-text);
 	background-color: color-mix(in srgb, var(--adam-card-bg) var(--adam-card-surface-opacity, 100%), transparent);
 	border-color: var(--adam-card-border);
@@ -549,9 +549,9 @@
 	border-color: var(--adam-card-border);
 }
 
-.adam-card :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-card-heading); }
-.adam-card :where(p, li, dt, dd) { color: var(--adam-card-text); }
-.adam-card a:not(.adam-button) { color: var(--adam-card-link); }
+.adam-card:not(.adam-digital-card-section) :where(h1, h2, h3, h4, h5, h6):not(.adam-digital-card-section *) { color: var(--adam-card-heading); }
+.adam-card:not(.adam-digital-card-section) :where(p, li, dt, dd):not(.adam-digital-card-section *) { color: var(--adam-card-text); }
+.adam-card:not(.adam-digital-card-section) a:not(.adam-button):not(.adam-digital-card-section *) { color: var(--adam-card-link); }
 
 .adam-section,
 .adam-section--base {
@@ -1017,7 +1017,7 @@
 	background-color: var(--adam-surface);
 }
 
-.adam-card {
+.adam-card:not(.adam-digital-card-section) {
 	color: var(--adam-text);
 	background-color: color-mix(in srgb, var(--adam-surface) var(--adam-card-surface-opacity, 100%), transparent);
 	padding: var(--adam-card-padding, var(--adam-space-5));
@@ -1026,7 +1026,7 @@
 	box-shadow: var(--adam-card-shadow);
 }
 
-:where(a.adam-card, button.adam-card, .adam-card--interactive):hover {
+:where(a.adam-card:not(.adam-digital-card-section), button.adam-card:not(.adam-digital-card-section), .adam-card--interactive):not(.adam-digital-card-section *):hover {
 	background-color: var(--adam-card-hover-bg);
 }
 

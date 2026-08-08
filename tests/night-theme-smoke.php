@@ -3,6 +3,7 @@
 
 $root       = dirname( __DIR__ );
 $ui_css     = file_get_contents( $root . '/assets/css/ui.css' );
+$components = file_get_contents( $root . '/assets/css/components.css' );
 $variables  = file_get_contents( $root . '/assets/css/variables.css' );
 $repository = file_get_contents( $root . '/includes/class-theme-repository.php' );
 $engine = file_get_contents( $root . '/includes/class-color-engine.php' );
@@ -59,7 +60,9 @@ foreach ( array( '.ct-toggle-dropdown-desktop', '.ct-toggle-dropdown-mobile', '.
 adam_ui_night_assert( false === strpos( $ui_css, '.ct-toggle-dropdown-mobile {
 	color: var(--adam-header-nav-text) !important' ), 'Blocksy navigation indicators must inherit state instead of receiving a fixed colour.' );
 adam_ui_night_assert( false !== strpos( $controller, 'protectedComponentSelector' ), 'Semantic badges, controls, and media must be protected from surface classification.' );
-adam_ui_night_assert( false !== strpos( $controller, 'preservedComponentSelector' ) && false !== strpos( $controller, '.adam-digital-card' ), 'Purpose-designed visual components must be excluded from Night surface classification.' );
+adam_ui_night_assert( false !== strpos( $controller, 'preservedComponentSelector' ) && false !== strpos( $controller, '[data-adam-ui-ignore]' ) && false !== strpos( $controller, '.adam-digital-card-section' ) && false !== strpos( $controller, '.adam-digital-card' ), 'Purpose-designed visual components must be excluded from Night surface classification.' );
+adam_ui_night_assert( false !== strpos( $controller, 'if ( isPreservedComponent( element ) )' ), 'Night refreshes must skip preserved component descendants during cleanup and classification.' );
+adam_ui_night_assert( false !== strpos( $ui_css, '.adam-digital-card-section *' ) && false !== strpos( $components, '.adam-digital-card-section' ), 'ADAM UI CSS must exclude the complete digital-card subtree.' );
 adam_ui_night_assert( false === strpos( $ui_css, "font-size: var(--adam-font-size);" ) && false === strpos( $ui_css, "line-height: var(--adam-line-height);" ), 'Night mode must not replace page typography metrics and alter geometry.' );
 adam_ui_night_assert( false === strpos( $ui_css, "min-height: var(--adam-control-height);" ), 'Night form overrides must not impose a different control geometry.' );
 adam_ui_night_assert( false !== strpos( $ui_css, '[data-adam-night-component="form"] :is(' ), 'ADAM-owned form controls do not have an authoritative Night contract.' );

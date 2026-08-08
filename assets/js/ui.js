@@ -441,9 +441,11 @@
 	 * must remain authored by the owning plugin.
 	 */
 	const preservedComponentSelector = [
+		'[data-adam-ui-ignore]',
 		'[data-adam-ui-preserve="true"]',
 		'[data-adam-preserve-styling="true"]',
 		'.adam-preserve-component',
+		'.adam-digital-card-section',
 		'.adam-digital-card',
 	].join( ',' );
 
@@ -700,10 +702,14 @@
 		const isNight = document.body && nightClass && document.body.classList.contains( nightClass );
 
 		document.querySelectorAll( '[data-adam-night-background]' ).forEach( ( element ) => {
-			delete element.dataset.adamNightBackground;
+			if ( ! isPreservedComponent( element ) ) {
+				delete element.dataset.adamNightBackground;
+			}
 		} );
 		document.querySelectorAll( '[data-adam-night-component]' ).forEach( ( element ) => {
-			delete element.dataset.adamNightComponent;
+			if ( ! isPreservedComponent( element ) ) {
+				delete element.dataset.adamNightComponent;
+			}
 		} );
 
 		if ( ! isNight ) {
@@ -711,6 +717,10 @@
 		}
 
 		document.querySelectorAll( backgroundCandidates ).forEach( ( element ) => {
+			if ( isPreservedComponent( element ) ) {
+				return;
+			}
+
 			const component = classifyComponent( element );
 			const classification = classifyBackground( element );
 
