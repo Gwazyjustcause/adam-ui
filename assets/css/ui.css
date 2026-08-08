@@ -520,8 +520,17 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	border-color: var(--adam-border);
 }
 
-/* Buttons. */
-:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+/*
+ * Buttons.
+ *
+ * This is deliberately a low-specificity fallback. A button that already
+ * has an authored class/style must keep its foreground/background pairing;
+ * semantic ADAM UI buttons below opt into the managed palettes explicitly.
+ * In particular, do not use !important here: it made light-green plugin
+ * buttons inherit the Night link colour and then repeated that mistake on
+ * hover.
+ */
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
 	button,
 	input[type="button"],
 	input[type="submit"],
@@ -533,14 +542,14 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	a[class*="button"]
 ):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor) {
 	--adam-current-button-focus: var(--adam-button-focus);
-	color: var(--adam-night-button-text) !important;
-	background-color: var(--adam-night-button-bg) !important;
-	border-color: var(--adam-night-button-border) !important;
-	outline-color: var(--adam-button-focus) !important;
+	color: var(--adam-night-button-text);
+	background-color: var(--adam-night-button-bg);
+	border-color: var(--adam-night-button-border);
+	outline-color: var(--adam-button-focus);
 	-webkit-text-fill-color: currentColor;
 }
 
-:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
 	button,
 	input[type="button"],
 	input[type="submit"],
@@ -551,12 +560,12 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	[role="button"],
 	a[class*="button"]
 ):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):is(:hover, :focus-visible, :active) {
-	color: var(--adam-night-button-hover-text) !important;
-	background-color: var(--adam-night-button-hover-bg) !important;
-	border-color: var(--adam-night-button-hover-border) !important;
+	color: var(--adam-night-button-hover-text);
+	background-color: var(--adam-night-button-hover-bg);
+	border-color: var(--adam-night-button-hover-border);
 }
 
-:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
 	input[type="reset"],
 	.button-secondary,
 	.adam-button-secondary,
@@ -665,12 +674,12 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	[role="button"],
 	a[class*="button"]
 ):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):focus-visible {
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--adam-current-button-focus) 42%, transparent) !important;
-	outline: 2px solid var(--adam-current-button-focus) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--adam-current-button-focus) 42%, transparent);
+	outline: 2px solid var(--adam-current-button-focus);
 	outline-offset: 2px;
 }
 
-:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
 	button,
 	input[type="button"],
 	input[type="submit"],
@@ -682,13 +691,13 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	[role="button"],
 	a[class*="button"]
 ):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):is(:disabled, [disabled], [aria-disabled="true"], .is-disabled, .disabled) {
-	color: var(--adam-button-disabled-text) !important;
-	background-color: var(--adam-button-disabled-bg) !important;
-	border-color: var(--adam-button-disabled-bg) !important;
+	color: var(--adam-button-disabled-text);
+	background-color: var(--adam-button-disabled-bg);
+	border-color: var(--adam-button-disabled-bg);
 	opacity: 1;
 }
 
-:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
 	button,
 	.button,
 	.ct-button,
@@ -697,11 +706,11 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	[role="button"],
 	a[class*="button"]
 ) :where(span, strong, em, b, i, svg, svg *) {
-	color: inherit !important;
+	color: inherit;
 	-webkit-text-fill-color: currentColor;
 }
 
-:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
 	button,
 	.button,
 	.ct-button,
@@ -710,10 +719,10 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	[role="button"],
 	a[class*="button"]
 ) svg:not([fill="none"]) {
-	fill: currentColor !important;
+	fill: currentColor;
 }
 
-:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
 	button,
 	.button,
 	.ct-button,
@@ -722,10 +731,10 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	[role="button"],
 	a[class*="button"]
 ) svg[stroke]:not([stroke="none"]) {
-	stroke: currentColor !important;
+	stroke: currentColor;
 }
 
-:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
 	button,
 	.button,
 	.ct-button,
@@ -734,7 +743,7 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	[role="button"],
 	a[class*="button"]
 )::before,
-:is(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :is(
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(
 	button,
 	.button,
 	.ct-button,
@@ -743,7 +752,7 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	[role="button"],
 	a[class*="button"]
 )::after {
-	color: inherit !important;
+	color: inherit;
 }
 
 /* Tables. */
