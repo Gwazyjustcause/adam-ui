@@ -567,7 +567,7 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
 	.wp-block-button__link,
 	[role="button"],
 	a[class*="button"],
-	.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])
+	a.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])
 ):not(.adam-theme-switcher__choice):not(.ct-toggle-dropdown-mobile):not(.ct-toggle-dropdown-desktop-ghost):not([role="combobox"]):not(.mce-btn):not(.ed_button):not(.tox-tbtn):not(.wp-switch-editor):not(.adam-digital-card *) {
 	--adam-text-inverse: var(--adam-btn-primary-hover-text);
 }
@@ -579,33 +579,33 @@ body.wp-admin.adam-theme-dark #wpbody-content :is(input, select, textarea, .ct-p
  * component-link rules cannot turn the bright-surface label back into a light
  * link colour. Explicit dark variants retain their authored pairing.
  */
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card *) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card *) {
 	color: var(--adam-btn-primary-hover-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card *):is(:hover, :focus, :focus-visible, :active) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card *):is(:hover, :focus, :focus-visible, :active) {
 	color: var(--adam-btn-primary-hover-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card *):is(:disabled, [disabled], [aria-disabled="true"]) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(a.adam-card-link:not(.adam-card-download-button):not([data-adam-card-download])):not(.adam-digital-card *):is(:disabled, [disabled], [aria-disabled="true"]) {
 	color: var(--adam-button-disabled-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
 
 /* Explicit dark action surface: retain a light, readable foreground. */
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(button.adam-card-link, .adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *) {
 	color: var(--adam-global-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *):is(:hover, :focus, :focus-visible, :active) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(button.adam-card-link, .adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *):is(:hover, :focus, :focus-visible, :active) {
 	color: var(--adam-global-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
 
-:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(.adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *):is(:disabled, [disabled], [aria-disabled="true"]) {
+:where(body.adam-theme-dark:not(.wp-admin), body.wp-admin.adam-theme-dark #wpbody-content) :where(button.adam-card-link, .adam-card-download-button, [data-adam-card-download]):not(.adam-digital-card *):is(:disabled, [disabled], [aria-disabled="true"]) {
 	color: var(--adam-button-disabled-text) !important;
 	-webkit-text-fill-color: currentColor;
 }
