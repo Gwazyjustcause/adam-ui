@@ -1466,6 +1466,21 @@ body.adam-theme-dark .adam-member-area :where(.adam-card, .adam-login-panel, .ad
 }
 
 /*
+ * ADAM Sócios uses .adam-card-link for filled primary actions, including the
+ * shared success-confirmation action. It is an action surface, not a prose
+ * link: keep its foreground paired with the primary fill in every mode/state.
+ */
+.adam-member-area :where(a.adam-card-link, button.adam-card-link, .adam-button-primary, .adam-button--primary):is(:link, :visited, :hover, :focus, :focus-visible, :active) {
+	color: var(--adam-btn-primary-text);
+	-webkit-text-fill-color: currentColor;
+}
+
+body.adam-theme-dark .adam-member-area :where(a.adam-card-link, button.adam-card-link, .adam-button-primary, .adam-button--primary):is(:link, :visited, :hover, :focus, :focus-visible, :active) {
+	color: var(--adam-btn-primary-hover-text);
+	-webkit-text-fill-color: currentColor;
+}
+
+/*
  * Digital card isolation boundary.
  *
  * ADAM Sócios owns this visual composition. Its stylesheet intentionally

@@ -551,7 +551,7 @@
 
 .adam-card:not(.adam-digital-card-section) :where(h1, h2, h3, h4, h5, h6):not(.adam-digital-card-section *) { color: var(--adam-card-heading); }
 .adam-card:not(.adam-digital-card-section) :where(p, li, dt, dd):not(.adam-digital-card-section *) { color: var(--adam-card-text); }
-.adam-card:not(.adam-digital-card-section) a:not(.adam-button):not(.adam-digital-card-section *) { color: var(--adam-card-link); }
+.adam-card:not(.adam-digital-card-section) a:not(.adam-button):not(.adam-card-link):not(.adam-digital-card-section *) { color: var(--adam-card-link); }
 
 .adam-section,
 .adam-section--base {
@@ -584,14 +584,14 @@
 .adam-section--feature :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-section-feature-heading); }
 .adam-section--accent :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-section-cta-heading); }
 .adam-section--deep :where(h1, h2, h3, h4, h5, h6) { color: var(--adam-section-overlay-heading); }
-.adam-section a:not(.adam-button),
-.adam-section--base a:not(.adam-button) { color: var(--adam-section-standard-link); }
-.adam-section--muted a:not(.adam-button),
-.adam-section--soft a:not(.adam-button) { color: var(--adam-section-alternate-link); }
-.adam-section--pale a:not(.adam-button),
-.adam-section--feature a:not(.adam-button) { color: var(--adam-section-feature-link); }
-.adam-section--accent a:not(.adam-button) { color: var(--adam-section-cta-link); }
-.adam-section--deep a:not(.adam-button) { color: var(--adam-section-overlay-link); }
+.adam-section a:not(.adam-button):not(.adam-card-link),
+.adam-section--base a:not(.adam-button):not(.adam-card-link) { color: var(--adam-section-standard-link); }
+.adam-section--muted a:not(.adam-button):not(.adam-card-link),
+.adam-section--soft a:not(.adam-button):not(.adam-card-link) { color: var(--adam-section-alternate-link); }
+.adam-section--pale a:not(.adam-button):not(.adam-card-link),
+.adam-section--feature a:not(.adam-button):not(.adam-card-link) { color: var(--adam-section-feature-link); }
+.adam-section--accent a:not(.adam-button):not(.adam-card-link) { color: var(--adam-section-cta-link); }
+.adam-section--deep a:not(.adam-button):not(.adam-card-link) { color: var(--adam-section-overlay-link); }
 
 .adam-button,
 .adam-button-primary,
