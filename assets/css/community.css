@@ -203,3 +203,28 @@ body.adam-theme-dark:not(.wp-admin) .adam-experience .adam-public-contact-notice
 body.adam-theme-dark:not(.wp-admin) .adam-experience :is(.adam-legal-submission-warning, .adam-public-contact-notice) * {
 	color: inherit !important;
 }
+
+/* Teams use div/label pairs where Campos uses label/span pairs. These are
+ * control groups within the shared filter panel, not nested form surfaces.
+ * Override the Night classifier's important surface and shadow declarations. */
+body:not(.wp-admin) .adam-team-filters > .adam-team-filter {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	background: transparent !important;
+	border: 0 !important;
+	box-shadow: none !important;
+	padding: 0;
+}
+
+body:not(.wp-admin) .adam-team-filters .adam-team-filter label {
+	font-size: .72rem;
+	font-weight: 750;
+	text-transform: uppercase;
+	margin: 0;
+}
+
+body:not(.wp-admin) .adam-team-filters .adam-team-filter :is(input, select) {
+	border-color: #d8ddd2;
+	padding: 0 10px;
+}
