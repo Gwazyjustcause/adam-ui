@@ -228,3 +228,35 @@ body:not(.wp-admin) .adam-team-filters .adam-team-filter :is(input, select) {
 	border-color: #d8ddd2;
 	padding: 0 10px;
 }
+
+/* Public submission uploaders share the Night palette with the manager's
+ * uploader. Pair the green feature surface with its generated foregrounds. */
+body.adam-theme-dark:not(.wp-admin) .adam-experience .adam-portal-form :is(.adam-upload, .adam-portal-upload) {
+	background: var(--adam-section-feature-bg) !important;
+	color: var(--adam-section-feature-text) !important;
+	border-color: var(--adam-border) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) .adam-experience .adam-portal-form :is(.adam-upload__item, .adam-upload__add, .adam-upload__preview) {
+	background: var(--adam-card-bg) !important;
+	color: var(--adam-card-text) !important;
+	border-color: var(--adam-card-border) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) .adam-experience .adam-portal-form :is(.adam-upload__toolbar strong, .adam-upload__toolbar span, .adam-upload__progress small, .adam-portal-upload small) {
+	color: var(--adam-section-feature-text) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) .adam-experience .adam-portal-form :is(.adam-upload__meta strong, .adam-upload__meta small, .adam-upload__add strong, .adam-upload__add small) {
+	color: var(--adam-card-text) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) .adam-experience .adam-portal-form :is(.adam-upload.is-dragover, .adam-portal-upload.is-dragover, .adam-upload__add:hover, .adam-upload__add:focus-visible) {
+	background: var(--adam-section-feature-bg) !important;
+	color: var(--adam-section-feature-text) !important;
+	border-color: var(--adam-focus-ring) !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) .adam-experience .adam-portal-form .adam-upload.has-error {
+	border-color: var(--adam-danger) !important;
+}
