@@ -188,3 +188,18 @@ body:not(.wp-admin) .adam-map-widget .leaflet-container a.leaflet-popup-close-bu
 body:not(.wp-admin) :is(.adam-community-hub, .adam-map-widget) :is(a, button, input, select):focus-visible {
 	outline-color: var(--adam-community-accent);
 }
+
+/* Submission notices retain the owning plugin's pale surfaces in Night mode.
+ * Keep their authored foregrounds paired with those surfaces rather than the
+ * surrounding panel's light text (including its important paragraph rule). */
+body.adam-theme-dark:not(.wp-admin) .adam-experience .adam-legal-submission-warning {
+	color: #302709 !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) .adam-experience .adam-public-contact-notice {
+	color: #31402d !important;
+}
+
+body.adam-theme-dark:not(.wp-admin) .adam-experience :is(.adam-legal-submission-warning, .adam-public-contact-notice) * {
+	color: inherit !important;
+}
