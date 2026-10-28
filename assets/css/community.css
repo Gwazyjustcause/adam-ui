@@ -45,6 +45,11 @@ body:not(.wp-admin) .adam-community-hub {
 	color: var(--adam-community-text);
 }
 
+/* Inline directory links belong to the page canvas, not a navigation panel. */
+body:not(.wp-admin) .adam-community-hub__lead nav {
+	background: transparent;
+}
+
 body:not(.wp-admin) .adam-community-hub :is(h1, h2, h3) {
 	color: var(--adam-community-heading);
 }
@@ -152,6 +157,14 @@ body:not(.wp-admin) .adam-map-widget .adam-map-result.is-active {
 body:not(.wp-admin) .adam-map-widget .adam-map-pin span {
 	border-color: var(--adam-community-surface);
 	color: var(--adam-community-on-accent);
+}
+
+/* Leaflet adds role="button" to this square positioning wrapper. Only its
+ * circular child should be painted, including on hover and keyboard focus.
+ * Important beats the shared Night button fallback's exclusion specificity. */
+body:not(.wp-admin) .adam-map-widget .adam-map-pin {
+	background: transparent !important;
+	border: 0;
 }
 
 body:not(.wp-admin) .adam-map-widget .adam-map-pin--field span {
