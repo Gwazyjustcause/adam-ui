@@ -22,6 +22,8 @@ Light, Night, and System remain preference modes:
 
 ADAM UI does not generate a Light palette or a Light stylesheet. `variables.css` provides only structural tokens and a neutral bridge to Blocksy/browser values. `ui.css` is scoped exclusively to Night mode.
 
+`community.css` is a scoped compatibility bridge for Comunidade's discovery hub and map widget, whose owning styles currently hard-code dark colours. It restores light surfaces and readable green accents in Light mode and consumes saved ADAM tokens in Night mode. Only the Leaflet tile pane receives the map tint: pale white/green in Light mode and dark green in Night mode. Theme switching, including System preference changes, works through the existing body class without rebuilding the map or resetting its filters and selection.
+
 Every component panel includes a compact live example. Changes update the preview immediately. Colour fields support short and long HEX, RGB/RGBA, HSL/HSLA, named colours, and `transparent`; values are validated again before storage.
 
 Visual styles are high-impact presets rather than collections of CSS controls. Cards provides Minimal, Elevated, Flat, and Soft; Buttons provides Filled, Outline, and Soft; Header provides Solid, Transparent, and Floating; Footer provides Standard, Minimal, and Compact. A preset resolves into structural design tokens for borders, depth, spacing, opacity, and contrast, so all consumers change consistently.

@@ -109,6 +109,7 @@ final class ADAM_UI_Asset_Registry {
 		$theme_dependencies = $this->get_theme_style_dependencies();
 		wp_register_style( 'adam-ui-variables', ADAM_UI_URL . 'assets/css/variables.css', $theme_dependencies, ADAM_UI_VERSION );
 		wp_register_style( 'adam-ui', ADAM_UI_URL . 'assets/css/ui.css', array( 'adam-ui-variables' ), ADAM_UI_VERSION );
+		wp_register_style( 'adam-ui-community', ADAM_UI_URL . 'assets/css/community.css', array( 'adam-ui' ), ADAM_UI_VERSION );
 		wp_register_style( 'adam-ui-utility-primitives', ADAM_UI_URL . 'assets/css/utilities.css', array( 'adam-ui' ), ADAM_UI_VERSION );
 		wp_register_style( 'adam-ui-utilities', ADAM_UI_URL . 'assets/css/components.css', array( 'adam-ui-utility-primitives' ), ADAM_UI_VERSION );
 		wp_register_style( 'adam-ui-theme-switcher', ADAM_UI_URL . 'assets/css/theme-switcher.css', array( 'adam-ui' ), ADAM_UI_VERSION );
@@ -142,6 +143,7 @@ final class ADAM_UI_Asset_Registry {
 	public function enqueue_core() {
 		$this->register_assets();
 		wp_enqueue_style( 'adam-ui' );
+		wp_enqueue_style( 'adam-ui-community' );
 		wp_enqueue_script( 'adam-ui' );
 	}
 

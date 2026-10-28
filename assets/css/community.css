@@ -1,0 +1,177 @@
+/**
+ * Compatibility with Comunidade's discovery hub and Leaflet widget.
+ * The owning plugin currently ships unconditional dark colours. Keep its
+ * layout, but bridge these surfaces to the resolved ADAM UI theme. Body
+ * specificity intentionally wins even when Comunidade loads its CSS later.
+ */
+body:not(.wp-admin) :is(.adam-community-hub, .adam-map-widget) {
+	--adam-community-bg: var(--adam-bg, #fff);
+	--adam-community-surface: var(--adam-surface, #fff);
+	--adam-community-soft: #f3f6ef;
+	--adam-community-text: #243426;
+	--adam-community-heading: #17241a;
+	--adam-community-muted: #526058;
+	--adam-community-border: #cbd8c5;
+	--adam-community-accent: #315c25;
+	--adam-community-hover: #24491c;
+	--adam-community-on-accent: #fff;
+	--adam-community-team: #315c25;
+	--adam-community-field: #cee5b8;
+	--adam-community-pin-text: #17241a;
+	--adam-community-tiles: grayscale(1) sepia(.25) saturate(1.6) hue-rotate(45deg);
+	color-scheme: light;
+}
+
+body.adam-theme-dark:not(.wp-admin) :is(.adam-community-hub, .adam-map-widget) {
+	--adam-community-bg: var(--adam-bg);
+	--adam-community-surface: var(--adam-card-bg);
+	--adam-community-soft: var(--adam-surface-2);
+	--adam-community-text: var(--adam-text);
+	--adam-community-heading: var(--adam-heading);
+	--adam-community-muted: var(--adam-text-muted);
+	--adam-community-border: var(--adam-border);
+	--adam-community-accent: var(--adam-link);
+	--adam-community-hover: var(--adam-link-hover);
+	--adam-community-on-accent: var(--adam-btn-primary-text);
+	--adam-community-team: var(--adam-btn-primary-bg);
+	--adam-community-field: var(--adam-link);
+	--adam-community-pin-text: var(--adam-btn-primary-text);
+	--adam-community-tiles: grayscale(1) invert(1) sepia(.45) saturate(1.7) hue-rotate(45deg) brightness(.85) contrast(.9);
+	color-scheme: dark;
+}
+
+body:not(.wp-admin) .adam-community-hub {
+	background: var(--adam-community-bg);
+	color: var(--adam-community-text);
+}
+
+body:not(.wp-admin) .adam-community-hub :is(h1, h2, h3) {
+	color: var(--adam-community-heading);
+}
+
+body:not(.wp-admin) .adam-community-hub :is(h1 span, .adam-community-hub__eyebrow) {
+	color: var(--adam-community-accent);
+}
+
+body:not(.wp-admin) .adam-community-hub :is(
+	.adam-community-hub__lead p,
+	.adam-community-hub__map-heading p,
+	.adam-community-hub__mission > div > p:not(.adam-community-hub__eyebrow),
+	.adam-community-hub__contribute p:not(.adam-community-hub__eyebrow)
+) {
+	color: var(--adam-community-muted);
+}
+
+body:not(.wp-admin) .adam-community-hub :is(.adam-community-hub__mission, .adam-community-hub__map-heading) {
+	border-color: var(--adam-community-border);
+}
+
+body:not(.wp-admin) :is(.adam-community-hub, .adam-map-widget) a {
+	color: var(--adam-community-accent);
+}
+
+body:not(.wp-admin) :is(.adam-community-hub, .adam-map-widget) a:hover {
+	color: var(--adam-community-hover);
+}
+
+body:not(.wp-admin) .adam-community-hub a.adam-community-hub__button {
+	background: var(--adam-community-accent);
+	border-color: var(--adam-community-accent);
+	color: var(--adam-community-on-accent);
+}
+
+body:not(.wp-admin) .adam-community-hub a.adam-community-hub__button:hover {
+	background: var(--adam-community-hover);
+	border-color: var(--adam-community-hover);
+}
+
+body:not(.wp-admin) .adam-community-hub a.adam-community-hub__button--outline {
+	background: transparent;
+	border-color: var(--adam-community-accent);
+	color: var(--adam-community-accent);
+}
+
+body:not(.wp-admin) .adam-community-hub a.adam-community-hub__button--outline:hover {
+	background: var(--adam-community-soft);
+	color: var(--adam-community-hover);
+}
+
+body:not(.wp-admin) .adam-map-widget {
+	--team: var(--adam-community-team);
+	--field: var(--adam-community-field);
+	background: var(--adam-community-surface);
+	color: var(--adam-community-text);
+	border-color: var(--adam-community-border);
+}
+
+body:not(.wp-admin) .adam-map-widget :is(h2, .adam-map-result > button, .leaflet-popup-content) {
+	color: var(--adam-community-heading);
+}
+
+body:not(.wp-admin) .adam-map-widget :is(header p, .adam-map-status, .adam-map-note, .adam-map-result small, .leaflet-popup-content small) {
+	color: var(--adam-community-muted);
+}
+
+body:not(.wp-admin) .adam-map-widget :is(input, select, .adam-map-result, .leaflet-popup-content-wrapper, .leaflet-popup-tip, .leaflet-control-zoom a) {
+	background: var(--adam-community-surface);
+	color: var(--adam-community-text);
+	border-color: var(--adam-community-border);
+}
+
+body:not(.wp-admin) .adam-map-widget input::placeholder {
+	color: var(--adam-community-muted);
+}
+
+body:not(.wp-admin) .adam-map-widget :is(.adam-map-results, .adam-map-canvas, .adam-map-filters button) {
+	background: var(--adam-community-soft);
+	color: var(--adam-community-text);
+}
+
+body:not(.wp-admin) .adam-map-widget :is(.adam-map-layout, .leaflet-popup-content > div > div + div) {
+	border-color: var(--adam-community-border);
+}
+
+body:not(.wp-admin) .adam-map-widget .adam-map-filters button {
+	border-color: var(--adam-community-accent);
+	color: var(--adam-community-accent);
+}
+
+body:not(.wp-admin) .adam-map-widget :is(.adam-map-filters button, .leaflet-control-zoom a):hover {
+	background: var(--adam-community-soft);
+	color: var(--adam-community-hover);
+}
+
+body:not(.wp-admin) .adam-map-widget .leaflet-control-zoom a.leaflet-disabled {
+	color: var(--adam-community-muted);
+}
+
+body:not(.wp-admin) .adam-map-widget .adam-map-result.is-active {
+	box-shadow: 0 0 0 2px var(--adam-community-accent);
+}
+
+body:not(.wp-admin) .adam-map-widget .adam-map-pin span {
+	border-color: var(--adam-community-surface);
+	color: var(--adam-community-on-accent);
+}
+
+body:not(.wp-admin) .adam-map-widget .adam-map-pin--field span {
+	color: var(--adam-community-pin-text);
+}
+
+/* Only geographic tiles are tinted; markers, labels and site media stay intact. */
+body:not(.wp-admin) .adam-map-widget .leaflet-tile-pane {
+	filter: var(--adam-community-tiles);
+}
+
+body:not(.wp-admin) .adam-map-widget .leaflet-control-attribution {
+	background: var(--adam-community-surface);
+	color: var(--adam-community-muted);
+}
+
+body:not(.wp-admin) .adam-map-widget .leaflet-container a.leaflet-popup-close-button {
+	color: var(--adam-community-accent);
+}
+
+body:not(.wp-admin) :is(.adam-community-hub, .adam-map-widget) :is(a, button, input, select):focus-visible {
+	outline-color: var(--adam-community-accent);
+}
